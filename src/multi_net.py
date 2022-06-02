@@ -12,8 +12,8 @@ import networkx as nx
 import pickle
 
 import sys
-sys.path.insert(0, './Multilayer_Networks_Package')
-from pymnet import *
+sys.path.insert(0, './')
+from xxx import *
 
 
 multi_net = MultiNet()
@@ -35,29 +35,6 @@ class MultiNet():
         # len(node_list) # 2196
         # max(node_list) # 2198
         self.n_node = len(node_id)
-        
-        if package == 'pymnet':
-            mplex = MultiplexNetwork(couplings='categorical')
-    
-            layer_list = link_df['Type_relation'].unique()
-            for layer in layer_list:
-                mplex.add_layer(layer)
-                
-            for index, row in link_df.iterrows():
-                if index < 400:
-                    layer = row['Type_relation']
-                    mplex[row['Actor_A'], layer][row['Actor_B'], layer] = 1
-            plt.figure(figsize=(20, 60))
-            fig = draw(mplex, show=True, layout="circular", layershape="circle")
-            fig.savefig("../output/mplex_net.pdf", dpi=200)
-            fig = draw(mplex, show=True,
-                        layout="spring",
-                        layerColorRule={},
-                        defaultLayerColor="gray",
-                        nodeLabelRule={},
-                        edgeColorRule={"rule":"edgeweight","colormap":"jet","scaleby":0.1})
-
-
         
         net = nx.Graph()
 
