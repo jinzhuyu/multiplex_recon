@@ -6,11 +6,13 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mtransforms
-from copy import deepcopy
+from functools import reduce
+# from copy import deepcopy
 # import pandas as pd
 # from scipy.stats import poisson
 import networkx as nx
-import pickle
+# import pickle
+
 
 # import sys
 # sys.path.insert(0, './xxxx')
@@ -24,8 +26,8 @@ class MultiNet:
         self.__dict__.update(vars) # __dict__ holds an object's attributes
         del self.__dict__["self"]  # `self` is not needed anymore
 
-    def load_data(self, dir='../data/links.xlsx'):
-        self.link_df = pd.read_excel(dir, sheet_name='LINKS IND AND GROUP')
+    def load_data(self, path='../data/links.xlsx'):
+        self.link_df = pd.read_excel(path, sheet_name='LINKS IND AND GROUP')
 
     def gen_net(self):
         link_df = self.link_df
@@ -80,10 +82,10 @@ class MultiNet:
         plt.savefig('../output/all_layers.pdf', dpi=800)
         plt.show()
        
-multi_net = MultiNet()
-self = multi_net
-multi_net.load_data()
-multi_net.gen_net()
+# multi_net = MultiNet()
+# self = multi_net
+# multi_net.load_data()
+# multi_net.gen_net()
 
 # https://stackoverflow.com/questions/17751552/drawing-multiplex-graphs-with-networkx
 
@@ -92,142 +94,220 @@ multi_net.gen_net()
 
 class Reconstruct:
     
-    def recon_multiplex(M_list, PONset_list, n_node, itermax=1000, eps=1e-6):
+    def __init__(self, M_list, PON_idx_list, n_node, itermax=1000, eps=1e-6):
         '''     
         Parameters
         ----------
-        M1, M2: the adjacency matrices of layer 1, 2 in a multiplex
-        PONset1, PONset2 : node set containing the index of nodes in the subgraphs
-        n_node : number of nodes in each layer. nodes are shared over layers.
+        M1, M2: the adjacency link array of layer 1, 2 in a multiplex
+        PON_idx1, PON_idx2 : node set containing the index of nodes in the subgraphs.
+        n_node : number of nodes in each layer. nodes are shared over layers
+        eps: error tolerance at convergence
 
         Returns
         -------
         Q1,Q2: the reconstructed adjacency matrices of layer 1, 2 in the multiplex network
+        
+        TODO: a more common case is that we have incomplete topology of several layers. the aggregated topology is not available.
 
-        '''
+        '''    
+        # TODO: n_node can be inferred from input        
+        vars = locals() # dict of local names
+        self.__dict__.update(vars) # __dict__ holds an object's attributes
+        del self.__dict__["self"]  # `self` is not needed anymore
         
-        # TODO: what if there are many layers instead of 2
-            # the input M and PONset should be list
-            # n_node can be inferred from input
-        
-        # generate the ground truth of a multiplex network
-        n_node = self.n_node
-        n_layer = len(self.M_list)
-        
-        self.A2 = np.zeros([n_node,n_node])  
+        self.n_layer = len(self.M_list)
+        self.get_layer_adj_list()
+        self.get_agg_net()
+    # layers should have same nodeset. Use the Union of sets of nodes in each layer.    
     
-        # layers should have same nodeset. Use the Union of sets of nodes in each layer.
-        def get_layer_adj(self, M):
+    # functions for generating the ground truth of a multiplex network  
+    def get_layer_adj_list(self):
+        def get_layer_adj(link_arr):
             n_node = self.n_node
+            n_link = len(link_arr)
             A = np.zeros([n_node, n_node]) 
-            for k in range(n_node):
-                i = M[k, 1] 
-                j = M[k, 2] 
+            for k in range(n_link):
+                i = link_arr[k, 0] 
+                j = link_arr[k, 1] 
                 A[i, j] = 1 
-                A[j, i] = 1
+                A[j, i] = 1        
             return A
         
-        layer_adj_list = []
-        for ix in range(n_layer):
-            layer_adj_list.append(get_layer_adj(M_list[idx]))
+        self.layer_adj_list = []
+        for idx in range(self.n_layer):
+            self.layer_adj_list.append(get_layer_adj(self.M_list[idx]))
+            
     
-        # generate the aggregate network
+    def get_agg_net(self):
+        # get the aggregate network using the OR agggregation
         J_N = np.ones([self.n_node, self.n_node])
-        self.A0 = J_N - (J_N - self.A1)*(J_N - self.A2) 
-        
-        #initial guess of the network model parameters
-        deg_seq_list = []
-        deg_seq_last_list = []
-        for idx in range(n_layer):
-            self.deg_seq_list.append( np.random.randint(low=1, high=self.n_node+1, size=self.n_node) )
-            self.deg_seq_last_list.append( np.zeros(self.n_node) ) 
+        layer_adj_neg_list = [J_N - ele for ele in self.layer_adj_list]
+        self.A0 = J_N - reduce(np.multiply, layer_adj_neg_list)
+
+
+    # functions used in learn layer adj        
+    # avoid probability overflow in configuration model
+    # prob overflow can be avoided automatically if degree gusses are integers
+    def avoid_prob_overflow(self, Q_list):
+        for Q in Q_list:
+            Q[Q<0] = 0 
+            Q[Q>1] = 1 # are there Q >1?
+            if (len(Q[Q>1]) + len(Q[Q<0])) >= 1:
+                print('There are prob overflows in Q')
+        return Q_list
+
+    #calculate link reliabilities by configuration model
+    def cal_link_prob_deg(self, Q_list):
+        ''' calculate link probability between two nodes using their degrees
+        '''
+        n_node = self.n_node
+        for i in range(n_node):
+            for j in range(n_node):
+                # Page 25 in the SI
+                temp = [1-self.deg_seq_list[ele][i]*self.deg_seq_list[ele][j]/(self.deg_sum_list[ele]-1)\
+                        for ele in range(self.n_layer)]
+                agg_link_prob = 1 - np.prod(temp)
+                for idx, Q in enumerate(Q_list):
+                    if agg_link_prob == 0:
+                        Q[i, j] = 0
+                    else:
+                        # single link prob using degree of two nodes: page 27 in SI
+                        single_link_prob = self.deg_seq_list[idx][i]*self.deg_seq_list[idx][j]\
+                                           /(self.deg_sum_list[idx]-1)
+                        Q[i, j] = self.A0[i, j]*single_link_prob/agg_link_prob                                          
+        Q_list = self.avoid_prob_overflow(Q_list)
+        return Q_list
+    
+    def cal_link_prob_PON(self, Q_list):
+        # calculate link probability using partial observed nodes in each layer
+        # TODO: avoid multiple nested for loops
+        for ns_idx, node_set in enumerate(self.PON_idx_list):
+            n_node_this = len(node_set)
+            for s in range(n_node_this):
+                for t in range(n_node_this):
+                    i, j = node_set[s], node_set[t]
+                    Q_list[ns_idx][i,j] = self.layer_adj_list[ns_idx][i, j] # TODO: why is the ground truth used here
+    
+                    # OR-aggregate mechanism: page 25 in SI
+                    if self.A0[i, j] == 1:
+                        other_layer_idx = [ele for ele in range(self.n_layer) if ele != ns_idx]
+                        single_link_prob_arr = np.zeros(self.n_layer)
+                        for idx1 in other_layer_idx:
+                            if Q_list[idx1][i, j] not in [0, 1]: # TODO: why not =0 and not =1
+                                single_link_prob = self.deg_seq_list[idx1][i]*self.deg_seq_list[idx1][j]\
+                                                   /(self.deg_sum_list[idx1] - 1)
+                                Q_list[idx1][i, j] = single_link_prob
+                                single_link_prob_arr[idx1] = single_link_prob
+                        if Q_list[ns_idx][i,j] == 0:
+                            # make at least one Q_ij = 1 to make A0_ij = 1
+                            # normalize each single link prob by the max
+                                # so that the max automatically becomes the chosen 1
+                            max_single_prob = np.max(single_link_prob_arr)
+                            for idx1 in other_layer_idx:
+                                if max_single_prob == 0:
+                                    raise Exception('max_single_prob is 0!')
+                                Q_list[idx1][i, j] = single_link_prob_arr[idx1] / max_single_prob
+        Q_list = self.avoid_prob_overflow(Q_list)
+        return Q_list
+    
+    def learn_layer_adj(self):     
+        #initialize the network model parameters
+        self.deg_seq_list = [np.random.randint(1, self.n_node+1, size=self.n_node)
+                             for idx in range(self.n_layer)]
+        self.deg_seq_last_list = [np.zeros(self.n_node) for idx in range(self.n_layer)] 
     
         for iter in range(self.itermax):
+            if iter % 100 == 0: 
+                print('\n====== iter: {}'.format(iter))
+            # init
+            n_node = self.n_node            
+            self.Q_list = [np.zeros([n_node, n_node]) for idx in range(self.n_layer)]
+            self.deg_sum_list = [np.sum(ele) for ele in self.deg_seq_list]
     
-            Q1 = np.zeros(n_node) 
-            Q2 = np.zeros(n_node) 
-            DegreeSum1 = np.sum(self.deg_seq_1)-1 
-            DegreeSum2 = np.sum(self.deg_seq_2)-1 
-    
-            #calculate link reliabilities by configuration model
-            def cal_link_prob(self):
-                for i in range(n_node):
-                    for j in range(n_node):
-                        dem = 1-(1-self.deg_seq_1(i)*self.deg_seq_1(j)/DegreeSum1)*(1-self.deg_seq_2(i)*self.deg_seq_2(j)/DegreeSum2) 
-                        if dem==0:
-                            Q1[i, j]=0 
-                            Q2[i, j]=0 
-                        if dem != 0:
-                            Q1[i, j]=self.A0[i, j]*self.deg_seq_1(i)*self.deg_seq_1(j)/DegreeSum1/dem 
-                            Q2[i, j]=self.A0[i, j]*self.deg_seq_2(i)*self.deg_seq_2(j)/DegreeSum2/dem 
-    
-            #avoid probability overflow in configuration model
-            def remove_error_prob(self, Q):
-                Q[Q<0]=0 
-                Q[Q>1]=1 
-                
-            self.Q1 = self.remove_error_prob(self.Q1)
-            self.Q2 = self.remove_error_prob(self.Q2)
-    
-    
-            #patial observation in layer 1
-            for s in range(len(self.PONset1)):
-                for t in range(len(self.PONset1)):
-    
-                    i = self.PONset1(s) 
-                    j = self.PONset1(t) 
-                    self.Q1[i, j] = self.A1[i, j] 
-    
-                    #OR-aggregate mechanism
-                    if self.A0[i, j] == 1:
-                        if Q1[i, j] == 1:
-                            if Q2[i, j]!=0 and Q2[i, j]!=1:
-                                Q2[i, j]=self.deg_seq_2(i)*self.deg_seq_2(j)/DegreeSum2
-                        if Q1[i, j]==0:
-                            Q2[i, j] = 1 
-   
-            #patial observation in layer 2
-            for s in range(len(self.PONset1)):
-                for t in range(len(self.PONset1)):
-    
-                    i = self.PONset2(s) 
-                    j = self.PONset2(t) 
-                    self.Q2[i, j] = self.A2[i, j] 
-    
-                    #OR-aggregate mechanism
-                    if self.A0[i, j]==1:
-                        if Q2[i, j]==1:
-                            if Q1[i, j]!=0 and Q1[i, j]!=1:
-                                Q1[i, j]=self.deg_seq_1(i)*self.deg_seq_1(j)/DegreeSum1 
-                        if Q2[i, j]==0:
-                            Q1[i, j] = 1 
-   
-            #avoid probability overflow in configuration model
-            self.Q1 = self.remove_error_prob(self.Q1)
-            self.Q2 = self.remove_error_prob(self.Q2)   
-    
+            #calculate link prob by configuration model
+            self.Q_list = self.cal_link_prob_deg(self.Q_list)
+
+            # update link prob using partial node sets
+            self.Q_list = self.cal_link_prob_PON(self.Q_list)        
+       
             #update network model parameters
-            self.deg_seq_1 = np.sum(self.Q1) 
-            self.deg_seq_2 = np.sum(self.Q2) 
-    
-    
+            self.deg_seq_list  = [np.sum(ele, axis=0) for ele in self.Q_list]
+            # print('deg_seq_list', self.deg_seq_list)
+
             #convergence check
-            if np.sum(np.abs(self.deg_seq_last_1-self.deg_seq_1))<self.eps and\
-               np.sum(np.abs(self.deg_seq_last_2-self.deg_seq_2))<self.eps: 
+            cond = [np.sum(np.abs(self.deg_seq_last_list[ele]-self.deg_seq_list[ele]))<self.eps\
+                    for ele in range(self.n_layer)]            
+            if all(cond):
+                print('\nConverges at iter: {}'.format(iter))
                 break
-            self.deg_seq_last_1 = self.deg_seq_1 
-            self.deg_seq_last_2 = self.deg_seq_2 
-    
+            else:
+                if iter == self.itermax:
+                    print('\nConvergence NOT achieved at the last iteration')
+            
+            self.deg_seq_last_list = self.deg_seq_list
+
+    def print_result(self):
         
+        n_digit = 0
+        self.Q_list = [np.round(ele, n_digit) for ele in self.Q_list]
+        self.deg_seq_last_list = [np.round(ele, n_digit) for ele in self.deg_seq_last_list]  
+        
+        n_space = 2
+        n_dot = 20
+        print('\nDegree sequence')
+        for idx in range(self.n_layer):   
+            if idx>0:
+                print(' ' * n_space, '-'*n_dot)
+            npprint(self.deg_seq_last_list[idx], n_space)  
+            
+        print('\nReconstructed adj mat')
+        for idx in range(self.n_layer):   
+            if idx>0:
+                print(' ' * n_space, '-'*n_dot)
+            npprint(self.Q_list[idx], n_space)  
+        
+        # true adj mat
+        adj_list = [np.zeros([self.n_node, self.n_node]) for i in range(self.n_layer)]
+        for idx in range(self.n_layer):
+            for ele in self.M_list[idx].tolist():
+                adj_list[idx][ele[0], ele[1]] = 1 
+        print('\nTrue adj mat')
+        for idx in range(self.n_layer): 
+            if idx>0:
+                print(' ' * n_space, '-'*n_dot)           
+            npprint(adj_list[idx], n_space)    
+
+
+def npprint(A, n_space=2):
+     assert isinstance(A, np.ndarray), "input of npprint must be array like"
+     if A.ndim==1 :
+         print(' '*n_space, A)
+     else:
+         for i in range(A.shape[1]):
+             npprint(A[:,i])
+             
+def main(): 
+    
+    # import data
+    path = '../data/toy_net/layer_links.xlsx'
+    layer_df_list = [pd.read_excel(path, sheet_name='layer_{}'.format(i)) for i in [1,2]]
+    layer_link_list = [ele.to_numpy() for ele in layer_df_list]
+    
+    # initilize    
+    n_node = max([np.amax(ele) for ele in layer_link_list]) + 1
+    
+    # choose observed nodes
+    PON_idx_list =[[0,1,2], [0,4,5]]    
+
+    reconst = Reconstruct(M_list=layer_link_list, PON_idx_list=PON_idx_list,
+                          n_node=n_node, itermax=1000, eps=1e-6)        
+    reconst.learn_layer_adj()
+    
+    # show results    
+    reconst.print_result()
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+main() 
+
+# self = reconst
+
