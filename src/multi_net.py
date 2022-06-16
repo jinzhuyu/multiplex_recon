@@ -19,12 +19,17 @@ import networkx as nx
 # from xxxx import *
 
 
-class MultiNet:
+class DrugNet:
     def __init__(self):
 
         vars = locals() # dict of local names
         self.__dict__.update(vars) # __dict__ holds an object's attributes
         del self.__dict__["self"]  # `self` is not needed anymore
+
+        self.load_data()
+        self.gen_net()
+        self.get_layer_links_list()
+        self.get_n_node()
 
     def load_data(self, path='../data/links.xlsx'):
         self.link_df = pd.read_excel(path, sheet_name='LINKS IND AND GROUP')
@@ -53,6 +58,49 @@ class MultiNet:
                               if e['label']==self.layer_id_list[idx]]
             G_sub.add_edges_from(edges_this_layer)
             self.sub_graph_list.append(G_sub)
+        
+    def get_layer_links_list(self):
+        '''
+            layer_links_list: a list containing 2d link array for each layer
+        '''
+        
+        # a list of the 2d link array for each layer
+        self.layer_links_list = []
+        for idx in range(len(self.layer_id_list)):
+            edges_this_layer = [[u,v] for (u,v,e) in self.G.edges(data=True)\
+                                 if e['label']==self.layer_id_list[idx]]
+            self.layer_links_list.append(edges_this_layer)
+                        
+    def get_n_node(self):
+        node_id = set(np.concatenate(self.layer_links_list).ravel())
+        self.n_node = len(node_id) 
+
+    def get_node_list(self):
+        node_id_list = [list(set(np.concatenate(self.layer_links_list[i])))
+                        for i in range(len(self.layer_id_list))]
+        self.node_id_list = len(node_id_list)
+        
+        
+        
+        # select a fraction of nodes as truly observed nodes
+        
+        # append nodes that are present in the aggregate net, but not in the current layer
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
                 
     def plot_layer(self, is_save_fig=True): 
@@ -94,62 +142,49 @@ class MultiNet:
         nx.draw(self.G, node_size=2)
         plt.savefig('../output/all_layers.pdf', dpi=800)
         plt.show()
-        
-        
-    def get_layer_links_list(self):
-        '''
-            true_layer_links_list: a list containing 2d link array for each layer
-        '''
-        
-        # a list of the 2d link array for each layer
-        self.layer_links_list = []
-        for idx in range(len(self.layer_id_list)):
-            edges_this_layer = [[u,v] for (u,v,e) in self.G.edges(data=True)\
-                                 if e['label']==self.layer_id_list[idx]]
-            self.layer_links_list.append(edges_this_layer)
-            
-            
-        
+               
        
-multi_net = MultiNet()
-multi_net.load_data()
-multi_net.gen_net()
-self = multi_net
+# drug_net = DrugNet()
+# drug_net.load_data()
+# drug_net.gen_net()
+# self = drug_net
 # https://stackoverflow.com/questions/17751552/drawing-multiplex-graphs-with-networkx
 
 
+# drug_net = Reconstruct(layer_links_list=multi_net.layer_links_list,
+#                        PON_idx_list=)
 
 
 class Reconstruct:
     
-    def __init__(self, true_layer_links_list, PON_idx_list, itermax=1000, eps=1e-3):
+    def __init__(self, layer_links_list, PON_idx_list, itermax=1000, eps=1e-5, **kwargs):
         '''     
         Parameters
         ----------
-        true_layer_links_list: a list containing 2d link array for each layer
+        layer_links_list: a list containing 2d link array for each layer
         PON_idx1, PON_idx2 : node set containing the index of nodes in the subgraphs.
         n_node : number of nodes in each layer. nodes are shared over layers
         eps: error tolerance at convergence
 
         Returns
         -------
-        Q1,Q2: the reconstructed adjacency matrices of layer 1, 2 in the multiplex network
+        Q1,Q2: the recovered adjacency matrices of layer 1, 2 in the multiplex network
         '''    
-        # TODO: n_node can be inferred from input        
+        super().__init__(**kwargs) # inherite parent class's method        
         vars = locals() # dict of local names
         self.__dict__.update(vars) # __dict__ holds an object's attributes
         del self.__dict__["self"]  # `self` is not needed anymore
         
-        self.n_layer = len(self.true_layer_links_list)
+        self.n_layer = len(self.layer_links_list)
         self.get_n_node()
         self.get_true_adj_list()
         self.get_agg_adj()
-
+ 
     # layers should have same nodeset. Use the Union of sets of nodes in each layer.    
     
     # functions for generating the ground truth of a multiplex network
     def get_n_node(self):
-        node_id_all = set(np.concatenate(self.true_layer_links_list).ravel().tolist())
+        node_id_all = set(np.concatenate(self.layer_links_list).ravel().tolist())
         self.n_node = len(node_id_all)
         
     def get_true_adj_list(self):
@@ -160,13 +195,13 @@ class Reconstruct:
             for k in range(n_link):
                 i = link_arr[k, 0] 
                 j = link_arr[k, 1] 
-                A[i, j] = 1 
-                A[j, i] = 1        
+                A[i,j] = 1 
+                A[j,i] = 1        
             return A
         
         self.true_adj_list = []        
         for idx in range(self.n_layer):
-            self.true_adj_list.append(get_true_adj(self.true_layer_links_list[idx]))  
+            self.true_adj_list.append(get_true_adj(self.layer_links_list[idx]))  
     
     def get_agg_adj(self):
         # get the aggregate network using the OR agggregation
@@ -199,53 +234,60 @@ class Reconstruct:
                 agg_link_prob = 1 - np.prod(temp)
                 for idx, Q in enumerate(pred_adj_list):
                     if agg_link_prob == 0:
-                        Q[i, j] = 0
+                        Q[i,j] = 0
                     else:
                         # single link prob using degree of two nodes: page 27 in SI
                         single_link_prob = self.deg_seq_list[idx][i]*self.deg_seq_list[idx][j]\
                                            /(self.deg_sum_list[idx]-1)
-                        Q[i, j] = self.agg_adj[i, j]*single_link_prob/agg_link_prob                                          
+                        Q[i,j] = self.agg_adj[i,j]*single_link_prob/agg_link_prob                                          
         pred_adj_list = self.avoid_prob_overflow(pred_adj_list)
         return pred_adj_list
     
     def cal_link_prob_PON(self, pred_adj_list):
         # calculate link probability using partial observed nodes in each layer
         # TODO: avoid multiple nested for loops
-        for ns_idx, node_set in enumerate(self.PON_idx_list):
-            n_node_this = len(node_set)
-            for s in range(n_node_this):
-                for t in range(n_node_this):
+        for curr_lyr, node_set in enumerate(self.PON_idx_list):
+            n_node_temp = len(node_set)
+            for s in range(n_node_temp):
+                for t in range(n_node_temp):
                     i, j = node_set[s], node_set[t]
                     # TODO: the following indicates that links among the observed nodes are also observed.
                         # so the subgraphs are actually vertex-induced subgraph
-                    # pred_adj_list[ns_idx][i,j] = self.true_adj_list[ns_idx][i, j]
+                    # pred_adj_list[curr_lyr][i,j] = self.true_adj_list[curr_lyr][i, j]
                     # suppose only a portion of links among observed nodes are observed
-            
-                    # if np.random.uniform(0, 1) < self.frac_obs_link:
-                    #     pred_adj_list[ns_idx][i,j] = self.true_adj_list[ns_idx][i, j]
+                    pred_adj_list[curr_lyr][i,j] = self.true_adj_list[curr_lyr][i,j]
     
                     # OR-aggregate mechanism: page 25 in SI
-                    if self.agg_adj[i, j] == 1:
-                        other_layer_idx = [ele for ele in range(self.n_layer) if ele != ns_idx]
+                    if self.agg_adj[i,j] == 1:
+                        other_layer_idx = [ele for ele in range(self.n_layer) if ele != curr_lyr]
                         single_link_prob_arr = np.zeros(self.n_layer)
-                        for idx1 in other_layer_idx:
-                            if pred_adj_list[idx1][i, j] not in [0, 1]: # TODO: why not =0 and not =1
-                                single_link_prob = self.deg_seq_list[idx1][i]*self.deg_seq_list[idx1][j]\
-                                                   /(self.deg_sum_list[idx1] - 1)
-                                pred_adj_list[idx1][i, j] = single_link_prob
-                                single_link_prob_arr[idx1] = single_link_prob
-                        if pred_adj_list[ns_idx][i,j] == 0:
+                        # calculate predicted link [i,j] probability in other layers
+                        for lyr_idx in other_layer_idx:
+                            single_link_prob = self.deg_seq_list[lyr_idx][i]  \
+                                               *self.deg_seq_list[lyr_idx][j] \
+                                               /(self.deg_sum_list[lyr_idx] - 1)
+                            single_link_prob_arr[lyr_idx] = single_link_prob
+                        # determine the actual predicted link [i,j] probability in other layers
+                        if pred_adj_list[curr_lyr][i,j] == 1:
+                            for lyr_idx in other_layer_idx:
+                                if pred_adj_list[lyr_idx][i,j] not in [0, 1]: # TODO: why not =0 and not =1:
+                                    pred_adj_list[lyr_idx][i,j] = single_link_prob_arr[lyr_idx]
+                        if pred_adj_list[curr_lyr][i,j] == 0:
                             # make at least one Q_ij = 1 to make A0_ij = 1
-                            # normalize each single link prob by the max
-                                # so that the max automatically becomes the chosen 1
-                            max_single_prob = np.max(single_link_prob_arr)
-                            if max_single_prob != 0:
-                                for idx1 in other_layer_idx:
-                                    pred_adj_list[idx1][i, j] = single_link_prob_arr[idx1] / max_single_prob
-                            else:
-                                #randomly select one
-                                rand_idx = np.random.choice(other_layer_idx)
-                                pred_adj_list[rand_idx][i, j] = 1
+                            if len(other_layer_idx) >= 2:
+                                max_single_prob = np.max(single_link_prob_arr)
+                                if max_single_prob != 0:
+                                    # normalize each single link prob by the max
+                                    # so that the max automatically becomes the chosen 1
+                                    for lyr_idx in other_layer_idx:
+                                        pred_adj_list[lyr_idx][i,j] = single_link_prob_arr[lyr_idx] \
+                                                                      /max_single_prob
+                                else: # TODO: randomly select one?
+                                    rand_idx = np.random.choice(other_layer_idx)
+                                    pred_adj_list[rand_idx][i,j] = 1
+                            else: # two layers in total
+                                rand_idx = other_layer_idx[0]
+                                pred_adj_list[rand_idx][i,j] = 1
         pred_adj_list = self.avoid_prob_overflow(pred_adj_list)
         return pred_adj_list
     
@@ -254,7 +296,7 @@ class Reconstruct:
         '''
         n_digit = 0
         self.pred_adj_list_round = [np.round(ele, n_digit) for ele in self.pred_adj_list]
-        self.deg_seq_last_list = [np.round(ele, n_digit) for ele in self.deg_seq_last_list]  
+        self.deg_seq_last_list_round = [np.round(ele, n_digit) for ele in self.deg_seq_last_list]  
         
         self.adj_MAE_list = [np.mean(np.abs(self.pred_adj_list_round[idx]-self.true_adj_list[idx]))\
                              for idx in range(self.n_layer)]
@@ -262,7 +304,7 @@ class Reconstruct:
         
     def predict_adj(self):     
         #initialize the network model parameters
-        self.deg_seq_list = [np.random.randint(1, self.n_node+1, size=self.n_node)
+        self.deg_seq_list = [np.random.uniform(1, self.n_node+1, size=self.n_node)
                              for idx in range(self.n_layer)]
         self.deg_seq_last_list = [np.zeros(self.n_node) for idx in range(self.n_layer)] 
     
@@ -277,14 +319,14 @@ class Reconstruct:
             #calculate link prob by configuration model
             self.pred_adj_list = self.cal_link_prob_deg(self.pred_adj_list)
 
-            # update link prob using partial node sets
+            # update link prob using partial node sets and all links among observed nodes
             self.pred_adj_list = self.cal_link_prob_PON(self.pred_adj_list)        
        
             #update network model parameters
             self.deg_seq_list  = [np.sum(ele, axis=0) for ele in self.pred_adj_list]
             # print('deg_seq_list', self.deg_seq_list)
 
-            #convergence check
+            # check convergence of degree sequence
             cond = [np.sum(np.abs(self.deg_seq_last_list[ele]-self.deg_seq_list[ele])) < self.eps\
                     for ele in range(self.n_layer)]            
             if all(cond):
@@ -299,16 +341,26 @@ class Reconstruct:
         self.cal_adj_MAE()
     
     
-    def print_result(self):        
+    def print_result(self): 
+        def round_list(any_list, n_digit=4):
+            return [np.round(ele, n_digit) for ele in any_list]
+        
         n_space = 2
         n_dot = 19
+        n_digit = 4
         print('\nDegree sequence')
         for idx in range(self.n_layer):   
             if idx > 0:
+                print(' ' * n_space, '-'*n_dot*2)
+            npprint(round_list(self.deg_seq_last_list)[idx], n_space)  
+        
+        print('\n')
+        for idx in range(self.n_layer):   
+            if idx > 0:
                 print(' ' * n_space, '-'*n_dot)
-            npprint(self.deg_seq_last_list[idx], n_space)  
+            npprint(self.deg_seq_last_list_round[idx], n_space) 
             
-        print('\nReconstructed adj mat')
+        print('\nRecovered adj mat')
         for idx in range(self.n_layer):   
             if idx > 0:
                 print(' ' * n_space, '-'*n_dot)
@@ -320,7 +372,7 @@ class Reconstruct:
             if idx > 0:
                 print(' ' * n_space, '-'*n_dot)           
             npprint(self.true_adj_list[idx], n_space)  
-        print('\nadj_MAE: ', self.adj_MAE_list)
+        print('\nadj_MAE: ', round_list(self.adj_MAE_list))
         
         
         
@@ -331,7 +383,7 @@ class Reconstruct:
         TODO:
             the following two lines should be modified the observed links should be among observed nodes
             'if np.random.uniform(0, 1) < self.frac_obs_link:
-                 pred_adj_list[ns_idx][i,j] = self.true_adj_list[ns_idx][i, j]'
+                 pred_adj_list[curr_lyr][i,j] = self.true_adj_list[curr_lyr][i,j]'
         '''                        
         
         
@@ -342,31 +394,29 @@ def npprint(A, n_space=2):
      else:
          for i in range(A.shape[1]):
              npprint(A[:,i])
-            
-def main(): 
+
+
+
+def main_drug(): 
     
     # import data
-    path = '../data/toy_net/layer_links.xlsx'
-    layer_df_list = [pd.read_excel(path, sheet_name='layer_{}'.format(i)) for i in [1,2]]
-    true_layer_links_list = [ele.to_numpy() for ele in layer_df_list]
+    drug_net = DrugNet()
+    drug_net.load_data()
+    drug_net.gen_net()
+    drug_net.get_layer_links_list()
     
-    # initilize    
-    n_node = max([np.amax(ele) for ele in true_layer_links_list]) + 1
-    frac_obs_node = [0.1*i for i in range(2,3)]
-    n_node_obs = [int(ele*n_node) for ele in frac_obs_node ]  
-    
+    frac_obs_node = [0.1*i for i in range(8, 9)]
+    n_node_obs = [int(ele*drug_net.n_node) for ele in frac_obs_node ]     
     n_fold = 1
-
     MAE_list = [[] for i in range(n_fold)]
-    for i_fd in range(n_fold):
-        # MAE_list = []    # choose observed nodes
-        # PON_idx_list =[[0,1,2], [0,4,5]] # no error if all links in subgraphs are observed
-        # np.random.seed(1235)   
+     
+    for i_fd in range(n_fold):   
         for idx in range(len(frac_obs_node)):        
-            PON_idx_list = [np.random.choice(n_node, n_node_obs[idx], replace=False).tolist()\
-                            for i in range(len(layer_df_list))]
+            PON_idx_list = [np.random.choice(drug_net.n_node, n_node_obs[idx], replace=False).tolist()\
+                            for i in range(len(drug_net.layer_links_list))]
 
-            reconst = Reconstruct(true_layer_links_list=true_layer_links_list, PON_idx_list=PON_idx_list,
+            reconst = Reconstruct(layer_links_list=drug_net.layer_links_list,
+                                  PON_idx_list=PON_idx_list,
                                   itermax=int(1e4), eps=1e-6)        
             reconst.predict_adj()
             MAE_list[i_fd].append(reconst.adj_MAE)
@@ -384,9 +434,59 @@ def main():
     
     print('\n mean MAE: ', mean_MAE)
     
+   
     
+# main_drug()
+
+
+            
+def main_toy(): 
     
-main() 
+    # import data
+    path = '../data/toy_net/layer_links.xlsx'
+    layer_df_list = [pd.read_excel(path, sheet_name='layer_{}'.format(i)) for i in [1,2]]
+    layer_links_list = [ele.to_numpy() for ele in layer_df_list]
+    
+    # initilize
+    node_id_list = [set(np.concatenate(ele)) for ele in layer_links_list]    
+    n_node_list = [len(ele) for ele in node_id_list]
+    frac_obs_node = [0.1*i for i in range(2,3)]
+    n_node_obs_list = [[int(i*n_node_list[j]) for i in frac_obs_node] \
+                       for j in range(len(layer_links_list))]   
+    n_fold = 1
+    MAE_list = [[] for i in range(n_fold)]
+    
+    for i_fd in range(n_fold):
+   
+        for idx in range(len(frac_obs_node)):
+            # PON_idx_list = [[0,1,2], [0,4,5]]
+            PON_idx_list = [np.random.choice(n_node_list[i], n_node_obs_list[i][idx], replace=False).tolist()\
+                            for i in range(len(layer_df_list))]
+
+            reconst = Reconstruct(layer_links_list=layer_links_list,
+                                  PON_idx_list=PON_idx_list,
+                                  itermax=int(1e4), eps=1e-6)        
+            reconst.predict_adj()
+            MAE_list[i_fd].append(reconst.adj_MAE)
+            # # show results    
+            reconst.print_result()
+    
+    mean_MAE = np.mean(np.array(MAE_list), axis=0)
+    print('\n mean MAE: ', np.round(mean_MAE, 4))   
+    
+    plt.figure(figsize=(4.8, 4.8*3/4))
+    plt.plot(frac_obs_node, mean_MAE, marker='o')
+    plt.xlabel('Fraction of observed nodes')
+    plt.ylabel('MAE of adjacency matrices')
+    plt.xticks([frac_obs_node[idx] for idx in range(len(frac_obs_node)) if idx%2 == 1])
+    plt.ylim(top=max(mean_MAE)+0.01)
+    plt.show()
+    
+
+    
+   
+    
+# main_toy() 
 
 
 
