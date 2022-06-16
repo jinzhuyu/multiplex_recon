@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mtransforms
 from functools import reduce
-# from copy import deepcopy
+from copy import deepcopy
 # import pandas as pd
 # from scipy.stats import poisson
 import networkx as nx
@@ -28,25 +28,37 @@ class DrugNet:
 
         self.load_data()
         self.gen_net()
-        self.get_layer_links_list()
-        self.get_n_node()
+        self.get_layer_link_list()
+        self.get_layer_node_list()
 
     def load_data(self, path='../data/links.xlsx'):
-        self.link_df = pd.read_excel(path, sheet_name='LINKS IND AND GROUP')
-
-    def gen_net(self):
-        link_df = self.link_df
-        node_id = pd.concat([link_df['Actor_A'], link_df['Actor_B']], ignore_index=True).unique().tolist()
-        node_id.sort()
-        self.node_id = node_id
+        self.link_df_orig = pd.read_excel(path, sheet_name='LINKS IND AND GROUP')
+        link_df = deepcopy(self.link_df_orig)
+        # let id start from 0
+        link_df[['Actor_A', 'Actor_B']] =  link_df[['Actor_A', 'Actor_B']] - 1
         
+        # find missing node ids
+        node_id = pd.concat([link_df['Actor_A'], link_df['Actor_B']], ignore_index=True).unique().tolist()
+        missed_id = [i for i in range(len(node_id)) if i not in node_id]
+        # correct id error in df
+        link_df_new = link_df
+        for this_id in missed_id:
+            for col in ['Actor_A', 'Actor_B']:
+                node_list_temp = link_df[col].tolist()
+                node_list_temp = [ele - 1 if ele >= this_id else ele for ele in node_list_temp]
+                link_df_new[col] = pd.Series(node_list_temp, index=link_df_new.index)       
+        node_id_new = pd.concat([link_df_new['Actor_A'], link_df_new['Actor_B']],
+                                ignore_index=True).unique().tolist()          
+        self.node_id = node_id_new
+        self.link_df = link_df_new
+        
+    def gen_net(self):        
         G = nx.MultiGraph()
-        self.layer_id_list = link_df['Type_relation'].unique() .tolist()  
-        for _, row in link_df.iterrows():
+        self.layer_id_list = self.link_df['Type_relation'].unique() .tolist()  
+        for _, row in self.link_df.iterrows():
             G.add_edge(row['Actor_A'], row['Actor_B'], label=row['Type_relation'])
         
         self.G = G
-
     
     def get_subgraph_list(self):
         '''get each layer as a subgraph 
@@ -59,48 +71,31 @@ class DrugNet:
             G_sub.add_edges_from(edges_this_layer)
             self.sub_graph_list.append(G_sub)
         
-    def get_layer_links_list(self):
+    def get_layer_link_list(self):
         '''
             layer_links_list: a list containing 2d link array for each layer
         '''
         
         # a list of the 2d link array for each layer
+        self.n_layer = len(self.layer_id_list)
         self.layer_links_list = []
-        for idx in range(len(self.layer_id_list)):
+        
+        for idx in range(self.n_layer):
             edges_this_layer = [[u,v] for (u,v,e) in self.G.edges(data=True)\
                                  if e['label']==self.layer_id_list[idx]]
             self.layer_links_list.append(edges_this_layer)
+        
                         
-    def get_n_node(self):
-        node_id = set(np.concatenate(self.layer_links_list).ravel())
-        self.n_node = len(node_id) 
+    def get_layer_node_list(self):
+        self.node_set_agg = set(np.concatenate(self.layer_links_list).ravel())
+        self.n_node = len(self.node_set_agg) 
 
-    def get_node_list(self):
-        node_id_list = [list(set(np.concatenate(self.layer_links_list[i])))
-                        for i in range(len(self.layer_id_list))]
-        self.node_id_list = len(node_id_list)
-        
-        
-        
-        # select a fraction of nodes as truly observed nodes
-        
-        # append nodes that are present in the aggregate net, but not in the current layer
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        node_set_layer = [set(np.concatenate(self.layer_links_list[i]))
+                          for i in range(len(self.layer_id_list))]
+        self.layer_n_node = [len(ele) for ele in node_set_layer]
+        self.node_list = [list(ele) for ele in node_set_layer]
+        # node in the aggregate net but not a layer
+        self.virt_node_list = [list(self.node_set_agg.difference(ele)) for ele in node_set_layer]           
         
                 
     def plot_layer(self, is_save_fig=True): 
@@ -157,7 +152,7 @@ class DrugNet:
 
 class Reconstruct:
     
-    def __init__(self, layer_links_list, PON_idx_list, itermax=1000, eps=1e-5, **kwargs):
+    def __init__(self, layer_links_list, PON_idx_list, n_node, itermax=1000, eps=1e-5,  **kwargs):
         '''     
         Parameters
         ----------
@@ -176,32 +171,27 @@ class Reconstruct:
         del self.__dict__["self"]  # `self` is not needed anymore
         
         self.n_layer = len(self.layer_links_list)
-        self.get_n_node()
         self.get_true_adj_list()
         self.get_agg_adj()
  
     # layers should have same nodeset. Use the Union of sets of nodes in each layer.    
     
-    # functions for generating the ground truth of a multiplex network
-    def get_n_node(self):
-        node_id_all = set(np.concatenate(self.layer_links_list).ravel().tolist())
-        self.n_node = len(node_id_all)
-        
+    # functions for generating the ground truth of a multiplex network        
     def get_true_adj_list(self):
         def get_true_adj(link_arr):
             n_node = self.n_node
             n_link = len(link_arr)
             A = np.zeros([n_node, n_node]) 
             for k in range(n_link):
-                i = link_arr[k, 0] 
-                j = link_arr[k, 1] 
+                i = link_arr[k][0] 
+                j = link_arr[k][1] 
                 A[i,j] = 1 
                 A[j,i] = 1        
             return A
         
         self.true_adj_list = []        
-        for idx in range(self.n_layer):
-            self.true_adj_list.append(get_true_adj(self.layer_links_list[idx]))  
+        for i_lyr in range(self.n_layer):
+            self.true_adj_list.append(get_true_adj(self.layer_links_list[i_lyr]))  
     
     def get_agg_adj(self):
         # get the aggregate network using the OR agggregation
@@ -395,29 +385,32 @@ def npprint(A, n_space=2):
          for i in range(A.shape[1]):
              npprint(A[:,i])
 
+# TODO: includethe list of observed links as an input
 
-
-def main_drug(): 
+def main_drug_net(): 
     
     # import data
     drug_net = DrugNet()
-    drug_net.load_data()
-    drug_net.gen_net()
-    drug_net.get_layer_links_list()
     
-    frac_obs_node = [0.1*i for i in range(8, 9)]
-    n_node_obs = [int(ele*drug_net.n_node) for ele in frac_obs_node ]     
+    frac_list = [0.1*i for i in range(8, 9)]
+    n_node_obs = [[int(frac*n) for n in drug_net.layer_n_node] for frac in frac_list ]     
     n_fold = 1
     MAE_list = [[] for i in range(n_fold)]
      
     for i_fd in range(n_fold):   
-        for idx in range(len(frac_obs_node)):        
-            PON_idx_list = [np.random.choice(drug_net.n_node, n_node_obs[idx], replace=False).tolist()\
-                            for i in range(len(drug_net.layer_links_list))]
+        for i_frac in range(len(frac_list)):        
+            PON_idx_list_orig = [np.random.choice(drug_net.node_list[i_lyr],
+                                                  n_node_obs[i_frac][i_lyr],
+                                                  replace=False).tolist()\
+                                 for i_lyr in range(drug_net.n_layer)]
+                
+            # append virtual nodes: all nodes - nodes in each layer
+            PON_idx_list = [PON_idx_list_orig[i_lyr] + drug_net.virt_node_list[i_lyr] \
+                            for i_lyr in range(drug_net.n_layer)]
 
             reconst = Reconstruct(layer_links_list=drug_net.layer_links_list,
-                                  PON_idx_list=PON_idx_list,
-                                  itermax=int(1e4), eps=1e-6)        
+                                  PON_idx_list=PON_idx_list, n_node=drug_net.n_node,
+                                  itermax=int(1e3), eps=1e-4)        
             reconst.predict_adj()
             MAE_list[i_fd].append(reconst.adj_MAE)
             # # show results    
@@ -425,10 +418,10 @@ def main_drug():
     
     mean_MAE = np.mean(np.array(MAE_list), axis=0)
     plt.figure(figsize=(4.8, 4.8*3/4))
-    plt.plot(frac_obs_node, mean_MAE)
+    plt.plot(frac_list, mean_MAE)
     plt.xlabel('Fraction of observed nodes')
     plt.ylabel('MAE of adjacency matrices')
-    plt.xticks([frac_obs_node[idx] for idx in range(len(frac_obs_node)) if idx%2 == 1])
+    plt.xticks([frac_list[idx] for idx in range(len(frac_list)) if idx%2 == 1])
     plt.ylim(top=max(mean_MAE)+0.01)
     plt.show()
     
@@ -436,7 +429,35 @@ def main_drug():
     
    
     
-# main_drug()
+# main_drug_net()
+
+from matplotlib import cm
+from sklearn.metrics import roc_curve, auc
+
+fpr, tpr, _ = roc_curve(adj_test,  adj_pred)
+fnr = 1 - tpr
+tnr = 1 - fpr
+
+
+
+colors = cm.get_cmap('tab10').colors
+for i in range(len(frac_list)):
+    plt.plot(fpr[i], tpr[i], color=colors[i], lw=lw,
+             label=r"$c$ = {0} (AUC = {1:0.2f})".format(i, roc_auc[i]))
+
+plt.plot([0, 1], [0, 1], "k--", lw=lw)
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel("False positive rate")
+plt.ylabel("True positive rate")
+plt.legend(loc="lower right")
+plt.show()
+
+#create ROC curve
+plt.plot(fpr,tpr)
+plt.ylabel('True Positive Rate')
+plt.xlabel('False Positive Rate')
+plt.show()
 
 
             
@@ -448,7 +469,8 @@ def main_toy():
     layer_links_list = [ele.to_numpy() for ele in layer_df_list]
     
     # initilize
-    node_id_list = [set(np.concatenate(ele)) for ele in layer_links_list]    
+    node_id_list = [set(np.concatenate(ele)) for ele in layer_links_list]
+    n_node = len(node_id_list)    
     n_node_list = [len(ele) for ele in node_id_list]
     frac_obs_node = [0.1*i for i in range(2,3)]
     n_node_obs_list = [[int(i*n_node_list[j]) for i in frac_obs_node] \
@@ -464,7 +486,7 @@ def main_toy():
                             for i in range(len(layer_df_list))]
 
             reconst = Reconstruct(layer_links_list=layer_links_list,
-                                  PON_idx_list=PON_idx_list,
+                                  PON_idx_list=PON_idx_list, n_node=n_node,
                                   itermax=int(1e4), eps=1e-6)        
             reconst.predict_adj()
             MAE_list[i_fd].append(reconst.adj_MAE)
