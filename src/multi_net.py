@@ -12,6 +12,9 @@ from copy import deepcopy
 # from scipy.stats import poisson
 import networkx as nx
 # import pickle
+from matplotlib import cm
+from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import precision_score, recall_score, accuracy_score
 
 
 # import sys
@@ -172,7 +175,10 @@ class Reconstruct:
         
         self.n_layer = len(self.layer_links_list)
         self.get_true_adj_list()
-        self.get_agg_adj()
+        self.get_agg_adj()   
+        self.get_unobs_link_list()
+        self.predict_adj()
+        self.eval_perform()
  
     # layers should have same nodeset. Use the Union of sets of nodes in each layer.    
     
@@ -181,10 +187,10 @@ class Reconstruct:
         def get_true_adj(link_arr):
             n_node = self.n_node
             n_link = len(link_arr)
-            A = np.zeros([n_node, n_node]) 
+            A = np.zeros([n_node, n_node])
             for k in range(n_link):
                 i = link_arr[k][0] 
-                j = link_arr[k][1] 
+                j = link_arr[k][1]
                 A[i,j] = 1 
                 A[j,i] = 1        
             return A
@@ -217,7 +223,7 @@ class Reconstruct:
         '''
         n_node = self.n_node
         for i in range(n_node):
-            for j in range(n_node):
+            for j in range(i+1, n_node):
                 # Page 25 in the SI
                 temp = [1-self.deg_seq_list[ele][i]*self.deg_seq_list[ele][j]/\
                         (self.deg_sum_list[ele]-1) for ele in range(self.n_layer)]
@@ -228,24 +234,32 @@ class Reconstruct:
                     else:
                         # single link prob using degree of two nodes: page 27 in SI
                         single_link_prob = self.deg_seq_list[idx][i]*self.deg_seq_list[idx][j]\
-                                           /(self.deg_sum_list[idx]-1)
-                        Q[i,j] = self.agg_adj[i,j]*single_link_prob/agg_link_prob                                          
+                                           /(self.deg_sum_list[idx] - 1)
+                        Q[i,j] = self.agg_adj[i,j]*single_link_prob/agg_link_prob
+                    # symmetry for undirected networks
+                    Q[j,i] = Q[i,j]                                          
         pred_adj_list = self.avoid_prob_overflow(pred_adj_list)
         return pred_adj_list
     
     def cal_link_prob_PON(self, pred_adj_list):
-        # calculate link probability using partial observed nodes in each layer
+        '''calculate link probability using partial observed nodes in each layer
+        '''
         # TODO: avoid multiple nested for loops
-        for curr_lyr, node_set in enumerate(self.PON_idx_list):
-            n_node_temp = len(node_set)
+        for curr_lyr, curr_node_list in enumerate(self.PON_idx_list):
+            n_node_temp = len(curr_node_list)
+            curr_node_list.sort()
             for s in range(n_node_temp):
-                for t in range(n_node_temp):
-                    i, j = node_set[s], node_set[t]
-                    # TODO: the following indicates that links among the observed nodes are also observed.
+                for t in range(s+1, n_node_temp):
+                    i, j = curr_node_list[s], curr_node_list[t]
+            # for s in range(n_node_temp):
+            #     for t in range(n_node_temp):
+            #         i, j = curr_node_list[s], curr_node_list[t]
+                    # !!!note: the following indicates that links among the observed nodes are also observed.
                         # so the subgraphs are actually vertex-induced subgraph
                     # pred_adj_list[curr_lyr][i,j] = self.true_adj_list[curr_lyr][i, j]
                     # suppose only a portion of links among observed nodes are observed
                     pred_adj_list[curr_lyr][i,j] = self.true_adj_list[curr_lyr][i,j]
+                    pred_adj_list[curr_lyr][j,i] = pred_adj_list[curr_lyr][i,j]
     
                     # OR-aggregate mechanism: page 25 in SI
                     if self.agg_adj[i,j] == 1:
@@ -260,8 +274,9 @@ class Reconstruct:
                         # determine the actual predicted link [i,j] probability in other layers
                         if pred_adj_list[curr_lyr][i,j] == 1:
                             for lyr_idx in other_layer_idx:
-                                if pred_adj_list[lyr_idx][i,j] not in [0, 1]: # TODO: why not =0 and not =1:
+                                if pred_adj_list[lyr_idx][i,j] not in [0, 1]: # !!! question: why not =0 and not =1:
                                     pred_adj_list[lyr_idx][i,j] = single_link_prob_arr[lyr_idx]
+                                    pred_adj_list[lyr_idx][j,i] = pred_adj_list[lyr_idx][i,j]
                         if pred_adj_list[curr_lyr][i,j] == 0:
                             # make at least one Q_ij = 1 to make A0_ij = 1
                             if len(other_layer_idx) >= 2:
@@ -272,25 +287,41 @@ class Reconstruct:
                                     for lyr_idx in other_layer_idx:
                                         pred_adj_list[lyr_idx][i,j] = single_link_prob_arr[lyr_idx] \
                                                                       /max_single_prob
+                                        pred_adj_list[lyr_idx][j,i] = pred_adj_list[lyr_idx][i,j]
                                 else: # TODO: randomly select one?
                                     rand_idx = np.random.choice(other_layer_idx)
                                     pred_adj_list[rand_idx][i,j] = 1
+                                    pred_adj_list[rand_idx][j,i] = pred_adj_list[rand_idx][i,j]
                             else: # two layers in total
                                 rand_idx = other_layer_idx[0]
                                 pred_adj_list[rand_idx][i,j] = 1
+                                pred_adj_list[rand_idx][j,i] = 1
         pred_adj_list = self.avoid_prob_overflow(pred_adj_list)
         return pred_adj_list
     
-    def cal_adj_MAE(self):
-        ''' MAE: average percentage of incorrect links
-        '''
-        n_digit = 0
-        self.pred_adj_list_round = [np.round(ele, n_digit) for ele in self.pred_adj_list]
-        self.deg_seq_last_list_round = [np.round(ele, n_digit) for ele in self.deg_seq_last_list]  
+    # def cal_adj_MAE(self):
+    #     ''' MAE: average percentage of incorrect links
+    #     '''
+    #     n_digit = 0
+    #     self.pred_adj_list_round = [np.round(ele, n_digit) for ele in self.pred_adj_list]
+    #     self.deg_seq_last_list_round = [np.round(ele, n_digit) for ele in self.deg_seq_last_list]  
         
-        self.adj_MAE_list = [np.mean(np.abs(self.pred_adj_list_round[idx]-self.true_adj_list[idx]))\
-                             for idx in range(self.n_layer)]
-        self.adj_MAE = np.mean(np.array(self.adj_MAE_list))
+    #     self.adj_MAE_list = [np.mean(np.abs(self.pred_adj_list_round[idx]-self.true_adj_list[idx]))\
+    #                          for idx in range(self.n_layer)]
+    #     self.adj_MAE = np.mean(np.array(self.adj_MAE_list))
+    
+    def get_unobs_link_list(self):
+        self.layer_link_unobs_list = []
+        for i_lyr in range(self.n_layer):
+            layer_link_obs = self.layer_links_list[i_lyr]
+            # all links - observed links (if vertex-induced, use links among observed nodes orig)
+            layer_link_unobs = [ele for ele in layer_link_obs if \
+                                (ele[0] not in self.PON_idx_list[i_lyr] or \
+                                 ele[1] not in self.PON_idx_list[i_lyr])]
+            
+            self.layer_link_unobs_list.append(np.array(layer_link_unobs))  
+        # print(self.layer_link_unobs_list)
+    
         
     def predict_adj(self):     
         #initialize the network model parameters
@@ -328,8 +359,36 @@ class Reconstruct:
             
             self.deg_seq_last_list = self.deg_seq_list
             
-        self.cal_adj_MAE()
-    
+    def eval_perform(self):
+        ''' performance using accuracy, precision, recall, as well as roc curve and AUC
+        '''
+        n_digit = 0
+        self.pred_adj_list_round = [np.round(ele, n_digit) for ele in self.pred_adj_list]
+        self.deg_seq_last_list_round = [np.round(ele, n_digit) for ele in self.deg_seq_last_list]  
+        
+        tru_adj_unobs_list = []
+        pred_adj_unobs_list = []
+        for idx in range(self.n_layer):
+            tru_adj_unobs = []
+            pred_adj_unobs = []
+            for i in range(len(self.true_adj_list[idx])):
+                for j in range(len(self.true_adj_list[idx])):
+                    if [i,j] in self.layer_link_unobs_list[idx]:
+                        tru_adj_unobs.append(self.true_adj_list[idx][i,j])
+                        pred_adj_unobs.append(self.pred_adj_list[idx][i,j])
+            tru_adj_unobs_list.append(tru_adj_unobs)
+            pred_adj_unobs_list.append(pred_adj_unobs)
+        adj_test = np.concatenate(tru_adj_unobs_list)
+        # print('adj_test', adj_test)
+        adj_pred = np.concatenate(pred_adj_unobs_list)
+        # print('adj_pred', adj_pred)
+        fpr, tpr, thresholds = roc_curve(adj_test, adj_pred)
+        self.fpr, self.tpr = fpr, tpr
+        self.auc = auc(fpr, tpr)
+        # print('\nfpr', self.fpr)
+        # print('\ntpr', self.tpr)
+        # print('auc', self.auc)
+   
     
     def print_result(self): 
         def round_list(any_list, n_digit=4):
@@ -337,7 +396,7 @@ class Reconstruct:
         
         n_space = 2
         n_dot = 19
-        n_digit = 4
+        # n_digit = 4
         print('\nDegree sequence')
         for idx in range(self.n_layer):   
             if idx > 0:
@@ -356,13 +415,13 @@ class Reconstruct:
                 print(' ' * n_space, '-'*n_dot)
             npprint(self.pred_adj_list_round[idx], n_space)  
         
-        # true adj mat
-        print('\nTrue adj mat')
-        for idx in range(self.n_layer): 
-            if idx > 0:
-                print(' ' * n_space, '-'*n_dot)           
-            npprint(self.true_adj_list[idx], n_space)  
-        print('\nadj_MAE: ', round_list(self.adj_MAE_list))
+        # # true adj mat
+        # print('\nTrue adj mat')
+        # for idx in range(self.n_layer): 
+        #     if idx > 0:
+        #         print(' ' * n_space, '-'*n_dot)           
+        #     npprint(self.true_adj_list[idx], n_space)  
+        # print('\nadj_MAE: ', round_list(self.adj_MAE_list))
         
         
         
@@ -385,6 +444,7 @@ def npprint(A, n_space=2):
          for i in range(A.shape[1]):
              npprint(A[:,i])
 
+# todo: the current complexity is N_iter*(N_all^2 + N_obs^2)
 # TODO: includethe list of observed links as an input
 
 def main_drug_net(): 
@@ -392,10 +452,13 @@ def main_drug_net():
     # import data
     drug_net = DrugNet()
     
-    frac_list = [0.1*i for i in range(8, 9)]
+    frac_list = [round(0.1*i,1) for i in range(8, 10)]
     n_node_obs = [[int(frac*n) for n in drug_net.layer_n_node] for frac in frac_list ]     
     n_fold = 1
-    MAE_list = [[] for i in range(n_fold)]
+    # MAE_list = [[] for i in range(n_fold)]
+    fpr_list = []
+    tpr_list = []
+    auc_list = []
      
     for i_fd in range(n_fold):   
         for i_frac in range(len(frac_list)):        
@@ -410,54 +473,46 @@ def main_drug_net():
 
             reconst = Reconstruct(layer_links_list=drug_net.layer_links_list,
                                   PON_idx_list=PON_idx_list, n_node=drug_net.n_node,
-                                  itermax=int(1e3), eps=1e-4)        
+                                  itermax=int(1e2), eps=1e-2)        
             reconst.predict_adj()
-            MAE_list[i_fd].append(reconst.adj_MAE)
+            fpr_list[i_fd].append(reconst.fpr)
+            # reconst.predict_adj()
+            fpr_list.append(reconst.fpr)
+            tpr_list.append(reconst.tpr)
+            auc_list.append(reconst.auc)
             # # show results    
             # reconst.print_result()
-    
-    mean_MAE = np.mean(np.array(MAE_list), axis=0)
-    plt.figure(figsize=(4.8, 4.8*3/4))
-    plt.plot(frac_list, mean_MAE)
-    plt.xlabel('Fraction of observed nodes')
-    plt.ylabel('MAE of adjacency matrices')
-    plt.xticks([frac_list[idx] for idx in range(len(frac_list)) if idx%2 == 1])
-    plt.ylim(top=max(mean_MAE)+0.01)
-    plt.show()
-    
-    print('\n mean MAE: ', mean_MAE)
-    
+    # Plots
+    Plots.plot_auc(frac_list, fpr_list, tpr_list, auc_list)
    
     
-# main_drug_net()
+import time
+start_time = time.time()
+main_drug_net()
+print("--- %s seconds ---" % (time.time() - start_time))
 
-from matplotlib import cm
-from sklearn.metrics import roc_curve, auc
-
-fpr, tpr, _ = roc_curve(adj_test,  adj_pred)
-fnr = 1 - tpr
-tnr = 1 - fpr
-
-
-
-colors = cm.get_cmap('tab10').colors
-for i in range(len(frac_list)):
-    plt.plot(fpr[i], tpr[i], color=colors[i], lw=lw,
-             label=r"$c$ = {0} (AUC = {1:0.2f})".format(i, roc_auc[i]))
-
-plt.plot([0, 1], [0, 1], "k--", lw=lw)
-plt.xlim([0.0, 1.0])
-plt.ylim([0.0, 1.05])
-plt.xlabel("False positive rate")
-plt.ylabel("True positive rate")
-plt.legend(loc="lower right")
-plt.show()
-
-#create ROC curve
-plt.plot(fpr,tpr)
-plt.ylabel('True Positive Rate')
-plt.xlabel('False Positive Rate')
-plt.show()
+class Plots:        
+    def plot_auc(frac_list, fpr_list, tpr_list, auc_list):
+        # linestyles = Utils.def_linestyles()
+        Utils.format_fig(1.2)
+        lw = 1.7
+        med_size = 7
+        colors = cm.get_cmap('tab10').colors
+        markers =['o', 'v', 's', 'd', '*', 'x', 'o', 'v', 's', 'd', '*', 'x'] 
+        plt.figure(figsize=(5.5, 4.5), dpi=400)
+        for i in range(len(frac_list)):
+            plt.plot(fpr_list[i], tpr_list[i], color=colors[i], marker=markers[i], 
+                     markersize=med_size, lw=lw,linestyle = '--',
+                     label=r"$c$ = {0} (AUC = {1:0.2f})".format(frac_list[i], auc_list[i]))
+                
+        plt.plot([0, 1], [0, 1], "k--", lw=lw)
+        plt.xlim([-0.03, 1.03])
+        plt.ylim([0.0, 1.03])
+        plt.xlabel("False positive rate")
+        plt.ylabel("True positive rate")
+        plt.legend(loc="lower right", fontsize=13)
+        # plt.xticks([frac_list[idx] for idx in range(len(frac_list)) if idx%2 == 1])
+        plt.show()
 
 
             
@@ -470,47 +525,39 @@ def main_toy():
     
     # initilize
     node_id_list = [set(np.concatenate(ele)) for ele in layer_links_list]
-    n_node = len(node_id_list)    
+    n_node = max(max(node_id_list)) + 1  
     n_node_list = [len(ele) for ele in node_id_list]
-    frac_obs_node = [0.1*i for i in range(2,3)]
-    n_node_obs_list = [[int(i*n_node_list[j]) for i in frac_obs_node] \
+    frac_list = [round(0.1*i,1) for i in range(5,9)]
+    n_node_obs_list = [[int(i*n_node_list[j]) for i in frac_list] \
                        for j in range(len(layer_links_list))]   
     n_fold = 1
-    MAE_list = [[] for i in range(n_fold)]
-    
+    # MAE_list = [[] for i in range(n_fold)]
+    fpr_list = []
+    tpr_list = []
+    auc_list = []
     for i_fd in range(n_fold):
    
-        for idx in range(len(frac_obs_node)):
+        for idx in range(len(frac_list)):
             # PON_idx_list = [[0,1,2], [0,4,5]]
             PON_idx_list = [np.random.choice(n_node_list[i], n_node_obs_list[i][idx], replace=False).tolist()\
                             for i in range(len(layer_df_list))]
 
             reconst = Reconstruct(layer_links_list=layer_links_list,
                                   PON_idx_list=PON_idx_list, n_node=n_node,
-                                  itermax=int(1e4), eps=1e-6)        
-            reconst.predict_adj()
-            MAE_list[i_fd].append(reconst.adj_MAE)
+                                  itermax=int(5e3), eps=1e-6)        
+            # reconst.predict_adj()
+            fpr_list.append(reconst.fpr)
+            tpr_list.append(reconst.tpr)
+            auc_list.append(reconst.auc)
             # # show results    
-            reconst.print_result()
+            # reconst.print_result()
+    # Plots
+    Plots.plot_auc(frac_list, fpr_list, tpr_list, auc_list)
+     
     
-    mean_MAE = np.mean(np.array(MAE_list), axis=0)
-    print('\n mean MAE: ', np.round(mean_MAE, 4))   
-    
-    plt.figure(figsize=(4.8, 4.8*3/4))
-    plt.plot(frac_obs_node, mean_MAE, marker='o')
-    plt.xlabel('Fraction of observed nodes')
-    plt.ylabel('MAE of adjacency matrices')
-    plt.xticks([frac_obs_node[idx] for idx in range(len(frac_obs_node)) if idx%2 == 1])
-    plt.ylim(top=max(mean_MAE)+0.01)
-    plt.show()
-    
+main_toy() 
 
-    
-   
-    
-# main_toy() 
-
-
+# self = reconst
 
 
 def sample_deg_corr(G, f=0.1, edges=None, probs=None):
@@ -616,7 +663,7 @@ class Utils:
         plt.rcParams['figure.figsize'] = (6, 6*3/4)
         plt.rcParams['figure.titlesize'] = LARGE   
         plt.rcParams['figure.facecolor'] = 'white'
-        plt.rcParams['figure.dpi'] = 300
+        plt.rcParams['figure.dpi'] = 400
     
         plt.rcParams['axes.facecolor'] = 'white'
         plt.rcParams['axes.axisbelow'] = True
@@ -631,10 +678,10 @@ class Utils:
         # plt.rcParams['xtick.minor.visible'] = True
         # plt.rcParams['ytick.minor.visible'] = True
     
-        plt.rc('lines', linewidth=1.8, markersize=3) #, markeredgecolor='none')
+        plt.rc('lines', linewidth=1.8, markersize=5) #, markeredgecolor='none')
         
-        plt.rc('xtick', labelsize=SMALL)
-        plt.rc('ytick', labelsize=SMALL)
+        plt.rc('xtick', labelsize=MEDIUM)
+        plt.rc('ytick', labelsize=MEDIUM)
         
         # plt.rcParams['xtick.major.size'] = 5
         # plt.rcParams['ytick.major.size'] = 5
@@ -674,3 +721,4 @@ class Utils:
         return linestyles
 
 Utils.format_fig()
+# linestyles = Utils.def_linestyles
