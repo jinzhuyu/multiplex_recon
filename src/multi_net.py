@@ -34,7 +34,7 @@ from my_utils import *
 
 
 # TODO: when the adj[i,j] is observed, how to save computational cost???
-# TODO: install VS buildtools
+# TODO: install VS buildtools to use Cython
 # TODO: avoid indexing those virtual observed nodes and lnks
 
 
@@ -211,7 +211,10 @@ class Reconstruct:
     # functions for generating the ground truth of a multiplex network        
     def get_true_adj_list(self):
         def get_true_adj(link_arr):
-            link_list = link_arr.tolist()
+            if not isinstance(link_arr, list):
+                link_list = link_arr.tolist()
+            else:
+                link_list = link_arr
             n_node = self.n_node
             A = np.zeros([n_node, n_node])
             rows, cols = [ele[0] for ele in link_list], [ele[1] for ele in link_list]
@@ -237,10 +240,11 @@ class Reconstruct:
     # prob overflow can be avoided automatically if degree gusses are integers
     def avoid_prob_overflow(self, pred_adj_list):
         for Q in pred_adj_list:
+            # if (len(Q[Q>1]) + len(Q[Q<0])) >= 1:
+            #     print('There are prob overflows in Q')
             Q[Q<0] = 0 
             Q[Q>1] = 1 # are there Q >1?
-            if (len(Q[Q>1]) + len(Q[Q<0])) >= 1:
-                print('There are prob overflows in Q')
+
         return pred_adj_list
 
     #calculate link reliabilities by configuration model
@@ -249,91 +253,95 @@ class Reconstruct:
         '''
         pred_adj_list = self.pred_adj_list
         n_node = self.n_node
-        for i in range(n_node):
-            for j in range(i+1, n_node):
-                # Page 25 in the SI
-                temp = [1-self.deg_seq_list[ele][i]*self.deg_seq_list[ele][j]/\
-                        (self.deg_sum_list[ele]-1) for ele in range(self.n_layer)]
-                agg_link_prob = 1 - np.prod(temp)
-                for idx, Q in enumerate(pred_adj_list):
-                    if agg_link_prob == 0:
-                        Q[i,j] = 0
-                    else:
-                        # single link prob using degree of two nodes: page 27 in SI
-                        single_link_prob = self.deg_seq_list[idx][i]*self.deg_seq_list[idx][j]\
-                                           /(self.deg_sum_list[idx] - 1)
-                        Q[i,j] = self.agg_adj[i,j]*single_link_prob/agg_link_prob
-                    # symmetry for undirected networks
-                    # Q[j,i] = Q[i,j]                                          
+        tri_up_idx = np.triu_indices(n_node, k=1)
+        rows, cols = tri_up_idx[0].tolist(), tri_up_idx[1].tolist()
+        # tri_up_idx = [[rows[i], cols[i]] for i in range(len(rows))]
+        for i_idx in range(len(rows)):
+            i, j = rows[i_idx], cols[i_idx]
+            temp = [1-self.deg_seq_list[ele][i]*self.deg_seq_list[ele][j]/\
+                    (self.deg_sum_list[ele]-1) for ele in range(self.n_layer)]
+            agg_link_prob = 1 - np.prod(temp)            
+        # for i in range(n_node):
+        #     for j in range(i+1, n_node):
+        #         # Page 25 in the SI
+        #         temp = [1-self.deg_seq_list[ele][i]*self.deg_seq_list[ele][j]/\
+        #                 (self.deg_sum_list[ele]-1) for ele in range(self.n_layer)]
+        #         agg_link_prob = 1 - np.prod(temp)
+            for idx, Q in enumerate(pred_adj_list):
+                if agg_link_prob == 0:
+                    Q[i,j] = 0
+                else:
+                    # single link prob using degree of two nodes: page 27 in SI
+                    single_link_prob = self.deg_seq_list[idx][i]*self.deg_seq_list[idx][j]\
+                                        /(self.deg_sum_list[idx] - 1)
+                    Q[i,j] = self.agg_adj[i,j]*single_link_prob/agg_link_prob
+                Q[j,i] = Q[i,j]
         # use symmetry
-        [exec('mat[np.tril_indices(mat.shape[0], k=-1)] = mat[np.triu_indices(mat.shape[0], k=1)]') \
-         for mat in pred_adj_list]
+        # [exec('mat[np.tril_indices(mat.shape[0], k=-1)] = mat[np.triu_indices(mat.shape[0], k=1)]') \
+        #  for mat in pred_adj_list]
         pred_adj_list = self.avoid_prob_overflow(pred_adj_list)
         self.pred_adj_list = pred_adj_list
     
     # def map_obs_link(self, mat_pred,  mat_true, curr_lyr, curr_node_list):
     #     permuts = list(itertools.permutations(curr_node_list, r=2))
     #     rows, cols = [ele[0] for ele in permuts], [ele[1] for ele in permuts] 
-    #     mat[rows, cols] = mat_true[rows, cols]
-        
+    #     mat[rows, cols] = mat_true[rows, cols]      
     
-    def cal_link_prob_PON(self, pred_adj_list):
+    def cal_link_prob_PON(self):
         '''calculate link probability using partial observed nodes in each layer
         '''
         # links among observed nodes are observed
         pred_adj_list = self.pred_adj_list
         for curr_lyr, curr_node_list in enumerate(self.PON_idx_list):
             permuts = list(itertools.permutations(curr_node_list, r=2))
-            rows, cols = [ele[0] for ele in permuts], [ele[1] for ele in permuts] 
-            pred_adj_list[curr_lyr][rows, cols] = self.true_adj_list[curr_lyr][rows, cols]
-                   
-        # TODO: avoid using nested for loops
-        for curr_lyr, curr_node_list in enumerate(self.PON_idx_list):
-            curr_node_list.sort()
-            for i_idx, i in enumerate(curr_node_list):
-                for j in curr_node_list[(i_idx+1):]:        
+            permuts_half = [ele for ele in permuts if ele[1] > ele[0]]
+            rows, cols = [ele[0] for ele in permuts_half], [ele[1] for ele in permuts_half] 
+            # pred_adj_list[curr_lyr][rows, cols] = self.true_adj_list[curr_lyr][rows, cols]                    
+                
+            for i_idx in range(len(permuts_half)):
+                i, j = rows[i_idx], cols[i_idx]
                     # # TODO: suppose only a portion of links among observed nodes are observed
-                    # pred_adj_list[curr_lyr][i,j] = self.true_adj_list[curr_lyr][i,j]
-                    # pred_adj_list[curr_lyr][j,i] = pred_adj_list[curr_lyr][i,j]
+                pred_adj_list[curr_lyr][i,j] = self.true_adj_list[curr_lyr][i,j]
+                pred_adj_list[curr_lyr][j,i] = pred_adj_list[curr_lyr][i,j]
     
-                    # OR-aggregate mechanism: page 25 in SI
-                    if self.agg_adj[i,j] == 1:
-                        other_layer_idx = [ele for ele in range(self.n_layer) if ele != curr_lyr]
-                        single_link_prob_arr = np.zeros(self.n_layer)
-                        # calculate predicted link [i,j] probability in other layers
+                # OR-aggregate mechanism: page 25 in SI
+                if self.agg_adj[i,j] == 1:
+                    other_layer_idx = [ele for ele in range(self.n_layer) if ele != curr_lyr]
+                    single_link_prob_arr = np.zeros(self.n_layer)
+                    # calculate predicted link [i,j] probability in other layers
+                    for oth_lyr_idx in other_layer_idx:
+                        single_link_prob = self.deg_seq_list[oth_lyr_idx][i]  \
+                                            *self.deg_seq_list[oth_lyr_idx][j] \
+                                            /(self.deg_sum_list[oth_lyr_idx] - 1)
+                        single_link_prob_arr[oth_lyr_idx] = single_link_prob
+                    # determine the actual predicted link [i,j] probability in other layers
+                    if pred_adj_list[curr_lyr][i,j] == 1:
                         for oth_lyr_idx in other_layer_idx:
-                            single_link_prob = self.deg_seq_list[oth_lyr_idx][i]  \
-                                               *self.deg_seq_list[oth_lyr_idx][j] \
-                                               /(self.deg_sum_list[oth_lyr_idx] - 1)
-                            single_link_prob_arr[oth_lyr_idx] = single_link_prob
-                        # determine the actual predicted link [i,j] probability in other layers
-                        if pred_adj_list[curr_lyr][i,j] == 1:
-                            for oth_lyr_idx in other_layer_idx:
-                                if pred_adj_list[oth_lyr_idx][i,j] not in [0, 1]: # !!! question: why not =0 and not =1:
-                                    pred_adj_list[oth_lyr_idx][i,j] = single_link_prob_arr[oth_lyr_idx]
-                                    # pred_adj_list[oth_lyr_idx][j,i] = pred_adj_list[oth_lyr_idx][i,j]
-                        if pred_adj_list[curr_lyr][i,j] == 0:
-                            # make at least one Q_ij = 1 to make A0_ij = 1
-                            if len(other_layer_idx) >= 2:
-                                max_single_prob = np.max(single_link_prob_arr)
-                                if max_single_prob != 0:
-                                    # normalize each single link prob by the max
-                                    # so that the max automatically becomes the chosen 1
-                                    for oth_lyr_idx in other_layer_idx:
-                                        pred_adj_list[oth_lyr_idx][i,j] = single_link_prob_arr[oth_lyr_idx] \
-                                                                          /max_single_prob
-                                        # pred_adj_list[oth_lyr_idx][j,i] = pred_adj_list[oth_lyr_idx][i,j]
-                                else: # TODO: randomly select one?
-                                    rand_idx = np.random.choice(other_layer_idx)
-                                    pred_adj_list[rand_idx][i,j] = 1
-                                    # pred_adj_list[rand_idx][j,i] = pred_adj_list[rand_idx][i,j]
-                            else: # two layers in total
-                                rand_idx = other_layer_idx[0]
+                            if pred_adj_list[oth_lyr_idx][i,j] not in [0, 1]: # !!! question: why not =0 and not =1:
+                                pred_adj_list[oth_lyr_idx][i,j] = single_link_prob_arr[oth_lyr_idx]
+                                pred_adj_list[oth_lyr_idx][j,i] = single_link_prob_arr[oth_lyr_idx]
+                    if pred_adj_list[curr_lyr][i,j] == 0:
+                        # make at least one Q_ij = 1 to make A0_ij = 1
+                        if len(other_layer_idx) >= 2:
+                            max_single_prob = np.max(single_link_prob_arr)
+                            if max_single_prob != 0:
+                                # normalize each single link prob by the max
+                                # so that the max automatically becomes the chosen 1
+                                for oth_lyr_idx in other_layer_idx:
+                                    pred_adj_list[oth_lyr_idx][i,j] = single_link_prob_arr[oth_lyr_idx] \
+                                                                      /max_single_prob
+                                    pred_adj_list[oth_lyr_idx][j,i] = pred_adj_list[oth_lyr_idx][i,j]
+                            else: # TODO: randomly select one?
+                                rand_idx = np.random.choice(other_layer_idx)
                                 pred_adj_list[rand_idx][i,j] = 1
-                                # pred_adj_list[rand_idx][j,i] = 1
+                                pred_adj_list[rand_idx][j,i] = 1
+                        else: # two layers in total
+                            rand_idx = other_layer_idx[0]
+                            pred_adj_list[rand_idx][i,j] = 1
+                            pred_adj_list[rand_idx][j,i] = 1
         # use symmetry
-        [exec('mat[np.tril_indices(mat.shape[0], k=-1)] = mat[np.triu_indices(mat.shape[0], k=1)]') \
-         for mat in pred_adj_list]
+        # [exec('mat[np.tril_indices(mat.shape[0], k=-1)] = mat[np.triu_indices(mat.shape[0], k=1)]') \
+        #  for mat in pred_adj_list]
         pred_adj_list = self.avoid_prob_overflow(pred_adj_list)
         self.pred_adj_list = pred_adj_list
     
@@ -449,14 +457,7 @@ class Reconstruct:
             if idx > 0:
                 print(' ' * n_space, '-'*n_dot)
             npprint(self.pred_adj_list_round[idx], n_space)  
-        
-        # # true adj mat
-        # print('\nTrue adj mat')
-        # for idx in range(self.n_layer): 
-        #     if idx > 0:
-        #         print(' ' * n_space, '-'*n_dot)           
-        #     npprint(self.true_adj_list[idx], n_space)  
-        # print('\nadj_MAE: ', round_list(self.adj_MAE_list))
+         
         
         
         
@@ -531,14 +532,14 @@ def main_drug_net():
     frac_list = [round(0.1*i,1) for i in range(8, 9)]
     n_node_obs = [[int(frac*n) for n in drug_net.layer_n_node] for frac in frac_list ]     
     n_fold = 1
-    # MAE_list = [[] for i in range(n_fold)]
+
     fpr_list = []
     tpr_list = []
     auc_list = []
     acc_list = []
     prec_list = []
     recall_list = []
-     
+    metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']     
     for i_fd in range(n_fold):   
         for i_frac in range(len(frac_list)):        
             PON_idx_list_orig = [np.random.choice(drug_net.node_list[i_lyr],
@@ -551,23 +552,19 @@ def main_drug_net():
 
             reconst = Reconstruct(layer_links_list=drug_net.layer_links_list,
                                   PON_idx_list=PON_idx_list, n_node=drug_net.n_node,
-                                  itermax=int(50), eps=1e-2)        
-            fpr_list.append(reconst.fpr)
-            tpr_list.append(reconst.tpr)
-            auc_list.append(reconst.auc)            
-            acc_list.append(reconst.acc)
-            prec_list.append(reconst.prec)
-            recall_list.append(reconst.recall)   
+                                  itermax=int(1000), eps=1e-4)        
+            for ele in metric_list:
+                exec('{}_list.append(reconst.{})'.format(ele,ele)) 
             # # show results    
             # reconst.print_result()
     # Plots
     Plots.plot_roc(frac_list, fpr_list, tpr_list, auc_list)
    
     
-# import time
-# start_time = time.time()
-# main_drug_net()
-# print("--- %s seconds ---" % (time.time() - start_time))
+import time
+start_time = time.time()
+main_drug_net()
+print("--- %s seconds ---" % (time.time() - start_time))
             
 def main_toy(): 
     
@@ -590,36 +587,30 @@ def main_toy():
     prec_list = []
     recall_list = []
     acc_list = []
-    # metric_list = ['AUC', 'Precision', 'Recall','Accuracy']
-    # metric_value_by_frac = [[] for i in range(len(metric_list))]
+    metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
     for i_fd in range(n_fold):
    
-        for idx in range(len(frac_list)):
-            # PON_idx_list = [[0,1,2], [0,4,5]]
+        for idx in range(len(frac_list[:1])):
+            # PON_idx_list = [[0,1,2], [0,4,5]]  # this comb leads to no error
             PON_idx_list = [np.random.choice(n_node_list[i],
-                                             n_node_obs_list[i][idx],
-                                             replace=False).tolist()\
+                                              n_node_obs_list[i][idx],
+                                              replace=False).tolist()\
                             for i in range(len(layer_df_list))]
-            for i in range(100):    
-                reconst = Reconstruct(layer_links_list=layer_links_list,
-                                  PON_idx_list=PON_idx_list, n_node=n_node,
-                                  itermax=int(5e3), eps=1e-6)        
-            
-            fpr_list.append(reconst.fpr)
-            tpr_list.append(reconst.tpr)
-            auc_list.append(reconst.auc)            
-            acc_list.append(reconst.acc)
-            prec_list.append(reconst.prec)
-            recall_list.append(reconst.recall)            
+
+            reconst = Reconstruct(layer_links_list=layer_links_list,
+                          PON_idx_list=PON_idx_list, n_node=n_node,
+                          itermax=int(5e3), eps=1e-6) 
+            for ele in metric_list:
+                exec('{}_list.append(reconst.{})'.format(ele,ele))          
             # # show results    
             reconst.print_result()
     metric_value_by_frac = [auc_list, prec_list, recall_list, acc_list]
-    # Plots
+    Plots
     Plots.plot_roc(frac_list, fpr_list, tpr_list, auc_list)
     Plots.plot_other(frac_list, metric_value_by_frac)
      
     
-main_toy() 
+# main_toy() 
 
 # self = reconst
 
