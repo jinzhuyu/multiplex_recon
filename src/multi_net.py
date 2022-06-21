@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import os
-os.chdir('c:/code/illicit_net_resil/src')
+# import os
+# os.chdir('c:/code/illicit_net_resil/src')
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -25,25 +25,9 @@ from my_utils import *
 # from xxxx import *
 
 
-
-
-
-
-
-
-
-
 # TODO: when the adj[i,j] is observed, how to save computational cost???
 # TODO: install VS buildtools to use Cython
 # TODO: avoid indexing those virtual observed nodes and lnks
-
-
-
-
-
-
-
-
 
 
 class DrugNet:
@@ -165,16 +149,10 @@ class DrugNet:
         plt.savefig('../output/all_layers.pdf', dpi=800)
         plt.show()
                
-       
-# drug_net = DrugNet()
-# drug_net.load_data()
-# drug_net.gen_net()
-# self = drug_net
+
 # https://stackoverflow.com/questions/17751552/drawing-multiplex-graphs-with-networkx
 
 
-# drug_net = Reconstruct(layer_links_list=multi_net.layer_links_list,
-#                        PON_idx_list=)
 
 
 class Reconstruct:
@@ -246,7 +224,6 @@ class Reconstruct:
             Q[Q>1] = 1 # are there Q >1?
 
         return pred_adj_list
-
     #calculate link reliabilities by configuration model
     def cal_link_prob_deg(self):
         ''' calculate link probability between two nodes using their degrees
@@ -254,33 +231,25 @@ class Reconstruct:
         pred_adj_list = self.pred_adj_list
         n_node = self.n_node
         tri_up_idx = np.triu_indices(n_node, k=1)
-        rows, cols = tri_up_idx[0].tolist(), tri_up_idx[1].tolist()
-        # tri_up_idx = [[rows[i], cols[i]] for i in range(len(rows))]
+        rows, cols = tri_up_idx[0].tolist(), tri_up_idx[1].tolist()        
         for i_idx in range(len(rows)):
             i, j = rows[i_idx], cols[i_idx]
-            temp = [1-self.deg_seq_list[ele][i]*self.deg_seq_list[ele][j]/\
-                    (self.deg_sum_list[ele]-1) for ele in range(self.n_layer)]
-            agg_link_prob = 1 - np.prod(temp)            
-        # for i in range(n_node):
-        #     for j in range(i+1, n_node):
-        #         # Page 25 in the SI
-        #         temp = [1-self.deg_seq_list[ele][i]*self.deg_seq_list[ele][j]/\
-        #                 (self.deg_sum_list[ele]-1) for ele in range(self.n_layer)]
-        #         agg_link_prob = 1 - np.prod(temp)
+            single_prob_rev_list = [1-self.deg_seq_list[ele][i]*self.deg_seq_list[ele][j]/\
+                                (self.deg_sum_list[ele]-1) for ele in range(self.n_layer)]
+            agg_link_prob = 1 - np.prod(single_prob_rev_list)
+            # agg_link_prob = agg_link_prob_list[i_idx] 
             for idx, Q in enumerate(pred_adj_list):
                 if agg_link_prob == 0:
                     Q[i,j] = 0
                 else:
                     # single link prob using degree of two nodes: page 27 in SI
-                    single_link_prob = self.deg_seq_list[idx][i]*self.deg_seq_list[idx][j]\
-                                        /(self.deg_sum_list[idx] - 1)
-                    Q[i,j] = self.agg_adj[i,j]*single_link_prob/agg_link_prob
+                    Q[i,j] = self.agg_adj[i,j]*(1 - single_prob_rev_list[idx])/agg_link_prob
+                    # Q[i,j] = self.agg_adj[i,j]*single_prob_list[idx]/agg_link_prob
                 Q[j,i] = Q[i,j]
         # use symmetry
         # [exec('mat[np.tril_indices(mat.shape[0], k=-1)] = mat[np.triu_indices(mat.shape[0], k=1)]') \
         #  for mat in pred_adj_list]
-        pred_adj_list = self.avoid_prob_overflow(pred_adj_list)
-        self.pred_adj_list = pred_adj_list
+        self.pred_adj_list = self.avoid_prob_overflow(pred_adj_list)
     
     # def map_obs_link(self, mat_pred,  mat_true, curr_lyr, curr_node_list):
     #     permuts = list(itertools.permutations(curr_node_list, r=2))
@@ -342,8 +311,8 @@ class Reconstruct:
         # use symmetry
         # [exec('mat[np.tril_indices(mat.shape[0], k=-1)] = mat[np.triu_indices(mat.shape[0], k=1)]') \
         #  for mat in pred_adj_list]
-        pred_adj_list = self.avoid_prob_overflow(pred_adj_list)
-        self.pred_adj_list = pred_adj_list
+        self.pred_adj_list = self.avoid_prob_overflow(pred_adj_list)
+
     
     def get_unobs_link_list(self):
         self.layer_link_unobs_list = []
@@ -362,7 +331,7 @@ class Reconstruct:
         self.deg_seq_list = [np.random.uniform(1, self.n_node+1, size=self.n_node)
                              for idx in range(self.n_layer)]
         self.deg_seq_last_list = [np.zeros(self.n_node) for idx in range(self.n_layer)] 
-    
+        t0 = time.time()
         for iter in range(self.itermax):
             # if (iter+1) % 1000 == 0: 
             #     print('  === iter: {}'.format(iter+1))
@@ -392,6 +361,9 @@ class Reconstruct:
                     print('\nConvergence NOT achieved at the last iteration')
             
             self.deg_seq_last_list = self.deg_seq_list
+            t1 = time.time()
+            t_diff = t1-t0
+            print("--- Time: {} mins after {} iters".format(round(t_diff/60, 2), iter+1))
             
     def eval_perform(self):
         ''' performance using accuracy, precision, recall, as well as roc curve and AUC
@@ -406,13 +378,18 @@ class Reconstruct:
         for idx in range(self.n_layer):
             tru_adj_unobs = []
             pred_adj_unobs = []
-            pred_adj_unobs_round = []
-            for i in range(len(self.true_adj_list[idx])):
-                for j in range(len(self.true_adj_list[idx])):
-                    if [i,j] in self.layer_link_unobs_list[idx]:
-                        tru_adj_unobs.append(self.true_adj_list[idx][i,j])
-                        pred_adj_unobs.append(self.pred_adj_list[idx][i,j])
-                        pred_adj_unobs_round.append(self.pred_adj_list_round[idx][i,j])
+            pred_adj_unobs_round = []            
+            permuts = list(itertools.permutations(range(self.n_node), r=2))
+            permuts_half = [ele for ele in permuts if ele[1] > ele[0]]
+            rows, cols = [ele[0] for ele in permuts_half], [ele[1] for ele in permuts_half]                
+            for i_idx in range(len(permuts_half)):
+                i, j = rows[i_idx], cols[i_idx]                
+            # for i in range(len(self.true_adj_list[idx])):
+            #     for j in range(len(self.true_adj_list[idx])):
+                if [i,j] in self.layer_link_unobs_list[idx]:
+                    tru_adj_unobs.append(self.true_adj_list[idx][i,j])
+                    pred_adj_unobs.append(self.pred_adj_list[idx][i,j])
+                    pred_adj_unobs_round.append(self.pred_adj_list_round[idx][i,j])
             tru_adj_unobs_list.append(tru_adj_unobs)
             pred_adj_unobs_list.append(pred_adj_unobs)
             pred_adj_unobs_round_list.append(pred_adj_unobs_round)
@@ -427,11 +404,7 @@ class Reconstruct:
         
         self.prec = precision_score(adj_test, adj_pred_round, average='binary')
         self.recall = recall_score(adj_test, adj_pred_round, average='binary')
-        self.acc = accuracy_score(adj_test, adj_pred_round)
-        # print('\nfpr', self.fpr)
-        # print('\ntpr', self.tpr)
-        # print('auc', self.auc)
-   
+        self.acc = accuracy_score(adj_test, adj_pred_round)   
     
     def print_result(self): 
         def round_list(any_list, n_digit=4):
@@ -457,9 +430,7 @@ class Reconstruct:
             if idx > 0:
                 print(' ' * n_space, '-'*n_dot)
             npprint(self.pred_adj_list_round[idx], n_space)  
-         
-        
-        
+       
         
     def gen_sub_graph(self, sample_meth='random_unif'):
         ''' 
@@ -552,19 +523,22 @@ def main_drug_net():
 
             reconst = Reconstruct(layer_links_list=drug_net.layer_links_list,
                                   PON_idx_list=PON_idx_list, n_node=drug_net.n_node,
-                                  itermax=int(1000), eps=1e-4)        
+                                  itermax=int(1), eps=1e-5)        
             for ele in metric_list:
                 exec('{}_list.append(reconst.{})'.format(ele,ele)) 
             # # show results    
             # reconst.print_result()
     # Plots
-    Plots.plot_roc(frac_list, fpr_list, tpr_list, auc_list)
-   
-    
-import time
-start_time = time.time()
-main_drug_net()
-print("--- %s seconds ---" % (time.time() - start_time))
+    # Plots.plot_roc(frac_list, fpr_list, tpr_list, auc_list)
+# self = reconst   
+# import cProfile    
+# import time
+# t0 = time.time()
+# cProfile.run('main_drug_net()')
+# main_drug_net()
+# t2 = time.time()
+# t_diff = t2-t0
+# print("--- %s mins ---" % (t_diff/60))
             
 def main_toy(): 
     
@@ -600,12 +574,12 @@ def main_toy():
             reconst = Reconstruct(layer_links_list=layer_links_list,
                           PON_idx_list=PON_idx_list, n_node=n_node,
                           itermax=int(5e3), eps=1e-6) 
-            for ele in metric_list:
-                exec('{}_list.append(reconst.{})'.format(ele,ele))          
+            # for ele in metric_list:
+            #     exec('{}_list.append(reconst.{})'.format(ele,ele))          
             # # show results    
             reconst.print_result()
     metric_value_by_frac = [auc_list, prec_list, recall_list, acc_list]
-    Plots
+    #Plots
     Plots.plot_roc(frac_list, fpr_list, tpr_list, auc_list)
     Plots.plot_other(frac_list, metric_value_by_frac)
      
@@ -614,88 +588,3 @@ def main_toy():
 
 # self = reconst
 
-
-def sample_deg_corr(G, f=0.1, edges=None, probs=None):
-    '''
-    Parameters:
-    ----------
-    G:         network
-    edges:     connections
-    probs:     degree correlation related probabilities
-    f:         fraction of edges to be sampled
-    '''
-    # prob = np.array([G.degree(u)**alpha for u in G])
-    # prob = prob/prob.sum()
-    if edges is None:
-        edges = sorted(G.edges())
-
-    m = G.number_of_edges()
-    indices=np.random.choice(range(m),size=int(m*f),replace=False,p=probs)
-    # returns a copy of the graph G with all of the edges removed
-    G_observed=nx.create_empty_copy(G)
-    G_observed.add_edges_from(edges[indices])
-    return G_observed
-
-
-def sample_random_walk(G,nodes,f=0.1):
-    '''
-    Parameters:
-    ----------
-    G:         network
-    nodes:     vertices
-    f:         fraction of edges to be sampled
-    '''
-    seed_node = np.random.choice(nodes,size=1)[0]
-    G_observed=nx.create_empty_copy(G)
-    m = G.number_of_edges()
-    size, sample,distinct=int(m*f),[seed_node],set()
-
-    while len(distinct) < 2*size:
-        u = sample[-1]
-        neighbors = list(G.neighbors(u))
-        v = np.random.choice(neighbors)
-        sample.append(v)
-        distinct.add((u,v))
-        distinct.add((v,u))
-        G_observed.add_edge(u,v)
-    return G_observed
-
-           
-def sample_snow_ball(G,nodes,f=0.1):
-    '''
-    Parameters:
-    ----------
-    G:         network
-    nodes:     vertices
-    f:         fraction of edges to be sampled
-    '''
-    m = G.number_of_edges()
-    size = int(m*f)
-
-    while True:
-        seed_node = np.random.choice(nodes,size=1)[0]
-        G_observed=nx.create_empty_copy(G)
-        visited=set()
-
-        members = [seed_node]
-        sz_sampled = 0
-        found = False
-        while len(members)>0:
-            u = members[0]
-            del members[0]
-
-            if u in visited:
-                continue
-
-            visited.add(u)
-
-            for v in G.neighbors(u):
-                if v in visited:
-                    continue
-
-                members.append(v)
-                G_observed.add_edge(u,v)
-                sz_sampled += 1
-                if sz_sampled == size:
-                    return G_observed
-    return G_observed
