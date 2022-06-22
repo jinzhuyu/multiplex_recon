@@ -373,17 +373,10 @@ class Reconstruct:
             tru_adj_unobs = []
             pred_adj_unobs = []
             pred_adj_unobs_round = []            
-            permuts = list(itertools.permutations(range(self.n_node), r=2))
-            permuts_half = [ele for ele in permuts if ele[1] > ele[0]]
-            rows, cols = [ele[0] for ele in permuts_half], [ele[1] for ele in permuts_half]                
-            for i_idx in range(len(permuts_half)):
-                i, j = rows[i_idx], cols[i_idx]                
-            # for i in range(len(self.true_adj_list[idx])):
-            #     for j in range(len(self.true_adj_list[idx])):
-                if [i,j] in self.layer_link_unobs_list[idx]:
-                    tru_adj_unobs.append(self.true_adj_list[idx][i,j])
-                    pred_adj_unobs.append(self.pred_adj_list[idx][i,j])
-                    pred_adj_unobs_round.append(self.pred_adj_list_round[idx][i,j])
+            for [i,j] in self.layer_link_unobs_list[idx]:
+                tru_adj_unobs.append(self.true_adj_list[idx][i,j])
+                pred_adj_unobs.append(self.pred_adj_list[idx][i,j])
+                pred_adj_unobs_round.append(self.pred_adj_list_round[idx][i,j])
             tru_adj_unobs_list.append(tru_adj_unobs)
             pred_adj_unobs_list.append(pred_adj_unobs)
             pred_adj_unobs_round_list.append(pred_adj_unobs_round)
