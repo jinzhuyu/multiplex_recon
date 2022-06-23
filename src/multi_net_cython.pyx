@@ -482,7 +482,7 @@ class Plots:
 # TODO: includethe list of observed links as an input
 
 drug_net = DrugNet()
-frac_list = [round(0.1*i,1) for i in range(1, 10)]
+frac_list = [round(0.1*i,1) for i in range(1, 3)]
 n_node_obs = [[int(frac*n) for n in drug_net.layer_n_node] for frac in frac_list ]     
 n_fold = 1
 metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
@@ -498,7 +498,7 @@ def single_run(i_frac):  #, layer_links_list, n_node):
 
     reconst = Reconstruct(layer_links_list=drug_net.layer_links_list,
                           PON_idx_list=PON_idx_list, n_node=drug_net.n_node,
-                          itermax=int(20), eps=1e-6)     
+                          itermax=int(1), eps=1e-6)     
     return reconst.metrics_value
 
 def get_result():

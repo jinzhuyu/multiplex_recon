@@ -566,14 +566,14 @@ def run_plot():
     Plots.plot_roc(frac_list, fpr_list, tpr_list, auc_list)
     Plots.plot_other(frac_list, metric_value_by_frac)
 
-if __name__ == '__main__': 
+# if __name__ == '__main__': 
 
-    import matplotlib
-    matplotlib.use('Agg')
-    t00 = time()
-    run_plot()
-    t10 = time()
-    print('Total elapsed time: {} mins'.format( round( (t10-t00)/60, 4) ) )      
+#     import matplotlib
+#     matplotlib.use('Agg')
+#     t00 = time()
+#     run_plot()
+#     t10 = time()
+#     print('Total elapsed time: {} mins'.format( round( (t10-t00)/60, 4) ) )      
     # for i_fd in range(n_fold):   
     #     for i_frac in range(len(frac_list)):
     #         print('--- Fraction: {}'.format(frac_list[i_frac]))

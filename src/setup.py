@@ -10,5 +10,5 @@ from setuptools import setup
 from Cython.Build import cythonize
 
 setup(
-    ext_modules = cythonize("multi_net.pyx")
+    ext_modules = cythonize("multi_net_cython.pyx")
 )

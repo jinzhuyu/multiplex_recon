@@ -5,7 +5,7 @@
 if __name__ == '__main__':
     
     # without build setup
-    import pyximport; pyximport.install()  
+    # import pyximport; pyximport.install()  
     import multi_net_cython
 
     import matplotlib
