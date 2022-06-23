@@ -384,6 +384,31 @@ class Reconstruct:
         recall = recall_score(adj_test, adj_pred_round, average='binary')
         acc = accuracy_score(adj_test, adj_pred_round)
         self.metrics_value = [fpr, tpr, auc_val, prec, recall, acc]  
+
+# True Positive (TP): we predict a label of 1 (positive), and the true label is 1.
+pred_labels = adj_pred_round
+true_labels = adj_test
+
+TP = np.sum(np.logical_and(pred_labels == 1, true_labels == 1))
+ 
+# True Negative (TN): we predict a label of 0 (negative), and the true label is 0.
+TN = np.sum(np.logical_and(pred_labels == 0, true_labels == 0))
+ 
+# False Positive (FP): we predict a label of 1 (positive), but the true label is 0.
+FP = np.sum(np.logical_and(pred_labels == 1, true_labels == 0))
+ 
+# False Negative (FN): we predict a label of 0 (negative), but the true label is 1.
+FN = np.sum(np.logical_and(pred_labels == 0, true_labels == 1))
+
+prec_cal = TP / (TP + FP)  #!!! why is FP = 0???
+recall_cal = TP / (TP + FN)
+acc_cal = (TP+TN) / (TP+TN + FP+FN)
+ 
+print('TP: {}, FP: {}, TN: {}, FN: {}'.format(TP,FP,TN,FN))
+
+print('prec_cal: {}, recall_cal: {}, acc_cal: {}'.format(prec_cal,recall_cal,acc_cal))
+
+
         
     
     def print_result(self): 
