@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import os
-os.chdir('c:/code/illicit_net_resil/src')
+# import os
+# os.chdir('c:/code/illicit_net_resil/src')
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -478,22 +478,15 @@ class Plots:
         plt.show()
         
 
-# todo: the current complexity is N_iter*(N_all^2 + N_obs^2)
+# TODO: the current complexity is N_iter*(N_all^2 + N_obs^2)
 # TODO: includethe list of observed links as an input
 
-# def main_drug_net(): 
-    
-# import data
-# def import_data():
 drug_net = DrugNet()
 frac_list = [round(0.1*i,1) for i in range(1, 10)]
 n_node_obs = [[int(frac*n) for n in drug_net.layer_n_node] for frac in frac_list ]     
 n_fold = 1
 metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
 
-    # return drug_net, frac_list, n_node_obs, metric_list
-
-# i_frac = 4
 def single_run(i_frac):  #, layer_links_list, n_node):
     PON_idx_list_orig = [np.random.choice(drug_net.node_list[i_lyr],
                                           n_node_obs[i_frac][i_lyr],
@@ -505,14 +498,8 @@ def single_run(i_frac):  #, layer_links_list, n_node):
 
     reconst = Reconstruct(layer_links_list=drug_net.layer_links_list,
                           PON_idx_list=PON_idx_list, n_node=drug_net.n_node,
-                          itermax=int(10), eps=1e-6)    
-    # acc_list.append(reconst.acc)
-    # metric_value = []
-    # for ele in metric_list:
-    #     metric_value.append(exec('reconst.{}'.format(ele)))
-    # metric_value = [exec('reconst.{}'.format(ele)) for ele in metric_list]  
+                          itermax=int(20), eps=1e-6)     
     return reconst.metrics_value
-# self = reconst
 
 def get_result():
     # drug_net, frac_list, n_node_obs, metric_list = import_data()
@@ -546,152 +533,7 @@ def run_plot():
 #     run_plot()
 #     t10 = time()
 #     print('Total elapsed time: {} mins'.format( round( (t10-t00)/60, 4) ) )      
-    # for i_fd in range(n_fold):   
-    #     for i_frac in range(len(frac_list)):
-    #         print('--- Fraction: {}'.format(frac_list[i_frac]))
-    #         PON_idx_list_orig = [np.random.choice(drug_net.node_list[i_lyr],
-    #                                               n_node_obs[i_frac][i_lyr],
-    #                                               replace=False).tolist()\
-    #                              for i_lyr in range(drug_net.n_layer)]                
-    #         # append virtual nodes: all nodes - nodes in each layer
-    #         PON_idx_list = [PON_idx_list_orig[i_lyr] + drug_net.virt_node_list[i_lyr] \
-    #                         for i_lyr in range(drug_net.n_layer)]
-
-    #         reconst = Reconstruct(layer_links_list=drug_net.layer_links_list,
-    #                               PON_idx_list=PON_idx_list, n_node=drug_net.n_node,
-    #                               itermax=int(10), eps=1e-5)        
-    #         for ele in metric_list:
-    #             exec('{}_list.append(reconst.{})'.format(ele,ele)) 
-    #         # # show results    
-    #         # reconst.print_result()
-    # metric_value_by_frac = [auc_list, prec_list, recall_list, acc_list]
-    # #Plots
-    # Plots.plot_roc(frac_list, fpr_list, tpr_list, auc_list)
-    # Plots.plot_other(frac_list, metric_value_by_frac)
-# # self = reconst      
-# # import time
-# t0 = time()
-# main_drug_net()
-# t2 = time()
-# t_diff = t2-t0
-# print("\n=== %s mins ===" % (t_diff/60))
 
 
 
-
-def sgl_run(idx):  #, layer_links_list, n_node):
-    PON_idx_list = [np.random.choice(n_node_list[i],
-                                  n_node_obs_list[i][idx],
-                                  replace=False).tolist()\
-                for i in range(len(layer_df_list))]
-    reconst = Reconstruct(layer_links_list=layer_links_list,
-                          PON_idx_list=PON_idx_list, n_node=n_node,
-                          itermax=int(1e3), eps=1e-6) 
-    # acc_list.append(reconst.acc)
-    # metric_value = []
-    # for ele in metric_list:
-    #     metric_value.append(exec('reconst.{}'.format(ele)))
-    # metric_value = [exec('reconst.{}'.format(ele)) for ele in metric_list]  
-    return reconst.metrics_value
-
-def get_result():
-    with mp.Pool(mp.cpu_count()-2) as pool:
-        results = pool.map(sgl_run, list(range(len(frac_list))))
-    return results
-
-def run_plot():
-    results = get_result()
-    fpr_list = []
-    tpr_list = []
-    auc_list = []
-    prec_list = []
-    recall_list = []
-    acc_list = []
-    for i_frac in range(len(frac_list)):
-        print('--- i frac: ', i_frac)
-        for i_mtc, mtc in enumerate(metric_list):
-            exec('{}_list.append({})'.format(mtc, results[i_frac][i_mtc].tolist()))
-
-    metric_value_by_frac = [auc_list, prec_list, recall_list, acc_list]
-    #Plots
-    Plots.plot_roc(frac_list, fpr_list, tpr_list, auc_list)
-    Plots.plot_other(frac_list, metric_value_by_frac)
-
-# if __name__ == '__main__': 
-#     run_plot()
- 
-            
-# def main_toy(): 
-    
-#     # import data
-#     path = '../data/toy_net/layer_links.xlsx'
-#     layer_df_list = [pd.read_excel(path, sheet_name='layer_{}'.format(i)) for i in [1,2]]
-#     layer_links_list = [ele.to_numpy() for ele in layer_df_list]
-    
-#     # initilize
-#     node_id_list = [set(np.concatenate(ele)) for ele in layer_links_list]
-#     n_node = max(max(node_id_list)) + 1  
-#     n_node_list = [len(ele) for ele in node_id_list]
-#     frac_list = [round(0.1*i,1) for i in range(1,10)]
-#     n_node_obs_list = [[int(i*n_node_list[j]) for i in frac_list] \
-#                        for j in range(len(layer_links_list))]   
-#     n_fold = 1
-#     # fpr_list = []
-#     # tpr_list = []
-#     # auc_list = []
-#     # prec_list = []
-#     # recall_list = []
-#     # acc_list = []
-#     # metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
-#     # fpr_list, tpr_list = [], []
-#     # auc_list, acc_list, prec_list, recall_list = [], [], [], []
-#     metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
-#     for ele in metric_list:
-#         exec('{}_list = []'.format(ele))
-#     import multiprocessing as mp
-#     def run_sgl_frac(i_frac):
-#         # print('--- Fraction: {}'.format(frac_list[i_frac]))
-#         PON_idx_list = [[0,1,2], [0,4,5]]  # this comb leads to no error
-#         # # PON_idx_list = [np.random.choice(n_node_list[i],
-#         # #                                   n_node_obs_list[i][idx],
-#         # #                                   replace=False).tolist()\
-#         # #                 for i in range(len(layer_df_list))]
-
-#         # reconst = Reconstruct(layer_links_list=layer_links_list,
-#         #               PON_idx_list=PON_idx_list, n_node=n_node,
-#         #               itermax=int(5e3), eps=1e-6) 
-#         # reconst.print_result()
-#         # for ele in metric_list:
-#         #     exec('{}_list.append(reconst.{})'.format(ele,ele))
-#         return None
-#     for _ in range(n_fold):         
-#         pool = mp.Pool(mp.cpu_count()-3)        
-#         results = [pool.apply(run_sgl_frac, args=(i_frac)) for i_frac in range(len(frac_list))]
-#         pool.close()   
-        
-#     # for i_fd in range(n_fold):
-   
-#     #     for idx in range(len(frac_list)):
-#     #         # PON_idx_list = [[0,1,2], [0,4,5]]  # this comb leads to no error
-#     #         PON_idx_list = [np.random.choice(n_node_list[i],
-#     #                                           n_node_obs_list[i][idx],
-#     #                                           replace=False).tolist()\
-#     #                         for i in range(len(layer_df_list))]
-
-#     #         reconst = Reconstruct(layer_links_list=layer_links_list,
-#     #                       PON_idx_list=PON_idx_list, n_node=n_node,
-#     #                       itermax=int(5e3), eps=1e-6) 
-#     #         for ele in metric_list:
-#     #             exec('{}_list.append(reconst.{})'.format(ele,ele))          
-#     #         # # show results    
-#     #         reconst.print_result()
-#     metric_value_by_frac = [auc_list, prec_list, recall_list, acc_list]
-    # #Plots
-    # Plots.plot_roc(frac_list, fpr_list, tpr_list, auc_list)
-    # Plots.plot_other(frac_list, metric_value_by_frac)
-     
-    
-# main_toy() 
-
-# self = reconst
 
