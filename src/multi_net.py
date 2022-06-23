@@ -28,7 +28,6 @@ from my_utils import *
 # TODO: install VS buildtools to use Cython
 # TODO: avoid indexing those virtual observed nodes and lnks
 
-
 class DrugNet:
     def __init__(self):
 
@@ -180,7 +179,7 @@ class Reconstruct:
         self.get_unobs_link_list()
         start_time1 = time()
         self.predict_adj()
-        print("--- %s seconds ---" % (time() - start_time1)) 
+        print("--- {} mins on predicting adj".format( round( (time() - start_time1)/60, 4) ) ) 
         self.eval_perform()
  
     # layers should have same nodeset. Use the Union of sets of nodes in each layer.    
@@ -226,18 +225,20 @@ class Reconstruct:
             Q[Q>1] = 1 # are there Q >1?
 
         return pred_adj_list
-    #calculate link reliabilities by configuration model
+    
+    #calculate link reliabilities by configuration model; used as prior probability
     def cal_link_prob_deg(self):
         ''' calculate link probability between two nodes using their degrees
         '''
         pred_adj_list = self.pred_adj_list
         n_node = self.n_node
         tri_up_idx = np.triu_indices(n_node, k=1)
-        rows, cols = tri_up_idx[0].tolist(), tri_up_idx[1].tolist()        
+        rows, cols = tri_up_idx[0].tolist(), tri_up_idx[1].tolist()
+#TODO: only calculate  single_prob_rev_list once for all pairs of nodes?       
         for i_idx in range(len(rows)):
             i, j = rows[i_idx], cols[i_idx]
             single_prob_rev_list = [1-self.deg_seq_list[ele][i]*self.deg_seq_list[ele][j]/\
-                                (self.deg_sum_list[ele]-1) for ele in range(self.n_layer)]
+                                    (self.deg_sum_list[ele]-1) for ele in range(self.n_layer)]
             agg_link_prob = 1 - np.prod(single_prob_rev_list)
             # agg_link_prob = agg_link_prob_list[i_idx] 
             for idx, Q in enumerate(pred_adj_list):
@@ -254,53 +255,57 @@ class Reconstruct:
         self.pred_adj_list = self.avoid_prob_overflow(pred_adj_list)      
     
     def cal_link_prob_PON(self):
-        '''calculate link probability using partial observed nodes in each layer
+        '''update link probability using partial observed nodes in each layer
         '''
         # links among observed nodes are observed
         pred_adj_list = self.pred_adj_list
         for i_curr, curr_node_list in enumerate(self.PON_idx_list):
             permuts = list(itertools.permutations(curr_node_list, r=2))
             permuts_half = [ele for ele in permuts if ele[1] > ele[0]]
-            rows, cols = [ele[0] for ele in permuts_half], [ele[1] for ele in permuts_half] 
-            # pred_adj_list[i_curr][rows, cols] = self.true_adj_list[i_curr][rows, cols]                    
+            rows, cols = [ele[0] for ele in permuts_half], [ele[1] for ele in permuts_half]                  
                 
             for i_idx in range(len(permuts_half)):
                 i, j = rows[i_idx], cols[i_idx]
-                    # # TODO: suppose only a portion of links among observed nodes are observed
+                # # TODO: suppose only a portion of links among observed nodes are observed
                 pred_adj_list[i_curr][i,j] = self.true_adj_list[i_curr][i,j]
                 pred_adj_list[i_curr][j,i] = pred_adj_list[i_curr][i,j]
     
                 # OR-aggregate mechanism: page 25 in SI
                 if self.agg_adj[i,j] == 1:
                     other_layer_idx = [ele for ele in range(self.n_layer) if ele != i_curr]
+                    # prior link probability
                     sgl_link_prob_list = [self.deg_seq_list[ele][i]*self.deg_seq_list[ele][j] \
                                           /(self.deg_sum_list[ele] - 1) \
                                           for ele in range(self.n_layer)]
                     # determine the actual predicted link [i,j] probability in other layers
                     if pred_adj_list[i_curr][i,j] == 1:
-                        for i_other in other_layer_idx:
-                            if pred_adj_list[i_other][i,j] not in [0, 1]: # !!! question: why not =0 and not =1:
-                                pred_adj_list[i_other][i,j] = sgl_link_prob_list[i_other]
-                                pred_adj_list[i_other][j,i] = sgl_link_prob_list[i_other]
+                        for i_othr in other_layer_idx:
+                            if pred_adj_list[i_othr][i,j] not in [0, 1]: # !!! question: why not =0 and not =1:
+                                pred_adj_list[i_othr][i,j] = sgl_link_prob_list[i_othr]
+                                pred_adj_list[i_othr][j,i] = sgl_link_prob_list[i_othr]
                     if pred_adj_list[i_curr][i,j] == 0:
                         # make at least one Q_ij = 1 to make A0_ij = 1
-                        if len(other_layer_idx) >= 2:
-                            max_single_prob = np.max(sgl_link_prob_list)
-                            if max_single_prob != 0:
-                                # normalize each single link prob by the max
-                                # so that the max automatically becomes the chosen 1
-                                for i_other in other_layer_idx:
-                                    pred_adj_list[i_other][i,j] = sgl_link_prob_list[i_other] \
-                                                                  /max_single_prob
-                                    pred_adj_list[i_other][j,i] = pred_adj_list[i_other][i,j]
-                            else: # TODO: randomly select one?
-                                rand_idx = np.random.choice(other_layer_idx)
-                                pred_adj_list[rand_idx][i,j] = 1
-                                pred_adj_list[rand_idx][j,i] = 1
-                        else: # two layers in total
-                            rand_idx = other_layer_idx[0]
-                            pred_adj_list[rand_idx][i,j] = 1
-                            pred_adj_list[rand_idx][j,i] = 1
+                        if len(other_layer_idx) == 1:
+                            i_othr = other_layer_idx[0]
+                            pred_adj_list[i_othr][i,j], pred_adj_list[i_othr][j,i] = 1, 1                            
+                        # else: use the probability calculated by the configuration model
+                        #     pass
+                        #     max_prob = np.max(sgl_link_prob_list)
+                        #     if max_prob != 0:
+                        #         # normalize each single link prob by the max
+                        #         # so that the max automatically becomes the chosen 1
+                        #         for i_othr in other_layer_idx:
+                        #             pred_adj_list[i_othr][i,j] = sgl_link_prob_list[i_othr]/max_prob
+                        #             pred_adj_list[i_othr][j,i] = pred_adj_list[i_othr][i,j]
+                        #     else: # TODO: randomly select one?
+                        #         rand_idx = np.random.choice(other_layer_idx)
+                        #         pred_adj_list[rand_idx][i,j], pred_adj_list[rand_idx][j,i] = 1, 1
+                        # else: # two layers in total
+                        #     i_othr = other_layer_idx[0]
+                        #     pred_adj_list[i_othr][i,j], pred_adj_list[i_othr][j,i] = 1, 1
+                # else:
+                #     for i_lyr in range(self.n_layer):  #[ele for ele in range(self.n_layer) if ele != i_curr]
+                #         pred_adj_list[i_lyr][i,j], pred_adj_list[i_lyr][j,i] = 0, 0
         # use symmetry
         # [exec('mat[np.tril_indices(mat.shape[0], k=-1)] = mat[np.triu_indices(mat.shape[0], k=1)]') \
         #  for mat in pred_adj_list]
@@ -324,13 +329,12 @@ class Reconstruct:
         self.deg_seq_list = [np.random.uniform(1, self.n_node+1, size=self.n_node)
                              for idx in range(self.n_layer)]
         self.deg_seq_last_list = [np.zeros(self.n_node) for idx in range(self.n_layer)] 
-        t0 = time()
+        # t0 = time()
         for iter in range(self.itermax):
             # if (iter+1) % 1000 == 0: 
             #     print('  === iter: {}'.format(iter+1))
-            # init
-            n_node = self.n_node            
-            self.pred_adj_list = [np.zeros([n_node, n_node]) for idx in range(self.n_layer)]
+            # init          
+            self.pred_adj_list = [np.zeros([self.n_node, self.n_node]) for idx in range(self.n_layer)]
             self.deg_sum_list = [np.sum(ele) for ele in self.deg_seq_list]
     
             #calculate link prob by configuration model
@@ -351,12 +355,12 @@ class Reconstruct:
                 break
             else:
                 if iter + 1 == self.itermax:
-                    print('\nConvergence NOT achieved at the last iteration')
+                    print('\nNOT converged at the last iteration\n')
             
             self.deg_seq_last_list = self.deg_seq_list
-            t1 = time()
-            t_diff = t1-t0
-            print("--- Time: {} mins after {} iters".format(round(t_diff/60, 2), iter+1))
+            # t1 = time()
+            # t_diff = t1-t0
+            # print("--- Time: {} mins after {} iters".format(round(t_diff/60, 2), iter+1))
             
     def eval_perform(self):
         ''' performance using accuracy, precision, recall, as well as roc curve and AUC
@@ -385,28 +389,28 @@ class Reconstruct:
         acc = accuracy_score(adj_test, adj_pred_round)
         self.metrics_value = [fpr, tpr, auc_val, prec, recall, acc]  
 
-# True Positive (TP): we predict a label of 1 (positive), and the true label is 1.
-pred_labels = adj_pred_round
-true_labels = adj_test
+# # True Positive (TP): we predict a label of 1 (positive), and the true label is 1.
+# pred_labels = adj_pred_round
+# true_labels = adj_test
 
-TP = np.sum(np.logical_and(pred_labels == 1, true_labels == 1))
+# TP = np.sum(np.logical_and(pred_labels == 1, true_labels == 1))
  
-# True Negative (TN): we predict a label of 0 (negative), and the true label is 0.
-TN = np.sum(np.logical_and(pred_labels == 0, true_labels == 0))
+# # True Negative (TN): we predict a label of 0 (negative), and the true label is 0.
+# TN = np.sum(np.logical_and(pred_labels == 0, true_labels == 0))
  
-# False Positive (FP): we predict a label of 1 (positive), but the true label is 0.
-FP = np.sum(np.logical_and(pred_labels == 1, true_labels == 0))
+# # False Positive (FP): we predict a label of 1 (positive), but the true label is 0.
+# FP = np.sum(np.logical_and(pred_labels == 1, true_labels == 0))
  
-# False Negative (FN): we predict a label of 0 (negative), but the true label is 1.
-FN = np.sum(np.logical_and(pred_labels == 0, true_labels == 1))
+# # False Negative (FN): we predict a label of 0 (negative), but the true label is 1.
+# FN = np.sum(np.logical_and(pred_labels == 0, true_labels == 1))
 
-prec_cal = TP / (TP + FP)  #!!! why is FP = 0???
-recall_cal = TP / (TP + FN)
-acc_cal = (TP+TN) / (TP+TN + FP+FN)
+# prec_cal = TP / (TP + FP)  #!!! why is FP = 0???
+# recall_cal = TP / (TP + FN)
+# acc_cal = (TP+TN) / (TP+TN + FP+FN)
  
-print('TP: {}, FP: {}, TN: {}, FN: {}'.format(TP,FP,TN,FN))
+# print('TP: {}, FP: {}, TN: {}, FN: {}'.format(TP,FP,TN,FN))
 
-print('prec_cal: {}, recall_cal: {}, acc_cal: {}'.format(prec_cal,recall_cal,acc_cal))
+# print('prec_cal: {}, recall_cal: {}, acc_cal: {}'.format(prec_cal,recall_cal,acc_cal))
 
 
         
@@ -446,7 +450,6 @@ print('prec_cal: {}, recall_cal: {}, acc_cal: {}'.format(prec_cal,recall_cal,acc
             'if np.random.uniform(0, 1) < self.frac_obs_link:
                  pred_adj_list[i_curr][i,j] = self.true_adj_list[i_curr][i,j]'
         '''                        
-
 
 
 class Plots:        
@@ -530,7 +533,7 @@ def single_run(i_frac):  #, layer_links_list, n_node):
 
     reconst = Reconstruct(layer_links_list=drug_net.layer_links_list,
                           PON_idx_list=PON_idx_list, n_node=drug_net.n_node,
-                          itermax=int(10), eps=1e-6)    
+                          itermax=int(20), eps=1e-6)    
     # acc_list.append(reconst.acc)
     # metric_value = []
     # for ele in metric_list:
@@ -563,14 +566,14 @@ def run_plot():
     Plots.plot_roc(frac_list, fpr_list, tpr_list, auc_list)
     Plots.plot_other(frac_list, metric_value_by_frac)
 
-# if __name__ == '__main__': 
+if __name__ == '__main__': 
 
-#     import matplotlib
-#     matplotlib.use('Agg')
-#     t00 = time()
-#     run_plot()
-#     t10 = time()
-#     print('Total elapsed time: {} mins'.format( round( (t10-t00)/60, 4) ) )      
+    import matplotlib
+    matplotlib.use('Agg')
+    t00 = time()
+    run_plot()
+    t10 = time()
+    print('Total elapsed time: {} mins'.format( round( (t10-t00)/60, 4) ) )      
     # for i_fd in range(n_fold):   
     #     for i_frac in range(len(frac_list)):
     #         print('--- Fraction: {}'.format(frac_list[i_frac]))
@@ -604,43 +607,43 @@ def run_plot():
 
 
 
-def sgl_run(idx):  #, layer_links_list, n_node):
-    PON_idx_list = [np.random.choice(n_node_list[i],
-                                  n_node_obs_list[i][idx],
-                                  replace=False).tolist()\
-                for i in range(len(layer_df_list))]
-    reconst = Reconstruct(layer_links_list=layer_links_list,
-                          PON_idx_list=PON_idx_list, n_node=n_node,
-                          itermax=int(1e3), eps=1e-6) 
-    # acc_list.append(reconst.acc)
-    # metric_value = []
-    # for ele in metric_list:
-    #     metric_value.append(exec('reconst.{}'.format(ele)))
-    # metric_value = [exec('reconst.{}'.format(ele)) for ele in metric_list]  
-    return reconst.metrics_value
+# def sgl_run(idx):  #, layer_links_list, n_node):
+#     PON_idx_list = [np.random.choice(n_node_list[i],
+#                                   n_node_obs_list[i][idx],
+#                                   replace=False).tolist()\
+#                 for i in range(len(layer_df_list))]
+#     reconst = Reconstruct(layer_links_list=layer_links_list,
+#                           PON_idx_list=PON_idx_list, n_node=n_node,
+#                           itermax=int(1e3), eps=1e-6) 
+#     # acc_list.append(reconst.acc)
+#     # metric_value = []
+#     # for ele in metric_list:
+#     #     metric_value.append(exec('reconst.{}'.format(ele)))
+#     # metric_value = [exec('reconst.{}'.format(ele)) for ele in metric_list]  
+#     return reconst.metrics_value
 
-def get_result():
-    with mp.Pool(mp.cpu_count()-2) as pool:
-        results = pool.map(sgl_run, list(range(len(frac_list))))
-    return results
+# def get_result():
+#     with mp.Pool(mp.cpu_count()-2) as pool:
+#         results = pool.map(sgl_run, list(range(len(frac_list))))
+#     return results
 
-def run_plot():
-    results = get_result()
-    fpr_list = []
-    tpr_list = []
-    auc_list = []
-    prec_list = []
-    recall_list = []
-    acc_list = []
-    for i_frac in range(len(frac_list)):
-        print('--- i frac: ', i_frac)
-        for i_mtc, mtc in enumerate(metric_list):
-            exec('{}_list.append({})'.format(mtc, results[i_frac][i_mtc].tolist()))
+# def run_plot():
+#     results = get_result()
+#     fpr_list = []
+#     tpr_list = []
+#     auc_list = []
+#     prec_list = []
+#     recall_list = []
+#     acc_list = []
+#     for i_frac in range(len(frac_list)):
+#         print('--- i frac: ', i_frac)
+#         for i_mtc, mtc in enumerate(metric_list):
+#             exec('{}_list.append({})'.format(mtc, results[i_frac][i_mtc].tolist()))
 
-    metric_value_by_frac = [auc_list, prec_list, recall_list, acc_list]
-    #Plots
-    Plots.plot_roc(frac_list, fpr_list, tpr_list, auc_list)
-    Plots.plot_other(frac_list, metric_value_by_frac)
+#     metric_value_by_frac = [auc_list, prec_list, recall_list, acc_list]
+#     #Plots
+#     Plots.plot_roc(frac_list, fpr_list, tpr_list, auc_list)
+#     Plots.plot_other(frac_list, metric_value_by_frac)
 
 # if __name__ == '__main__': 
 #     run_plot()
@@ -659,7 +662,7 @@ def run_plot():
 #     n_node_list = [len(ele) for ele in node_id_list]
 #     frac_list = [round(0.1*i,1) for i in range(1,10)]
 #     n_node_obs_list = [[int(i*n_node_list[j]) for i in frac_list] \
-#                        for j in range(len(layer_links_list))]   
+#                         for j in range(len(layer_links_list))]   
 #     n_fold = 1
 #     # fpr_list = []
 #     # tpr_list = []
@@ -676,15 +679,15 @@ def run_plot():
 #     import multiprocessing as mp
 #     def run_sgl_frac(i_frac):
 #         # print('--- Fraction: {}'.format(frac_list[i_frac]))
-#         PON_idx_list = [[0,1,2], [0,4,5]]  # this comb leads to no error
-#         # # PON_idx_list = [np.random.choice(n_node_list[i],
-#         # #                                   n_node_obs_list[i][idx],
-#         # #                                   replace=False).tolist()\
-#         # #                 for i in range(len(layer_df_list))]
+#         # PON_idx_list = [[0,1,2], [0,4,5]]  # this comb leads to no error
+#         PON_idx_list = [np.random.choice(n_node_list[i],
+#                                           n_node_obs_list[i][idx],
+#                                           replace=False).tolist()\
+#                         for i in range(len(layer_df_list))]
 
-#         # reconst = Reconstruct(layer_links_list=layer_links_list,
-#         #               PON_idx_list=PON_idx_list, n_node=n_node,
-#         #               itermax=int(5e3), eps=1e-6) 
+#         reconst = Reconstruct(layer_links_list=layer_links_list,
+#                       PON_idx_list=PON_idx_list, n_node=n_node,
+#                       itermax=int(5e3), eps=1e-6) 
 #         # reconst.print_result()
 #         # for ele in metric_list:
 #         #     exec('{}_list.append(reconst.{})'.format(ele,ele))
