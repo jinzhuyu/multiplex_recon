@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from itertools import permutations
+
+
 class plotfuncs:
     def format_fig(size_scale=1):
     
@@ -7,6 +10,7 @@ class plotfuncs:
         SMALL = 13*size_scale
         MEDIUM = 15*size_scale
         LARGE = 16*size_scale
+        lw_small = 1.1*size_scale
         
         # plt.style.use('classic')
         
@@ -15,15 +19,16 @@ class plotfuncs:
         plt.rcParams['figure.figsize'] = (6, 6*3/4)
         plt.rcParams['figure.titlesize'] = LARGE   
         plt.rcParams['figure.facecolor'] = 'white'
-        plt.rcParams['figure.dpi'] = 400
+        plt.rcParams['figure.dpi'] = 500
     
         plt.rcParams['axes.facecolor'] = 'white'
         plt.rcParams['axes.axisbelow'] = True
     
         plt.rcParams['axes.titlepad'] = LARGE + 2  # title to figure
         plt.rcParams['axes.labelpad'] = 3.5 # x y labels to figure
-        plt.rc('axes', titlesize=MEDIUM, labelsize=MEDIUM, linewidth=1.25)    # fontsize of the axes title, the x and y labels
-        
+        plt.rc('axes', titlesize=MEDIUM, labelsize=MEDIUM, linewidth=lw_small)    # fontsize of the axes title, the x and y labels
+        plt.rcParams['xtick.major.width'] = lw_small
+        plt.rcParams['xtick.minor.width'] = lw_small       
         
         plt.rcParams['ytick.right'] = False
         plt.rcParams['xtick.top'] = False
@@ -53,7 +58,7 @@ class plotfuncs:
         plt.rcParams['savefig.dpi'] = 800
         
         
-    def linestyles():
+    def get_linestyles():
         linestyles = [('solid',               (0, ())),
                       ('dashdotted',          (0, (3, 5, 1, 5))),
                       ('dotted',              (0, (1, 5))),
@@ -71,6 +76,11 @@ class plotfuncs:
                       ('dashdotdotted',         (0, (3, 5, 1, 5, 1, 5))),
                       ('densely dashdotdotted', (0, (3, 1, 1, 1, 1, 1)))]
         return linestyles
+    
+    def get_markers():
+        markers =['o', 'v', 's', 'D', '*', 'x', 'o', 'v', 's', 'D', '*', 'x'] 
+        # markers =['o', 'v', 's', '*', 'D', 'x', 'v', 'o', 'x', 'D', '*', 's'] 
+        return markers
 
 
 
@@ -82,6 +92,15 @@ def npprint(A, n_space=2):
          for i in range(A.shape[1]):
              npprint(A[:,i])
 
+def get_permuts_half(a_list):
+    '''get permutations where the first is smaller than the second
+    '''
+    if not isinstance(a_list, list):
+        a_list = a_list.tolist()
+    permuts = list(permutations(a_list, r=2))
+    permuts_half = [[ele[0], ele[1]] for ele in permuts if ele[1] > ele[0]]
+    
+    return permuts_half
 
 def sample_deg_corr(G, f=0.1, edges=None, probs=None):
     '''
@@ -175,4 +194,5 @@ if __name__ == '__main__':
     main() 
 else:             
     plotfuncs.format_fig()
-    linestyles = plotfuncs.linestyles()
+    linestyles = plotfuncs.get_linestyles()
+    # markers = plotfuncs.get_markers()
