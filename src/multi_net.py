@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import os
-os.chdir('c:/code/illicit_net_resil/src')
+# import os
+# os.chdir('c:/code/illicit_net_resil/src')
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -493,7 +493,7 @@ real_node_list, virt_node_list = get_layer_node_list(layer_link_list, n_layer, n
 frac_list = [round(0.2*i,1) for i in range(0, 5)] + [0.9, 0.95]
 n_node_list = [len(real_node_list[i]) for i in range(n_layer)]
 n_node_obs = [[int(frac*n_node_list[i]) for i in range(n_layer)] for frac in frac_list]     
-n_rep = 2
+n_rep = 10
 metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
 
 # parellel processing
@@ -530,7 +530,7 @@ def single_run(i_frac):  #, layer_link_list, n_node):
         t000 = time()    
         reconst = Reconstruct(layer_link_list=layer_link_list, PON_idx_list=PON_idx_list,
                               layer_link_unobs_list=layer_link_unobs_list, 
-                              n_node=n_node, itermax=int(20), eps=1e-6)    
+                              n_node=n_node, itermax=int(100), eps=1e-6)    
         t100 = time()
         print('=== {} mins on this rep in total'.format( round( (t100-t000)/60, 4) ) ) 
         metric_value_rep_list.append(reconst.metric_value)
@@ -541,9 +541,15 @@ def single_run(i_frac):  #, layer_link_list, n_node):
 
 def paral_run():
     # drug_net, frac_list, n_node_obs, metric_list = import_data()
-    n_core = mp.cpu_count()-3
+    n_cpu = mp.cpu_count()
+    if n_cpu == 8:
+        n_cpu -= 3
+    else:
+        n_cpu = int(n_cpu*0.6)
+    
+    print('=== n_cpu: ', n_cpu)
     # n_core = 1
-    with mp.Pool(n_core) as pool:
+    with mp.Pool(n_cpu) as pool:
         results = pool.map(single_run, range(len(frac_list)))
     return results
 
