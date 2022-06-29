@@ -2,9 +2,6 @@
 """
 Formate the drug trafficking network data
 """
-
-# import os
-# os.chdir('c:/code/illicit_net_resil/src')
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mtransforms
