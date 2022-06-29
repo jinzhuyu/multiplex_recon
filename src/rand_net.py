@@ -44,11 +44,20 @@ def gen_multiplex(n_layer, n_node, p_list):
     layer_link_list = [x for sub in layer_link_list for x in sub]    
     return layer_link_list
 
-n_node = 100
-n_layer = 2
-layer_link_list = gen_multiplex(n_layer, n_node, [0.2, 0.15, 0.1])
-link_df = pd.DataFrame(layer_link_list, columns=['Actor_A', 'Actor_B', 'Type_relation'])
+# TODO: remove nodes and associated links in some layers to model real dark networks
 
-writer = pd.ExcelWriter("../data/{}layers_{}nodes.xlsx".format(n_layer, n_node), engine='xlsxwriter')
-link_df.to_excel(writer, sheet_name = 'LINKS IND AND GROUP', index=False)
-writer.save() 
+def main():
+    n_node_list = [30]
+    n_layer_list = [2]        
+    link_prob = [0.6, 0.5, 0.08, 0.05, 0.1, 0.1]
+    for n_node in n_node_list:
+        for n_layer in n_layer_list:
+            layer_link_list = gen_multiplex(n_layer, n_node, link_prob)
+            link_df = pd.DataFrame(layer_link_list, columns=['Actor_A', 'Actor_B', 'Type_relation'])
+            
+            writer = pd.ExcelWriter("../data/{}layers_{}nodes.xlsx".format(n_layer, n_node), engine='xlsxwriter')
+            link_df.to_excel(writer, sheet_name = 'LINKS IND AND GROUP', index=False)
+            writer.save() 
+
+if __name__ == '__main__':
+    main()
