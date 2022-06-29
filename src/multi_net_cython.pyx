@@ -55,13 +55,14 @@ class Reconstruct:
         else:
             self.get_adj_true_list()
             self.get_agg_adj()
+            self.get_unobs_link_list()
             start_time2 = time()
             self.predict_adj()
             # print("--- {} mins on predicting adj".format( round( (time() - start_time2)/60, 4) ) ) 
        
-            start_time3 = time()         
+            # start_time3 = time()         
             self.eval_perform()
-            # print('--- {} mins on evaluating performance'.format( round( (time()-start_time3)/60, 4) ) )  
+            # print('--- {} mins on evaluating performance'.format( round( (time() - start_time3)/60, 4) ) )  
     # layers should have same nodeset. Use the Union of sets of nodes in each layer.    
     
     # functions for generating the ground truth of a multiplex network        
@@ -95,6 +96,8 @@ class Reconstruct:
 
     def get_unobs_link_list(self):
         self.layer_link_unobs_list = []
+        self.layer_link_unobs_list_uu = []
+        self.layer_link_unobs_list_ou = []
         # permuts = list(permutations(range(self.n_node), r=2))
         # permuts_half = [ele for ele in permuts if ele[1] > ele[0]]
         for i_lyr in range(self.n_layer):
@@ -108,7 +111,9 @@ class Reconstruct:
             layer_link_unobs_2 = [[ele[0], ele[1]] for ele in link_prod_temp if ele[0] < ele[1]] 
             # layer_link_unobs = [ele for ele in link_posbl if \
             #                     (ele[0] in layer_node_unobs or ele[1] in layer_node_unobs)]
-            self.layer_link_unobs_list.append(np.array(layer_link_unobs_1 + layer_link_unobs_2))  
+            self.layer_link_unobs_list.append(np.array(layer_link_unobs_1 + layer_link_unobs_2))
+            self.layer_link_unobs_list_uu.append(np.array(layer_link_unobs_1))
+            self.layer_link_unobs_list_ou.append(np.array(layer_link_unobs_2))
         # print(self.layer_link_unobs_list)
 
     # functions used in learn layer adj        
@@ -242,27 +247,20 @@ class Reconstruct:
             if all(cond):
                 # print('\nConverges at iter: {}'.format(iter))
                 break
-            else:
-                if iter + 1 == self.itermax:
-                    print('\nNOT converged at the last iteration\n')
+            # else:
+            #     if iter + 1 == self.itermax:
+            #         print('\nNOT converged at the last iteration\n')
             
             self.deg_seq_last_list = self.deg_seq_list
             # t1 = time()
             # t_diff = t1-t0
             # print("--- Time: {} mins after {} iters".format(round(t_diff/60, 2), iter+1))
-            
-    def eval_perform(self):
-        ''' performance using accuracy, precision, recall, as well as roc curve and AUC
-        '''
-        n_digit = 0
-        self.adj_pred_list_round = [np.round(ele, n_digit) for ele in self.adj_pred_list]
-        self.deg_seq_last_list_round = [np.round(ele, n_digit) for ele in self.deg_seq_last_list]  
-        
+    def eval_perform_sub(self, link_unobs_list):
         adj_true_unobs_list = [[] for _ in range(self.n_layer)]
         adj_pred_unobs_list = [[] for _ in range(self.n_layer)]
         # adj_pred_unobs_round_list = [[] for _ in range(self.n_layer)]
         for idx in range(self.n_layer):
-            for [i,j] in self.layer_link_unobs_list[idx]:
+            for [i,j] in link_unobs_list[idx]:
                 adj_true_unobs_list[idx].append(self.adj_true_list[idx][i,j])
                 adj_pred_unobs_list[idx].append(self.adj_pred_list[idx][i,j])
                 # adj_pred_unobs_round_list[idx].append(self.adj_pred_list_round[idx][i,j]) 
@@ -276,44 +274,57 @@ class Reconstruct:
         prec = precision_score(adj_true, adj_pred_round, average='binary')
         if 1 not in adj_pred_round or 0 not in adj_true:
             fpr = [0 for _ in tpr]
-            auc_val = 1  #np.nan
-            prec = 1 #np.nan
+            auc_val = np.nan
+            prec = np.nan
         if 1 not in adj_true or 0 not in adj_pred_round:
             tpr = [1 for _ in fpr] 
-            auc_val = 1 #np.nan
-            prec = 1 #np.nan
+            auc_val = np.nan
+            prec = np.nan
         # if(np.isnan(prec).any()):
         # print('\n--- auc_val', auc_val, 'fpr', np.round(fpr, 2), 'tpr', np.round(tpr, 2))
         # print('--- adj_true', adj_true, 'adj_pred_round', adj_pred_round, '\n') 
             # print('\n--- adj_pred', adj_pred)
         recall = recall_score(adj_true, adj_pred_round, average='binary')
         acc = accuracy_score(adj_true, adj_pred_round)
-        self.metric_value = [fpr, tpr, auc_val, prec, recall, acc]  
-
-# # True Positive (TP): we predict a label of 1 (positive), and the true label is 1.
-# pred_labels = adj_pred_round
-# true_labels = adj_true
-
-# TP = np.sum(np.logical_and(pred_labels == 1, true_labels == 1))
- 
-# # True Negative (TN): we predict a label of 0 (negative), and the true label is 0.
-# TN = np.sum(np.logical_and(pred_labels == 0, true_labels == 0))
- 
-# # False Positive (FP): we predict a label of 1 (positive), but the true label is 0.
-# FP = np.sum(np.logical_and(pred_labels == 1, true_labels == 0))
- 
-# # False Negative (FN): we predict a label of 0 (negative), but the true label is 1.
-# FN = np.sum(np.logical_and(pred_labels == 0, true_labels == 1))
-
-# prec_cal = TP / (TP + FP)  #!!! why is FP = 0??? no ones in pred adj?
-# recall_cal = TP / (TP + FN)  # because FN is high if FP is low
-# acc_cal = (TP+TN) / (TP+TN + FP+FN)
- 
-# print('TP: {}, FP: {}, TN: {}, FN: {}'.format(TP,FP,TN,FN))
-
-# print('prec_cal: {}, recall_cal: {}, acc_cal: {}'.format(prec_cal,recall_cal,acc_cal))
-
-
+        # self.metric_value = [fpr, tpr, auc_val, prec, recall, acc] 
+        metric_value = [fpr, tpr, auc_val, prec, recall, acc]
+        return metric_value
+            
+    def eval_perform(self):
+        ''' performance using accuracy, precision, recall, as well as roc curve and AUC
+        '''
+        n_digit = 0
+        self.adj_pred_list_round = [np.round(ele, n_digit) for ele in self.adj_pred_list]
+        self.deg_seq_last_list_round = [np.round(ele, n_digit) for ele in self.deg_seq_last_list]  
+        
+        self.metric_value = self.eval_perform_sub(self.layer_link_unobs_list)
+        self.metric_value_uu = self.eval_perform_sub(self.layer_link_unobs_list_uu)
+        self.metric_value_ou = self.eval_perform_sub(self.layer_link_unobs_list_ou)
+        
+        # print('--- metric_value_uu', self.metric_value_uu[2:])
+        # print('--- metric_value_ou', self.metric_value_ou[2:])
+        # # True Positive (TP): we predict a label of 1 (positive), and the true label is 1.
+        # pred_labels = adj_pred_round
+        # true_labels = adj_true
+        
+        # TP = np.sum(np.logical_and(pred_labels == 1, true_labels == 1))
+         
+        # # True Negative (TN): we predict a label of 0 (negative), and the true label is 0.
+        # TN = np.sum(np.logical_and(pred_labels == 0, true_labels == 0))
+         
+        # # False Positive (FP): we predict a label of 1 (positive), but the true label is 0.
+        # FP = np.sum(np.logical_and(pred_labels == 1, true_labels == 0))
+         
+        # # False Negative (FN): we predict a label of 0 (negative), but the true label is 1.
+        # FN = np.sum(np.logical_and(pred_labels == 0, true_labels == 1))
+        
+        # prec_cal = TP / (TP + FP)  #!!! why is FP = 0??? no ones in pred adj?
+        # recall_cal = TP / (TP + FN)  # because FN is high if FP is low
+        # acc_cal = (TP+TN) / (TP+TN + FP+FN)
+         
+        # print('TP: {}, FP: {}, TN: {}, FN: {}'.format(TP,FP,TN,FN))
+        
+        # print('prec_cal: {}, recall_cal: {}, acc_cal: {}'.format(prec_cal,recall_cal,acc_cal))
         
     
     def print_result(self): 
@@ -362,7 +373,7 @@ class Plots:
         tpr_mean = np.mean(np.array(tprs_intp_list), axis=0).tolist()       
         return tpr_mean
         
-    def plot_roc(frac_list, metric_mean_by_frac, net_name, n_layer, n_node):
+    def plot_roc(frac_list, metric_mean_by_frac, n_layer, n_node, link_unobs_type=0):
         fpr_list, tpr_list, auc_list = metric_mean_by_frac[0], metric_mean_by_frac[1], metric_mean_by_frac[2]
         # linestyles = plotfuncs.linestyles()
         plotfuncs.format_fig(1.2)
@@ -392,13 +403,16 @@ class Plots:
         plt.ylim([-0.015, 1.015])
         plt.xlabel("False positive rate")
         plt.ylabel("True positive rate")
-        plt.legend(loc="lower right", fontsize=14.5, title=r'$c$') #title=r'$c$  (AUC)')
-        
         plt.xticks([0.2*i for i in range(5+1)])
-        plt.savefig('../output/roc_{}_layers_{}_nodes.pdf'.format(n_layer, n_node))
+        # plt.legend(loc="lower right", fontsize=14.5, title=r'$c$') #title=r'$c$  (AUC)')
+        ax = plt.gca()
+        handles, labels = ax.get_legend_handles_labels()
+        ax.legend(reversed(handles), reversed(labels), title=r'$c$', loc='lower right', fontsize=14.5,)        
+
+        plt.savefig('../output/roc_{}layers_{}nodes_test_type_{}.pdf'.format(n_layer, n_node, link_unobs_type))
         plt.show()
 
-    def plot_other(frac_list, metric_mean_by_frac, n_layer, n_node):
+    def plot_other(frac_list, metric_mean_by_frac, n_layer, n_node, link_unobs_type=0):
         # linestyles = plotfuncs.linestyles()
         metric_value_by_frac = metric_mean_by_frac[2:]
         metric_list = ['AUC', 'Precision', 'Recall','Accuracy']
@@ -413,17 +427,16 @@ class Plots:
                      ms=med_size, lw=lw,linestyle = '--', label=metric_list[i])
                 
         plt.xlim(right=1.03)
-        plt.ylim(top=1.03)
+        plt.ylim([0, 1.03])
         # plt.xlim([-0.03, 1.03])
         # plt.ylim([0.0, 1.03])
         plt.xlabel(r"$c$")
         plt.ylabel("Value of metric")
-        plt.legend(loc="upper left", fontsize=13.5)
+        plt.legend(loc="lower right", fontsize=13)
         plt.xticks([0.2*i for i in range(5+1)])
-        plt.savefig('../output/metrics_{}_layers_{}_nodes.pdf'.format(n_layer, n_node))
+        plt.savefig('../output/metrics_{}layers_{}nodes_test_type_{}.pdf'.format(n_layer, n_node, link_unobs_type))
         plt.show()
         
-
 
 class DrugNet():
     
@@ -540,7 +553,7 @@ class DrugNet():
             G_sub.add_edges_from(selected_edges)
             plt.sca(axes[ax_labels[idx]])
             nx.draw(G_sub, node_size=2)
-            print(layers_selected[counter], ': ', len(selected_edges))
+            # print(layers_selected[counter], ': ', len(selected_edges))
             counter += 1
         # save fig
         plt.tight_layout()
@@ -564,20 +577,23 @@ class DrugNet():
     
 # import data
 # def import_data():
-net_name = '2_layer'
-path = '../data/links_{}.xlsx'.format(net_name)
+net_name = '2layers_30nodes'
+path = '../data/{}.xlsx'.format(net_name)
 drug_net = DrugNet(path=path)
-# frac_list = [0.8, 0.95]
+frac_list = [0.75, 0.8, 0.85, 0.9, 0.95]
 # frac_list = [0, 0.9, 0.95] 
-frac_list = [round(0.1*i, 2) for i in range(0,10)] + [0.95]
+# frac_list = [round(0.1*i, 2) for i in range(0,10)] + [0.95]
 #frac_list = [round(0.2*i,1) for i in range(1, 5)]
 n_node_obs = [[int(frac*n) for n in drug_net.layer_n_node] for frac in frac_list ]     
-n_rep = 500
+n_rep = 30
 metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
+n_node = drug_net.layer_n_node[0]
+n_layer = drug_net.n_layer
 
     # return drug_net, frac_list, n_node_obs, metric_list
 
 def sample_node_obs(drug_net, i_frac):
+    # print('--- i_frac: ', i_frac)
     PON_idx_list_orig = [np.random.choice(drug_net.node_list[i_lyr], n_node_obs[i_frac][i_lyr],
                          replace=False).tolist() for i_lyr in range(drug_net.n_layer)]                
     # append virtual nodes: all nodes - nodes in each layer
@@ -593,7 +609,7 @@ def sample_node_obs(drug_net, i_frac):
         if reconst_temp.layer_link_unobs_list[i_lyr].size == 0:
             is_empty.append(i_lyr)
     if len(is_empty) == reconst_temp.n_layer:
-        print('--- No layers have unobserved links. Will resample observed nodes.')
+        # print('--- No layers have unobserved links. Will resample observed nodes.')
         return sample_node_obs(drug_net, i_frac)
     else:
         return PON_idx_list, layer_link_unobs_list
@@ -601,7 +617,11 @@ def sample_node_obs(drug_net, i_frac):
 # i_frac = 1
 def single_run(i_frac):  #, layer_link_list, n_node):
     metric_value_rep_list = []
+    metric_value_rep_list_uu = []
+    metric_value_rep_list_ou = []
     for i_rep in range(n_rep):
+        if i_rep == n_rep - 1:
+            print('--- rep: ', i_rep)
         PON_idx_list, layer_link_unobs_list = sample_node_obs(drug_net, i_frac)
         t000 = time()    
         reconst = Reconstruct(layer_link_list=drug_net.layer_link_list,
@@ -610,17 +630,11 @@ def single_run(i_frac):  #, layer_link_list, n_node):
                               itermax=int(5000), eps=1e-6)    
         t100 = time()
         # print('Total elapsed time: {} mins'.format( round( (t100-t000)/60, 4) ) ) 
-    # acc_list.append(reconst.acc)
-    # metric_value = []
-    # for ele in metric_list:
-    #     metric_value.append(exec('reconst.{}'.format(ele)))
-    # metric_value = [exec('reconst.{}'.format(ele)) for ele in metric_list]  
-    # print('reconst.metric_value', reconst.metric_value)
         metric_value_rep_list.append(reconst.metric_value)
-    return metric_value_rep_list
+        metric_value_rep_list_uu.append(reconst.metric_value_uu)
+        metric_value_rep_list_ou.append(reconst.metric_value_ou)
+    return [metric_value_rep_list, metric_value_rep_list_uu, metric_value_rep_list_ou]
 # self = reconst
-
-# single_run(1)
 
 def paral_run():
     # drug_net, frac_list, n_node_obs, metric_list = import_data()
@@ -633,16 +647,14 @@ def paral_run():
 
 # results include metric_value_rep_list for each frac. 
 # metric_value_rep_list include metric_value
-def run_plot():
-    results = paral_run()
-    # print(results)
+def plot_sub(results, i_link_type):
     metric_value_by_frac = [[ [] for _ in range(len(frac_list))] for _ in metric_list]
     for ele in metric_list:
         exec('{}_list = [[] for item in range(len(frac_list))]'.format(ele))
     for i_mtc in range(len(metric_list)):
         for i_frac in range(len(frac_list)):
             for i_rep in range(n_rep):
-                metric_value_by_frac[i_mtc][i_frac].append(results[i_frac][i_rep][i_mtc])
+                metric_value_by_frac[i_mtc][i_frac].append(results[i_frac][i_link_type][i_rep][i_mtc])
     # calculate the mean
     metric_mean_by_frac = [[ [] for _ in range(len(frac_list))] for _ in metric_list]
     
@@ -664,8 +676,17 @@ def run_plot():
     # metric_value_by_frac = [auc_list, prec_list, recall_list, acc_list]
     # print('\nmetric_value_by_frac: ', metric_value_by_frac)
     #Plots
-    Plots.plot_roc(frac_list, metric_mean_by_frac, net_name)
-    Plots.plot_other(frac_list, metric_mean_by_frac, net_name)
+    # Plots.plot_roc(frac_list, metric_mean_by_frac, n_layer, n_node, link_unobs_type=i_link_type)
+    Plots.plot_other(frac_list, metric_mean_by_frac, n_layer, n_node, link_unobs_type=i_link_type)
+
+def run_plot():
+    results = paral_run()
+    for i_link_type in range(3):
+        plot_sub(results, i_link_type)
+    # print(results)
+    
+    
+
 
 # if __name__ == '__main__': 
 
