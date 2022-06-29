@@ -7,11 +7,6 @@ from itertools import combinations, groupby
 import random
 import pandas as pd
 
-# class RandomNet:
-#     ''' generate a multiplex network where each layer is a random network
-#         and return the list of links for each layer
-#     '''
-
 def gen_single_rand_net(n, p):
     """
     Generates a random undirected graph, similarly to an Erdős-Rényi 
@@ -47,17 +42,15 @@ def gen_multiplex(n_layer, n_node, p_list):
 # TODO: remove nodes and associated links in some layers to model real dark networks
 
 def main():
-    n_node_list = [30]
-    n_layer_list = [2]        
-    link_prob = [0.6, 0.5, 0.08, 0.05, 0.1, 0.1]
+    n_node_list = [30, 50, 100]
+    n_layer_list = [2, 3, 4]        
+    link_prob = [0.15, 0.1, 0.08, 0.05, 0.05]
     for n_node in n_node_list:
         for n_layer in n_layer_list:
-            layer_link_list = gen_multiplex(n_layer, n_node, link_prob)
-            link_df = pd.DataFrame(layer_link_list, columns=['Actor_A', 'Actor_B', 'Type_relation'])
-            
-            writer = pd.ExcelWriter("../data/{}layers_{}nodes.xlsx".format(n_layer, n_node), engine='xlsxwriter')
-            link_df.to_excel(writer, sheet_name = 'LINKS IND AND GROUP', index=False)
-            writer.save() 
+            layer_link_list = gen_multiplex(n_layer, n_node, link_prob[:n_layer])
+            link_df = pd.DataFrame(layer_link_list, columns=['From', 'To', 'Relation'])
+            link_df.to_excel("../data/rand_net_{}layers_{}nodes.xlsx".format(n_layer, n_node),
+                             index=False) 
 
 if __name__ == '__main__':
     main()
