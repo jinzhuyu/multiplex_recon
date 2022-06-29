@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# import os
-# os.chdir('c:/code/illicit_net_resil/src')
+import os
+os.chdir('c:/code/illicit_net_resil/src')
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -475,8 +475,13 @@ def get_layer_node_list(layer_link_list, n_layer, n_node):
 # import data
 # net_type = 'toy'
 # n_node, n_layer = 6, 2
-net_type = 'rand'
-n_node, n_layer = 30, 2
+
+# net_type = 'rand'
+# n_node, n_layer = 30, 2
+
+net_type = 'drug'
+n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
+
 net_name = '{}_net_{}layers_{}nodes'.format(net_type, n_layer, n_node)
 path = '../data/{}.xlsx'.format(net_name)
 layer_link_list = load_data(path)
@@ -486,13 +491,15 @@ real_node_list, virt_node_list = get_layer_node_list(layer_link_list, n_layer, n
 # frac_list = [0, 0.9, 0.95] 
 # frac_list = [round(0.1*i, 2) for i in range(0, 10)] + [0.95]
 frac_list = [round(0.2*i,1) for i in range(0, 5)] + [0.9, 0.95]
-n_node_obs = [[int(frac*n_node) for _ in range(n_layer)] for frac in frac_list]     
+n_node_list = [len(real_node_list[i]) for i in range(n_layer)]
+n_node_obs = [[int(frac*n_node_list[i]) for i in range(n_layer)] for frac in frac_list]     
 n_rep = 2
 metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
 
 # parellel processing
 
 def sample_node_obs(layer_link_list, real_node_list, virt_node_list, i_frac):
+    
     PON_idx_list_orig = [np.random.choice(real_node_list[i_lyr], n_node_obs[i_frac][i_lyr],
                          replace=False).tolist() for i_lyr in range(n_layer)]                
     # append virtual nodes: all nodes - nodes in each layer
@@ -523,7 +530,7 @@ def single_run(i_frac):  #, layer_link_list, n_node):
         t000 = time()    
         reconst = Reconstruct(layer_link_list=layer_link_list, PON_idx_list=PON_idx_list,
                               layer_link_unobs_list=layer_link_unobs_list, 
-                              n_node=n_node, itermax=int(1000), eps=1e-6)    
+                              n_node=n_node, itermax=int(20), eps=1e-6)    
         t100 = time()
         print('=== {} mins on this rep in total'.format( round( (t100-t000)/60, 4) ) ) 
         metric_value_rep_list.append(reconst.metric_value)
