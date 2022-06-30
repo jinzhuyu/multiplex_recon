@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from itertools import permutations
-
+# import numba
 
 class plotfuncs:
     def format_fig(size_scale=1):
@@ -101,6 +101,34 @@ def get_permuts_half(a_list):
     permuts_half = [[ele[0], ele[1]] for ele in permuts if ele[1] > ele[0]]
     
     return permuts_half
+
+# @numba.njit
+# def get_permuts_half_numba(vec: np.ndarray):
+#     k, size = 0, vec.size
+#     output = np.empty((size * (size - 1) // 2, 2))
+#     for i in range(size):
+#         for j in range(i+1, size):
+#             output[k,:] = [i,j]
+#             k += 1
+#     return output
+# if mat has more than 5000 elements use pairwise_multiply_iterative_slicing
+# https://stackoverflow.com/questions/62012339/efficiently-computing-all-pairwise-products-of-a-given-vectors-elements-in-nump/62012545#62012545
+
+# t0 = time()
+# aa0 = get_permuts_half(list(range(2000)))
+# print(time()-t0)
+
+# t0 = time()
+# aa1 = get_permuts_half_nb(list(range(2000)))
+# print(time()-t0)
+
+# t0 = time()
+# a_list = list(range(2000))
+# a_arr = np.array(a_list)
+# aa = get_permuts_half_numba(a_arr)
+# aa2 = aa.tolist()
+# print(time()-t0)
+
 
 def sample_deg_corr(G, f=0.1, edges=None, probs=None):
     '''
