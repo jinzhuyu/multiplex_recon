@@ -37,7 +37,7 @@ from my_utils import *
 
 class Reconstruct:
     def __init__(self, layer_link_list, PON_idx_list=None, layer_link_unobs_list=None,
-                 deg_seq_init=None, n_node=None, itermax=1000, eps=1e-5, **kwargs):
+                 deg_seq_init=None, n_node=None, itermax=500, eps=1e-5, **kwargs):
         '''     
         Parameters
         ----------
@@ -522,6 +522,17 @@ metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
 
 # parellel processing
 
+
+
+@numba.njit
+def get_permuts_half_numba(vec: np.ndarray):
+    k, size = 0, vec.size
+    output = np.empty((size * (size - 1) // 2, 2))
+    for i in range(size):
+        for j in range(i+1, size):
+            output[k,:] = [i,j]
+            k += 1
+    return output
             
 def get_init_deg_seq(layer_link_list, PON_idx_list, virt_node_list):
     ''' initialize degree sequence reduce the no. of iterations
@@ -574,7 +585,7 @@ def single_run(i_frac):  #, layer_link_list, n_node):
         t000 = time()    
         reconst = Reconstruct(layer_link_list=layer_link_list, PON_idx_list=PON_idx_list,
                               layer_link_unobs_list=layer_link_unobs_list, deg_seq_init=None,
-                              n_node=n_node, itermax=int(300), eps=1e-5)    
+                              n_node=n_node, itermax=int(200), eps=1e-5)    
         t100 = time()
         print('=== {} mins on this rep in total'.format( round( (t100-t000)/60, 4) ) ) 
         metric_value_rep_list.append(reconst.metric_value)
