@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
-
-
-
 # import os
 # os.chdir('c:/code/illicit_net_resil/src')
 
@@ -21,6 +17,7 @@ from copy import deepcopy
 from sklearn.metrics import roc_curve, auc
 from sklearn.metrics import precision_score, recall_score, accuracy_score
 from time import time
+import numba
 
 from my_utils import *
 
@@ -65,7 +62,7 @@ class Reconstruct:
         else:
             # self.get_layer_link_list()
             # self.get_layer_node_list()
-            self.get_adj_true_list()
+            self.get_adj_true_arr()
             self.get_agg_adj()
             start_time2 = time()
             self.predict_adj()
@@ -110,7 +107,7 @@ class Reconstruct:
     #     # node in the aggregate net but not a layer
     #     self.virt_node_list = [list(self.node_set_agg.difference(ele)) for ele in node_set_layer] 
               
-    def get_adj_true_list(self):
+    def get_adj_true_arr(self):
         def get_adj_true(link_arr):
             if not isinstance(link_arr, list):
                 link_list = link_arr.tolist()
@@ -120,81 +117,96 @@ class Reconstruct:
             link_arr = np.array(link_list)
             A[link_arr[:,0], link_arr[:,1]] = 1
             return A        
-        self.adj_true_list = []        
-        for i_lyr in range(self.n_layer):
-            self.adj_true_list.append(get_adj_true(self.layer_link_list[i_lyr]))
+        self.adj_true_arr = np.zeros((self.n_layer, self.n_node, self.n_node))
+        for i_lyr in range(self.n_layer):              
+            self.adj_true_arr[i_lyr] = get_adj_true(self.layer_link_list[i_lyr])
+            tri_up_idx = np.triu_indices(self.n_node, k=1)
+            tri_low_idx = tri_up_idx[::-1]
+            self.adj_true_arr[i_lyr][tri_low_idx] = \
+                self.adj_true_arr[i_lyr][tri_up_idx]
         # use symmetry
-        for mat in self.adj_true_list:
-            exec('mat[np.tril_indices(mat.shape[0], k=-1)] = mat[np.triu_indices(mat.shape[0], k=1)]')
+        # for mat in self.adj_true_arr:
+        #     exec('mat[np.tril_indices(mat.shape[0], k=-1)] = mat[np.triu_indices(mat.shape[0], k=1)]')
     
     def get_agg_adj(self):
         '''get the aggregate network using the OR agggregation
         '''
-        J_N = np.ones([self.n_node, self.n_node])
-        adj_true_neg_list = [J_N - ele for ele in self.adj_true_list]
-        self.agg_adj = J_N - reduce(np.multiply, adj_true_neg_list)
+        adj_true_diff = np.ones([self.n_layer, self.n_node, self.n_node]) - self.adj_true_arr
+        self.agg_adj = np.ones([self.n_node, self.n_node]) - np.prod(adj_true_diff, axis=0)
+        # J_N = np.ones([self.n_node, self.n_node])
+        # adj_true_neg_list = [J_N - ele for ele in self.adj_true_arr]
+        # self.agg_adj = J_N - reduce(np.multiply, adj_true_neg_list)
 
     def get_unobs_link_list(self):
         self.layer_link_unobs_list = []
         # permuts = list(permutations(range(self.n_node), r=2))
         # permuts_half = [ele for ele in permuts if ele[1] > ele[0]]
         for i_lyr in range(self.n_layer):
-            layer_node_obs = self.PON_idx_list[i_lyr]
-            layer_node_unobs = [ele for ele in range(self.n_node) if ele not in layer_node_obs]
+            node_obs = self.PON_idx_list[i_lyr]
+            node_unobs = [ele for ele in range(self.n_node) if ele not in node_obs]
             # both nodes are unobserved
-            layer_link_unobs_1 = get_permuts_half(layer_node_unobs)
+            link_unobs_1 = get_permuts_half_numba(np.array(node_unobs))
+            link_unobs_1 = link_unobs_1.astype(int).tolist()
             # ubobserved links have at least one unobserved node (if vertex-induced, use links among observed nodes orig)
             # one node unobserved
-            link_prod_temp = list(product(layer_node_obs, layer_node_unobs))
-            layer_link_unobs_2 = [[ele[0], ele[1]] for ele in link_prod_temp if ele[0] < ele[1]] 
+            link_prod_temp = list(product(node_obs, node_unobs))
+            link_unobs_2 = [[ele[0], ele[1]] for ele in link_prod_temp if ele[0] < ele[1]]
             # layer_link_unobs = [ele for ele in link_posbl if \
             #                     (ele[0] in layer_node_unobs or ele[1] in layer_node_unobs)]
-            self.layer_link_unobs_list.append(np.array(layer_link_unobs_1 + layer_link_unobs_2))  
+            self.layer_link_unobs_list.append(np.array(link_unobs_1 + link_unobs_2))  
         # print(self.layer_link_unobs_list)
 
     # functions used in learn layer adj        
-    def avoid_prob_overflow(self, adj_pred_list):
+    def avoid_prob_overflow(self, adj_pred_arr):
         ''' avoid probability overflow in configuration model
             prob overflow can be avoided automatically if degree gusses are integers 
         '''
-        adj_pred_arr = np.array(adj_pred_list)
+        # adj_pred_arr = np.array(adj_pred_list)
+        # adj_pred_arr = np.moveaxis(adj_pred_arr,-1,0)
         adj_pred_arr[adj_pred_arr<0] = 0 
-        adj_pred_arr[adj_pred_arr>1] = 1 
-        return adj_pred_list
+        adj_pred_arr[adj_pred_arr>1] = 1
+        return adj_pred_arr
+        # return adj_pred_arr.moveaxis(adj_pred_arr,-1,0).tolist()
+        # for Q in adj_pred_list:
+        #     Q[Q>1] = 1
+        #     Q[Q<0] = 0
+        # return adj_pred_list
     
     def cal_link_prob_deg(self):
         ''' calculate link probability between two nodes using their degrees (configuration model)
             used as prior link probability
         '''
-        adj_pred_list = self.adj_pred_list
+        adj_pred_arr = self.adj_pred_arr
         n_node = self.n_node
         tri_up_idx = np.triu_indices(n_node, k=1)
         rows, cols = tri_up_idx[0].tolist(), tri_up_idx[1].tolist()
         #TODO: only calculate  single_prob_rev_list once for all pairs of nodes?       
         for i_idx in range(len(rows)):
-            i, j = rows[i_idx], cols[i_idx]
-            single_prob_rev_list = [1-self.deg_seq_list[ele][i]*self.deg_seq_list[ele][j]/\
-                                    (self.deg_sum_list[ele]-1) for ele in range(self.n_layer)]
+            i, j = rows[i_idx], cols[i_idx]            
+            # if mat has more than 5000 elements use pairwise_multiply_iterative_slicing
+            # https://stackoverflow.com/questions/62012339/efficiently-computing-all-pairwise-products-of-a-given-vectors-elements-in-nump/62012545#62012545
+            single_prob_rev_list = [1-self.deg_seq_arr[ele][i]*self.deg_seq_arr[ele][j]/\
+                                    (self.deg_sum_arr[ele]-1) for ele in range(self.n_layer)]                
             agg_link_prob = 1 - np.prod(single_prob_rev_list)
             # agg_link_prob = agg_link_prob_list[i_idx] 
-            for idx, Q in enumerate(adj_pred_list):
-                if agg_link_prob == 0:
-                    Q[i,j] = 0
-                else:
+            if agg_link_prob == 0:
+                adj_pred_arr[:,i,j] = 0
+            else:
+                for i_lyr in range(self.n_layer):
                     # single link prob using degree of two nodes: page 27 in SI
-                    Q[i,j] = self.agg_adj[i,j]*(1 - single_prob_rev_list[idx])/agg_link_prob
+                    adj_pred_arr[i_lyr][i,j] = self.agg_adj[i,j]*(1 - single_prob_rev_list[i_lyr])/agg_link_prob
                     # Q[i,j] = self.agg_adj[i,j]*single_prob_list[idx]/agg_link_prob
-                Q[j,i] = Q[i,j]
+            adj_pred_arr[:, j,i] = adj_pred_arr[:, i,j]
         # use symmetry
         # [exec('mat[np.tril_indices(mat.shape[0], k=-1)] = mat[np.triu_indices(mat.shape[0], k=1)]') \
         #  for mat in adj_pred_list]
-        self.adj_pred_list = self.avoid_prob_overflow(adj_pred_list)      
+        self.adj_pred_arr = self.avoid_prob_overflow(adj_pred_arr) 
     
     def cal_link_prob_PON(self):
         '''update link probability using partial observed nodes in each layer
         '''
         # links among observed nodes are observed
-        adj_pred_list = self.adj_pred_list
+        adj_pred_arr = self.adj_pred_arr
         for i_curr, curr_node_list in enumerate(self.PON_idx_list):
             permuts = list(permutations(curr_node_list, r=2))
             permuts_half = [ele for ele in permuts if ele[1] > ele[0]]
@@ -203,34 +215,34 @@ class Reconstruct:
             for i_idx in range(len(permuts_half)):
                 i, j = rows[i_idx], cols[i_idx]
                 # # TODO: suppose only a portion of links among observed nodes are observed
-                adj_pred_list[i_curr][i,j] = self.adj_true_list[i_curr][i,j]
-                adj_pred_list[i_curr][j,i] = adj_pred_list[i_curr][i,j]
+                adj_pred_arr[i_curr][i,j] = self.adj_true_arr[i_curr][i,j]
+                adj_pred_arr[i_curr][j,i] = adj_pred_arr[i_curr][i,j]
     
                 # OR-aggregate mechanism: page 25 in SI
                 if self.agg_adj[i,j] == 1:
                     othr_lyr_idx = [ele for ele in range(self.n_layer) if ele != i_curr]
                     # prior link probability
-                    sgl_link_prob_list = [self.deg_seq_list[ele][i]*self.deg_seq_list[ele][j] \
-                                          /(self.deg_sum_list[ele] - 1) \
+                    sgl_link_prob_list = [self.deg_seq_arr[ele][i]*self.deg_seq_arr[ele][j] \
+                                          /(self.deg_sum_arr[ele] - 1) \
                                           for ele in range(self.n_layer)]
                     # determine the actual predicted link [i,j] probability in other layers
-                    if adj_pred_list[i_curr][i,j] == 1:
+                    if adj_pred_arr[i_curr][i,j] == 1:
                         for i_othr in othr_lyr_idx:
-                            if adj_pred_list[i_othr][i,j] not in [0, 1]: # !!! question: why not =0 and not =1:
-                                adj_pred_list[i_othr][i,j] = sgl_link_prob_list[i_othr]
-                                adj_pred_list[i_othr][j,i] = sgl_link_prob_list[i_othr]
-                    if adj_pred_list[i_curr][i,j] == 0:
+                            if adj_pred_arr[i_othr][i,j] not in [0, 1]: # !!! question: why not =0 and not =1:
+                                adj_pred_arr[i_othr][i,j] = sgl_link_prob_list[i_othr]
+                                adj_pred_arr[i_othr][j,i] = sgl_link_prob_list[i_othr]
+                    if adj_pred_arr[i_curr][i,j] == 0:
                         # make at least one Q_ij = 1 to make A0_ij = 1
                         if len(othr_lyr_idx) == 1:
                             i_othr = othr_lyr_idx[0]
-                            adj_pred_list[i_othr][i,j], adj_pred_list[i_othr][j,i] = 1, 1                            
+                            adj_pred_arr[i_othr][i,j], adj_pred_arr[i_othr][j,i] = 1, 1                            
                         else: 
                             # pi /1- prod_i(1-pi). If two layers only, this formula is always 1.
                             prod_temp = np.prod([1-sgl_link_prob_list[i_othr] for i_othr in othr_lyr_idx])
                             if prod_temp < 1:  # such that prod_temp != 1
                                 for i_othr in othr_lyr_idx:
-                                    adj_pred_list[i_othr][i,j] = sgl_link_prob_list[i_othr]/ (1 - prod_temp)
-                                    adj_pred_list[i_othr][j,i] = adj_pred_list[i_othr][i,j]
+                                    adj_pred_arr[i_othr][i,j] = sgl_link_prob_list[i_othr]/ (1 - prod_temp)
+                                    adj_pred_arr[i_othr][j,i] = adj_pred_arr[i_othr][i,j]
                         #     max_prob = np.max(sgl_link_prob_list)
                         #     if max_prob != 0:
                         #         # normalize each single link prob by the max
@@ -250,38 +262,24 @@ class Reconstruct:
         # use symmetry
         # [exec('mat[np.tril_indices(mat.shape[0], k=-1)] = mat[np.triu_indices(mat.shape[0], k=1)]') \
         #  for mat in adj_pred_list]
-        self.adj_pred_list = self.avoid_prob_overflow(adj_pred_list)
+        self.adj_pred_arr = self.avoid_prob_overflow(adj_pred_arr)
            
     def predict_adj(self):     
         #initialize the network model parameters
-        if self.deg_seq_init == None:
-            self.deg_seq_list = [np.random.uniform(1, self.n_node+1, size=self.n_node)
-                                 for idx in range(self.n_layer)]
+        if self.deg_seq_init is None:
+            self.deg_seq_arr = np.random.uniform(1, self.n_node+1, size=(self.n_layer, self.n_node))
+            print(self.deg_seq_arr)
         else:
-            self.deg_seq_list = self.deg_seq_init 
-        self.deg_seq_last_list = [np.zeros(self.n_node) for idx in range(self.n_layer)] 
-        
+            self.deg_seq_arr = self.deg_seq_init 
+        self.deg_seq_last_arr = np.empty((self.n_layer, self.n_node))
+        n_link_unobs = np.array([ len(sub) for sub in self.layer_link_unobs_list ])
         for iter in range(self.itermax):
-            # if (iter+1) % 1000 == 0: 
-            #     print('  === iter: {}'.format(iter+1))
-            # init          
+            if (iter+1) % 100 == 0: 
+                print('  === iter: {}'.format(iter+1))                 
             
+            self.adj_pred_arr = np.zeros((self.n_layer, self.n_node, self.n_node))                  
             
-            
-            
-            
-            
-            
-            
-            self.adj_pred_list = [np.zeros([self.n_node, self.n_node]) for idx in range(self.n_layer)]
-            
-            
-            
-            
-            
-            
-            
-            self.deg_sum_list = [np.sum(ele) for ele in self.deg_seq_list]
+            self.deg_sum_arr = np.sum(self.deg_seq_arr, axis=1) #[np.sum(ele) for ele in self.deg_seq_list]
     
             #calculate link prob by configuration model
             self.cal_link_prob_deg()
@@ -290,42 +288,42 @@ class Reconstruct:
             self.cal_link_prob_PON()        
        
             #update network model parameters
-            self.deg_seq_list  = [np.sum(ele, axis=0) for ele in self.adj_pred_list]
-            # print('deg_seq_list', self.deg_seq_list)
+            self.deg_seq_arr = np.sum(self.adj_pred_arr, axis=1)
 
             # check convergence of degree sequence
-            err_sum = np.sum(np.abs(np.array(self.deg_seq_last_list) - np.array(self.deg_seq_list)))
+            # err_abs = np.abs(self.deg_seq_last_arr - self.deg_seq_arr)
+            mae = np.sum(np.abs(self.deg_seq_last_arr - self.deg_seq_arr), axis=1) / n_link_unobs
             #TODO: need to use recall or precision as metrics
-            cond = [np.sum(np.abs(self.deg_seq_last_list[ele]-self.deg_seq_list[ele])) < self.eps\
-                    for ele in range(self.n_layer)]            
-            if all(cond):
+            # cond = [np.sum(np.abs(self.deg_seq_last_arr[ele]-self.deg_seq_arr[ele])) < self.eps\
+            #         for ele in range(self.n_layer)]            
+            # if all(cond):
+            #     print('\nConverges at iter: {}'.format(iter))
+            #     break
+            if np.all(mae < self.eps) :
                 print('\nConverges at iter: {}'.format(iter))
                 break
             else:
-                if iter + 1 == self.itermax:
-                    err = [np.sum(np.abs(self.deg_seq_last_list[ele]-self.deg_seq_list[ele])) for ele in range(self.n_layer)]
-                    print('\nNOT converged at the last iteration. Err: {}\n'.format(err))
-            
-            self.deg_seq_last_list = self.deg_seq_list
-            # t1 = time()
-            # t_diff = t1-t0
-            # print("--- Time: {} mins after {} iters".format(round(t_diff/60, 2), iter+1))
+                if iter == self.itermax:
+                    print('\nNOT converged at the last iteration. MAE: {}\n'.format(mae))            
+            self.deg_seq_last_arr = self.deg_seq_arr
+
             
     def eval_perform(self):
         ''' performance using accuracy, precision, recall, as well as roc curve and AUC
         '''
         n_digit = 0
-        self.adj_pred_list_round = [np.round(ele, n_digit) for ele in self.adj_pred_list]
-        self.deg_seq_last_list_round = [np.round(ele, n_digit) for ele in self.deg_seq_last_list]  
+        self.adj_pred_arr_round = np.round(self.adj_pred_arr, n_digit)
+        #[np.round(ele, n_digit) for ele in self.adj_pred_list]
+        self.deg_seq_last_arr_round = np.round(self.deg_seq_last_arr) 
         
         adj_true_unobs_list = [[] for _ in range(self.n_layer)]
         adj_pred_unobs_list = [[] for _ in range(self.n_layer)]
         # adj_pred_unobs_round_list = [[] for _ in range(self.n_layer)]
         for idx in range(self.n_layer):
             for [i,j] in self.layer_link_unobs_list[idx]:
-                adj_true_unobs_list[idx].append(self.adj_true_list[idx][i,j])
-                adj_pred_unobs_list[idx].append(self.adj_pred_list[idx][i,j])
-                # adj_pred_unobs_round_list[idx].append(self.adj_pred_list_round[idx][i,j]) 
+                adj_true_unobs_list[idx].append(self.adj_true_arr[idx][i,j])
+                adj_pred_unobs_list[idx].append(self.adj_pred_arr[idx][i,j])
+                # adj_pred_unobs_round_list[idx].append(self.adj_pred_arr_round[idx][i,j]) 
 
         adj_true = np.concatenate(adj_true_unobs_list)
         adj_pred = np.concatenate(adj_pred_unobs_list)
@@ -377,19 +375,19 @@ class Reconstruct:
         for idx in range(self.n_layer):   
             if idx > 0:
                 print(' ' * n_space, '-'*n_dot*2)
-            npprint(round_list(self.deg_seq_last_list)[idx], n_space)  
+            npprint(round_list(self.deg_seq_last_arr)[idx], n_space)  
         
         print('\n')
         for idx in range(self.n_layer):   
             if idx > 0:
                 print(' ' * n_space, '-'*n_dot)
-            npprint(self.deg_seq_last_list_round[idx], n_space) 
+            npprint(self.deg_seq_last_arr_round[idx], n_space) 
             
         print('\nRecovered adj mat')
         for idx in range(self.n_layer):   
             if idx > 0:
                 print(' ' * n_space, '-'*n_dot)
-            npprint(self.adj_pred_list_round[idx], n_space)  
+            npprint(self.adj_pred_arr_round[idx,:,:], n_space)  
        
         
     def gen_sub_graph(self, sample_meth='random_unif'):
@@ -399,7 +397,7 @@ class Reconstruct:
         TODO:
             the following two lines should be modified the observed links should be among observed nodes
             'if np.random.uniform(0, 1) < self.frac_obs_link:
-                 adj_pred_list[i_curr][i,j] = self.adj_true_list[i_curr][i,j]'
+                 self.adj_pred_arr[i_curr][i,j] = self.adj_true_arr[i_curr][i,j]'
         '''
         pass                        
 
@@ -477,8 +475,7 @@ class Plots:
         plt.xticks([0.2*i for i in range(5+1)])
         plt.savefig('../output/metrics_{}layers_{}nodes.pdf'.format(n_layer, n_node))
         plt.show()                  
-        
-
+    
 
 def load_data(path):
     link_df = pd.read_excel(path)
@@ -499,14 +496,14 @@ def get_layer_node_list(layer_link_list, n_layer, n_node):
     return real_node_list, virt_node_list
 
 # import data
-# net_type = 'toy'
-# n_node, n_layer = 6, 2
+net_type = 'toy'
+n_node, n_layer = 6, 2
 
 # net_type = 'rand'
 # n_node, n_layer = 30, 2
 
-net_type = 'drug'
-n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
+# net_type = 'drug'
+# n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
 
 net_name = '{}_net_{}layers_{}nodes'.format(net_type, n_layer, n_node)
 path = '../data/{}.xlsx'.format(net_name)
@@ -519,7 +516,7 @@ real_node_list, virt_node_list = get_layer_node_list(layer_link_list, n_layer, n
 frac_list = [round(0.2*i,1) for i in range(0, 5)] + [0.9, 0.95]
 n_node_list = [len(real_node_list[i]) for i in range(n_layer)]
 n_node_obs = [[int(frac*n_node_list[i]) for i in range(n_layer)] for frac in frac_list]     
-n_rep = 5
+n_rep = 2
 metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
 
 # parellel processing
@@ -529,8 +526,7 @@ def get_init_deg_seq(layer_link_list, PON_idx_list, virt_node_list):
     ''' initialize degree sequence reduce the no. of iterations
         note: the first iteration may do a similar job in estimating the degree sequence
     '''
-    deg_seq_init = [np.random.uniform(1, n_node+1, size=n_node)
-                    for idx in range(n_layer)] 
+    deg_seq_init = np.random.uniform(1, n_node+1, size=(n_layer, n_node))
     layer_link_obs = []
     for i_lyr in range(n_layer):
         node_obs_temp = PON_idx_list[i_lyr]
@@ -540,13 +536,12 @@ def get_init_deg_seq(layer_link_list, PON_idx_list, virt_node_list):
         # for observed real nodes, the initial degree will be the observed degree
         for i_node in range(n_node):
             deg_temp = len([ele for ele in links_obs_temp if i_node in ele])
-            deg_seq_init[i_lyr][i_node] = np.abs(np.random.normal(deg_temp, deg_temp/5))
+            deg_seq_init[i_lyr, i_node] = np.abs(np.random.normal(deg_temp, deg_temp/5))
         
     return deg_seq_init
       
     
-def sample_node_obs(layer_link_list, real_node_list, virt_node_list, i_frac):
-    
+def sample_node_obs(layer_link_list, real_node_list, virt_node_list, i_frac):    
     PON_idx_list_orig = [np.random.choice(real_node_list[i_lyr], n_node_obs[i_frac][i_lyr],
                          replace=False).tolist() for i_lyr in range(n_layer)]                
     # append virtual nodes: all nodes - nodes in each layer
@@ -577,8 +572,8 @@ def single_run(i_frac):  #, layer_link_list, n_node):
         deg_seq_init = get_init_deg_seq(layer_link_list, PON_idx_list, virt_node_list) 
         t000 = time()    
         reconst = Reconstruct(layer_link_list=layer_link_list, PON_idx_list=PON_idx_list,
-                              layer_link_unobs_list=layer_link_unobs_list, deg_seq_init=deg_seq_init,
-                              n_node=n_node, itermax=int(100), eps=1e-6)    
+                              layer_link_unobs_list=layer_link_unobs_list, deg_seq_init=None,
+                              n_node=n_node, itermax=int(500), eps=1e-6)    
         t100 = time()
         print('=== {} mins on this rep in total'.format( round( (t100-t000)/60, 4) ) ) 
         metric_value_rep_list.append(reconst.metric_value)
@@ -586,6 +581,7 @@ def single_run(i_frac):  #, layer_link_list, n_node):
             print('--- rep: {}'.format(i_rep))
     return metric_value_rep_list
 # self = reconst
+#reconst.print_result()
 
 def paral_run():
     # drug_net, frac_list, n_node_obs, metric_list = import_data()
