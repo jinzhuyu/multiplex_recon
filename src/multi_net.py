@@ -268,7 +268,8 @@ class Reconstruct:
         #initialize the network model parameters
         if self.deg_seq_init is None:
             self.deg_seq_arr = np.random.uniform(1, self.n_node+1, size=(self.n_layer, self.n_node))
-            print(self.deg_seq_arr)
+            # self.deg_seq_arr = np.array([[5.7430,    2.9123,    4.8017,    0.8513,    2.5306,    5.4944],
+            #                              [4.7532,    5.7570,    3.9344,    0.2143,    5.0948,    5.6040]])
         else:
             self.deg_seq_arr = self.deg_seq_init 
         self.deg_seq_last_arr = np.empty((self.n_layer, self.n_node))
@@ -424,7 +425,7 @@ class Plots:
         #     colors = cm.get_cmap('tab20').colors  
         colors = ['tab:{}'.format(x) for x in ['red', 'blue', 'green', 'orange', 'purple']]
         markers = ['o', 'v', 's', 'd', '*', 'x', 'v', 'o', 'x', 'd', '*', 's']
-        n_select = 4
+        n_select = 5
         if n_frac <= n_select:
             selected_idx = [ele for ele in range(n_frac)]
         else:
@@ -495,16 +496,16 @@ def get_layer_node_list(layer_link_list, n_layer, n_node):
     virt_node_list = [list(node_set_agg.difference(ele)) for ele in node_set_layer]
     return real_node_list, virt_node_list
 
-# import data
-net_type = 'toy'
-n_node, n_layer = 6, 2
+# # import data
+# net_type = 'toy'
+# n_node, n_layer = 6, 2
 
 # net_type = 'rand'
-# n_node, n_layer = 30, 2
+# n_node, n_layer = 50, 3
 
-# net_type = 'drug'
+net_type = 'drug'
 # n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
-
+n_node, n_layer = 2196, 4
 net_name = '{}_net_{}layers_{}nodes'.format(net_type, n_layer, n_node)
 path = '../data/{}.xlsx'.format(net_name)
 layer_link_list = load_data(path)
@@ -513,10 +514,10 @@ real_node_list, virt_node_list = get_layer_node_list(layer_link_list, n_layer, n
 # frac_list = [0.8, 0.95]
 # frac_list = [0, 0.9, 0.95] 
 # frac_list = [round(0.1*i, 2) for i in range(0, 10)] + [0.95]
-frac_list = [round(0.2*i,1) for i in range(0, 5)] + [0.9, 0.95]
+frac_list = [0,0.05,0.1] + [round(0.2*i,1) for i in range(1, 5)] + [0.9, 0.95]
 n_node_list = [len(real_node_list[i]) for i in range(n_layer)]
 n_node_obs = [[int(frac*n_node_list[i]) for i in range(n_layer)] for frac in frac_list]     
-n_rep = 2
+n_rep = 10
 metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
 
 # parellel processing
@@ -536,7 +537,7 @@ def get_init_deg_seq(layer_link_list, PON_idx_list, virt_node_list):
         # for observed real nodes, the initial degree will be the observed degree
         for i_node in range(n_node):
             deg_temp = len([ele for ele in links_obs_temp if i_node in ele])
-            deg_seq_init[i_lyr, i_node] = np.abs(np.random.normal(deg_temp, deg_temp/5))
+            deg_seq_init[i_lyr, i_node] = np.abs(np.random.normal(deg_temp, deg_temp))
         
     return deg_seq_init
       
@@ -558,7 +559,7 @@ def sample_node_obs(layer_link_list, real_node_list, virt_node_list, i_frac):
             is_empty.append(i_lyr)
     if len(is_empty) == reconst_temp.n_layer:
         print('--- No layers have unobserved links. Will resample observed nodes.')
-        return sample_node_obs(drug_net, i_frac)
+        return sample_node_obs(layer_link_list, real_node_list, virt_node_list, i_frac)
     else:
         return PON_idx_list, layer_link_unobs_list
 
@@ -569,11 +570,11 @@ def single_run(i_frac):  #, layer_link_list, n_node):
     for i_rep in range(n_rep):
         PON_idx_list, layer_link_unobs_list = sample_node_obs(layer_link_list, real_node_list,
                                                               virt_node_list, i_frac)
-        deg_seq_init = get_init_deg_seq(layer_link_list, PON_idx_list, virt_node_list) 
+        # deg_seq_init = get_init_deg_seq(layer_link_list, PON_idx_list, virt_node_list) 
         t000 = time()    
         reconst = Reconstruct(layer_link_list=layer_link_list, PON_idx_list=PON_idx_list,
                               layer_link_unobs_list=layer_link_unobs_list, deg_seq_init=None,
-                              n_node=n_node, itermax=int(500), eps=1e-6)    
+                              n_node=n_node, itermax=int(300), eps=1e-5)    
         t100 = time()
         print('=== {} mins on this rep in total'.format( round( (t100-t000)/60, 4) ) ) 
         metric_value_rep_list.append(reconst.metric_value)
@@ -581,7 +582,7 @@ def single_run(i_frac):  #, layer_link_list, n_node):
             print('--- rep: {}'.format(i_rep))
     return metric_value_rep_list
 # self = reconst
-#reconst.print_result()
+# reconst.print_result()
 
 def paral_run():
     # drug_net, frac_list, n_node_obs, metric_list = import_data()
@@ -589,9 +590,9 @@ def paral_run():
     if n_cpu == 8:
         n_cpu -= 3
     else:
-        n_cpu = int(n_cpu*0.8)
+        n_cpu = int(n_cpu*0.75)
     
-    print('=== n_cpu: ', n_cpu)
+    print('=== No. of CPUs selected: ', n_cpu)
     # n_core = 1
     with mp.Pool(n_cpu) as pool:
         results = pool.map(single_run, range(len(frac_list)))
@@ -633,13 +634,13 @@ def run_plot():
     Plots.plot_roc(frac_list, metric_mean_by_frac, n_layer, n_node)
     Plots.plot_other(frac_list, metric_mean_by_frac, n_layer, n_node)
 
-# if __name__ == '__main__': 
+if __name__ == '__main__': 
 
-#     import matplotlib
-#     matplotlib.use('Agg')
-#     t00 = time()
-#     run_plot()
-#     print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) ) 
+    import matplotlib
+    matplotlib.use('Agg')
+    t00 = time()
+    run_plot()
+    print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) ) 
 
      
     # for i_fd in range(n_fold):   
