@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
 
-"""
 import networkx as nx
 from itertools import combinations, groupby
 import random
@@ -34,7 +32,7 @@ def gen_multiplex(n_layer, n_node, p_list):
     layer_link_list = []
     for i in range(n_layer):
         G = gen_single_rand_net(n_node, p_list[i])
-        links = [[ele[0]+1, ele[1]+1, 'L{}'.format(i+1)] for ele in G.edges]
+        links = [[ele[0], ele[1], 'L{}'.format(i+1)] for ele in G.edges]
         layer_link_list.append(links)
     layer_link_list = [x for sub in layer_link_list for x in sub]    
     return layer_link_list
