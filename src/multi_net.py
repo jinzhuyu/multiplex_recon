@@ -14,8 +14,13 @@ import multiprocessing as mp
 from functools import reduce
 from itertools import permutations, product
 from copy import deepcopy
-from sklearn.metrics import roc_curve, auc
-from sklearn.metrics import precision_score, recall_score, accuracy_score
+
+# from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import precision_score, recall_score
+from sklearn.metrics import f1_score, matthews_corrcoef
+# from sklearn.metrics.cluster import fowlkes_mallows_score # geometric mean (G-mean)
+from imblearn.metrics import geometric_mean_score 
+# from prg import prg
 from time import time
 import numba
 
@@ -330,24 +335,29 @@ class Reconstruct:
         adj_pred = np.concatenate(adj_pred_unobs_list)
         adj_pred_round = np.round(adj_pred)
         
-        fpr, tpr, thresholds = roc_curve(adj_true, adj_pred)        
-        auc_val = auc(fpr, tpr)
-        prec = precision_score(adj_true, adj_pred_round, average='binary')
-        if 1 not in adj_pred_round or 0 not in adj_true:
-            fpr = [0 for _ in tpr]
-            auc_val = np.nan
-            prec = np.nan
-        if 1 not in adj_true or 0 not in adj_pred_round:
-            tpr = [1 for _ in fpr] 
-            auc_val = np.nan
-            prec = np.nan
-        # if(np.isnan(prec).any()):
-        # print('\n--- auc_val', auc_val, 'fpr', np.round(fpr, 2), 'tpr', np.round(tpr, 2))
-        # print('--- adj_true', adj_true, 'adj_pred_round', adj_pred_round, '\n') 
-            # print('\n--- adj_pred', adj_pred)
-        recall = recall_score(adj_true, adj_pred_round, average='binary')
-        acc = accuracy_score(adj_true, adj_pred_round)
-        self.metric_value = [fpr, tpr, auc_val, prec, recall, acc]  
+
+        f1 = f1_score(adj_true, adj_pred_round)
+        gmean  = geometric_mean_score(adj_true, adj_pred_round)
+        mcc = matthews_corrcoef(adj_true, adj_pred_round)
+        self.metric_value = [f1, gmean, mcc]
+            # fpr, tpr, thresholds = roc_curve(adj_true, adj_pred)        
+            # auc_val = auc(fpr, tpr)
+            # prec = precision_score(adj_true, adj_pred_round, average='binary')
+            # if 1 not in adj_pred_round or 0 not in adj_true:
+            #     fpr = [0 for _ in tpr]
+            #     auc_val = np.nan
+            #     prec = np.nan
+            # if 1 not in adj_true or 0 not in adj_pred_round:
+            #     tpr = [1 for _ in fpr] 
+            #     auc_val = np.nan
+            #     prec = np.nan
+            # # if(np.isnan(prec).any()):
+            # # print('\n--- auc_val', auc_val, 'fpr', np.round(fpr, 2), 'tpr', np.round(tpr, 2))
+            # # print('--- adj_true', adj_true, 'adj_pred_round', adj_pred_round, '\n') 
+            #     # print('\n--- adj_pred', adj_pred)
+            # recall = recall_score(adj_true, adj_pred_round, average='binary')
+            # acc = accuracy_score(adj_true, adj_pred_round)
+            # self.metric_value = [fpr, tpr, auc_val, prec, recall, acc]  
 
         # # True Positive (TP): we predict a label of 1 (positive), and the true label is 1.
         # pred_labels, true_labels = adj_pred_round, adj_true       
@@ -449,21 +459,22 @@ class Plots:
         handles, labels = ax.get_legend_handles_labels()
         ax.legend(reversed(handles), reversed(labels), title=r'$c$', loc='lower right', fontsize=14.5,)        
 
-        plt.savefig('../output/roc_{}layers_{}nodes.pdf'.format(n_layer, n_node))
+        # plt.savefig('../output/roc_{}layers_{}nodes.pdf'.format(n_layer, n_node))
         plt.show()
 
     def plot_other(frac_list, metric_mean_by_frac, n_layer, n_node):
         # linestyles = plotfuncs.linestyles()
-        metric_value_by_frac = metric_mean_by_frac[2:]
-        metric_list = ['AUC', 'Precision', 'Recall','Accuracy']
-        plotfuncs.format_fig(1.15)
+        # metric_value_by_frac = metric_mean_by_frac[2:]
+        # metric_list = ['AUC', 'Precision', 'Recall','Accuracy']
+        metric_list = ['F1', 'G-mean', 'MCC']
+        plotfuncs.format_fig(1.1)
         lw = .9
         med_size = 7
         colors = ['tab:{}'.format(x) for x in ['red', 'blue', 'green', 'orange']]
         markers = ['o', 'v', 's', 'd']
         plt.figure(figsize=(5, 4), dpi=400)
         for i in range(len(metric_list)):
-            plt.plot(frac_list, metric_value_by_frac[i], color=colors[i], marker=markers[i], alpha=.85,
+            plt.plot(frac_list, metric_mean_by_frac[i], color=colors[i], marker=markers[i], alpha=.85,
                      ms=med_size, lw=lw,linestyle = '--', label=metric_list[i])
                 
         plt.xlim(right=1.03)
@@ -474,7 +485,7 @@ class Plots:
         plt.ylabel("Value of metric")
         plt.legend(loc="lower right", fontsize=13)
         plt.xticks([0.2*i for i in range(5+1)])
-        plt.savefig('../output/metrics_{}layers_{}nodes.pdf'.format(n_layer, n_node))
+        plt.savefig('../output/imbl_metrics_{}layers_{}nodes.pdf'.format(n_layer, n_node))
         plt.show()                  
     
 
@@ -558,7 +569,7 @@ def single_run(i_frac):  #, layer_link_list, n_node):
         t000 = time()    
         reconst = Reconstruct(layer_link_list=layer_link_list, PON_idx_list=PON_idx_list,
                               layer_link_unobs_list=layer_link_unobs_list, deg_seq_init=None,
-                              n_node=n_node, itermax=int(200), eps=1e-5)    
+                              n_node=n_node, itermax=int(200), eps=1e-6)    
         t100 = time()
         print('=== {} mins on this rep in total'.format( round( (t100-t000)/60, 4) ) ) 
         metric_value_rep_list.append(reconst.metric_value)
@@ -576,7 +587,7 @@ def paral_run():
     else:
         n_cpu = int(n_cpu*0.75)
     
-    print('=== No. of CPUs selected: ', n_cpu)
+    # print('=== No. of CPUs used: ', n_cpu)
     # n_core = 1
     with mp.Pool(n_cpu) as pool:
         results = pool.map(single_run, range(len(frac_list)))
@@ -588,34 +599,34 @@ def run_plot():
     results = paral_run()
     # print(results)
     metric_value_by_frac = [[ [] for _ in range(len(frac_list))] for _ in metric_list]
-    for ele in metric_list:
-        exec('{}_list = [[] for item in range(len(frac_list))]'.format(ele))
+    # for ele in metric_list:
+    #     exec('{}_list = [[] for item in range(len(frac_list))]'.format(ele))
     for i_mtc in range(len(metric_list)):
         for i_frac in range(len(frac_list)):
             for i_rep in range(n_rep):
                 metric_value_by_frac[i_mtc][i_frac].append(results[i_frac][i_rep][i_mtc])
     # calculate the mean
-    metric_mean_by_frac = [[ [] for _ in range(len(frac_list))] for _ in metric_list]
-    
-    fpr_mean = np.linspace(0, 1, 20)
-    for i_mtc, mtc in enumerate(['fpr', 'tpr', 'auc', 'prec', 'recall','acc']):
-        if mtc == 'fpr':
-            for i_frac in range(len(frac_list)):
-                metric_mean_by_frac[i_mtc][i_frac] = fpr_mean
-        elif mtc == 'tpr':
-            for i_frac in range(len(frac_list)):
-                fpr_list = metric_value_by_frac[i_mtc-1][i_frac]
-                tpr_list = metric_value_by_frac[i_mtc][i_frac]
-                tpr_mean = Plots.get_mean_roc(fpr_mean, fpr_list, tpr_list)
-                metric_mean_by_frac[i_mtc][i_frac] = tpr_mean
-        else:                
-            for i_frac in range(len(frac_list)):
-                # print(metric_value_by_frac[i_mtc][i_frac])
-                metric_mean_by_frac[i_mtc][i_frac] = np.nanmean(np.array(metric_value_by_frac[i_mtc][i_frac]))
+    metric_mean_by_frac = [[ [] for _ in range(len(frac_list))] for _ in metric_list]    
+    # fpr_mean = np.linspace(0, 1, 20)
+    for i_mtc in range(len(metric_list)): # enumerate(metric_list):
+        # if mtc == 'fpr':
+        #     for i_frac in range(len(frac_list)):
+        #         metric_mean_by_frac[i_mtc][i_frac] = fpr_mean
+        # elif mtc == 'tpr':
+        #     for i_frac in range(len(frac_list)):
+        #         fpr_list = metric_value_by_frac[i_mtc-1][i_frac]
+        #         tpr_list = metric_value_by_frac[i_mtc][i_frac]
+        #         tpr_mean = Plots.get_mean_roc(fpr_mean, fpr_list, tpr_list)
+        #         metric_mean_by_frac[i_mtc][i_frac] = tpr_mean
+        # else:                
+        for i_frac in range(len(frac_list)):
+            # print(metric_value_by_frac[i_mtc][i_frac])
+            metric_mean_by_frac[i_mtc][i_frac] = np.nanmean(np.array(metric_value_by_frac[i_mtc][i_frac]))
     # metric_value_by_frac = [auc_list, prec_list, recall_list, acc_list]
     # print('\nmetric_value_by_frac: ', metric_value_by_frac)
+    print('\nmetric_mean_by_frac: ', metric_mean_by_frac)
     #Plots
-    Plots.plot_roc(frac_list, metric_mean_by_frac, n_layer, n_node)
+    # Plots.plot_roc(frac_list, metric_mean_by_frac, n_layer, n_node)
     Plots.plot_other(frac_list, metric_mean_by_frac, n_layer, n_node)
 
 
@@ -624,12 +635,12 @@ def run_plot():
 # n_node, n_layer = 6, 2
 
 # net_type = 'rand'
-# n_node, n_layer = 50, 3
+# n_node, n_layer = 50, 2
 
 net_type = 'drug'
-# n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
+n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
 # n_node, n_layer = 2196, 4
-n_node, n_layer = 2139, 3
+# n_node, n_layer = 2139, 3
 net_name = '{}_net_{}layers_{}nodes'.format(net_type, n_layer, n_node)
 path = '../data/{}.xlsx'.format(net_name)
 layer_link_list = load_data(path)
@@ -642,7 +653,8 @@ frac_list = [0,0.05,0.1] + [round(0.2*i,1) for i in range(1, 5)] + [0.9, 0.95]
 n_node_list = [len(real_node_list[i]) for i in range(n_layer)]
 n_node_obs = [[int(frac*n_node_list[i]) for i in range(n_layer)] for frac in frac_list]     
 n_rep = 10
-metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
+# metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
+metric_list = ['F1', 'G-mean', 'MCC']
 
 # parellel processing
 
