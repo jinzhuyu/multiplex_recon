@@ -638,7 +638,7 @@ def run_plot():
 # n_node, n_layer = 50, 2
 
 net_type = 'drug'
-n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
+n_node, n_layer = 2114, 3 # 2139, 3 # 2196, 4
 # n_node, n_layer = 2196, 4
 # n_node, n_layer = 2139, 3
 net_name = '{}_net_{}layers_{}nodes'.format(net_type, n_layer, n_node)
