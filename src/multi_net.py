@@ -304,7 +304,7 @@ class Reconstruct:
                 print('\nConverges at iter: {}'.format(iter))
                 break
             else:
-                if iter == self.itermax:
+                if iter == self.itermax-1:
                     print('\nNOT converged at the last iteration. MAE: {}\n'.format(mae))            
             self.deg_seq_last_arr = self.deg_seq_arr
 
@@ -496,33 +496,6 @@ def get_layer_node_list(layer_link_list, n_layer, n_node):
     virt_node_list = [list(node_set_agg.difference(ele)) for ele in node_set_layer]
     return real_node_list, virt_node_list
 
-# # import data
-# net_type = 'toy'
-# n_node, n_layer = 6, 2
-
-# net_type = 'rand'
-# n_node, n_layer = 50, 3
-
-net_type = 'drug'
-# n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
-n_node, n_layer = 2196, 4
-net_name = '{}_net_{}layers_{}nodes'.format(net_type, n_layer, n_node)
-path = '../data/{}.xlsx'.format(net_name)
-layer_link_list = load_data(path)
-real_node_list, virt_node_list = get_layer_node_list(layer_link_list, n_layer, n_node)
-
-# frac_list = [0.8, 0.95]
-# frac_list = [0, 0.9, 0.95] 
-# frac_list = [round(0.1*i, 2) for i in range(0, 10)] + [0.95]
-frac_list = [0,0.05,0.1] + [round(0.2*i,1) for i in range(1, 5)] + [0.9, 0.95]
-n_node_list = [len(real_node_list[i]) for i in range(n_layer)]
-n_node_obs = [[int(frac*n_node_list[i]) for i in range(n_layer)] for frac in frac_list]     
-n_rep = 10
-metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
-
-# parellel processing
-
-
 
 @numba.njit
 def get_permuts_half_numba(vec: np.ndarray):
@@ -644,6 +617,34 @@ def run_plot():
     #Plots
     Plots.plot_roc(frac_list, metric_mean_by_frac, n_layer, n_node)
     Plots.plot_other(frac_list, metric_mean_by_frac, n_layer, n_node)
+
+
+# # import data
+# net_type = 'toy'
+# n_node, n_layer = 6, 2
+
+# net_type = 'rand'
+# n_node, n_layer = 50, 3
+
+net_type = 'drug'
+# n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
+# n_node, n_layer = 2196, 4
+n_node, n_layer = 2139, 3
+net_name = '{}_net_{}layers_{}nodes'.format(net_type, n_layer, n_node)
+path = '../data/{}.xlsx'.format(net_name)
+layer_link_list = load_data(path)
+real_node_list, virt_node_list = get_layer_node_list(layer_link_list, n_layer, n_node)
+
+# frac_list = [0.8, 0.95]
+# frac_list = [0, 0.9, 0.95] 
+# frac_list = [round(0.1*i, 2) for i in range(0, 10)] + [0.95]
+frac_list = [0,0.05,0.1] + [round(0.2*i,1) for i in range(1, 5)] + [0.9, 0.95]
+n_node_list = [len(real_node_list[i]) for i in range(n_layer)]
+n_node_obs = [[int(frac*n_node_list[i]) for i in range(n_layer)] for frac in frac_list]     
+n_rep = 10
+metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
+
+# parellel processing
 
 if __name__ == '__main__': 
 
