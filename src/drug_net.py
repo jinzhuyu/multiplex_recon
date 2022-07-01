@@ -2,6 +2,7 @@
 """
 Formate the drug trafficking network data
 """
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mtransforms
@@ -13,7 +14,8 @@ from copy import deepcopy
 
 class DrugNet():
     
-    def __init__(self, path,layer_selected_list, is_plot=False, is_save_fig=False, **kwargs):
+    def __init__(self, path, layer_selected_list, is_save_data=False, 
+                 is_extract_char=False, is_plot=False, is_save_fig=False, **kwargs):
         '''     
         Parameters
             Path: path to the links of networks.
@@ -28,13 +30,20 @@ class DrugNet():
         vars = locals()
         self.__dict__.update(vars)
         del self.__dict__["self"] 
-
+        
+        self.n_layer = len(self.layer_selected_list)
+        
         self.load_data()
         self.merge_layer()
         self.select_layers()
         self.correct_node_id()
         self.rename_col()
-        self.save_df() 
+        if self.is_extract_char:
+            self.gen_net()
+            self.get_layer()
+            self.extract_char()
+        if self.is_save_data:
+            self.save_df() 
         
         if self.is_plot:
             self.gen_net()
@@ -85,13 +94,13 @@ class DrugNet():
         node_id_new = pd.concat([df_temp_new['Actor_A'], df_temp_new['Actor_B']],
                                 ignore_index=True).unique().tolist()          
         self.node_id = node_id_new
+        self.n_node = len(node_id_new)
         self.link_df = df_temp_new
 
     def rename_col(self):
         self.link_df.rename(columns={'Actor_A': 'From', 'Actor_B': 'To', 'Type_relation': 'Relation'} , 
                             inplace=True)
     def save_df(self):
-        self.n_layer, self.n_node = len(self.layer_selected_list), len(self.node_id)
         self.link_df.to_excel('../data/drug_net_{}layers_{}nodes.xlsx'. \
                               format(self.n_layer, self.n_node), index=False)                 
 
@@ -101,6 +110,40 @@ class DrugNet():
         for _, row in self.link_df.iterrows():
             G.add_edge(row['From'], row['To'], label=row['Relation'])       
         self.G = G
+
+    def get_layer(self):
+        self.G_layer_list = []
+        for i in range(self.n_layer):
+            G_sub = nx.Graph()
+            selected_edges = [(u,v) for (u,v,e) in self.G.edges(data=True) \
+                              if e['label']==self.layer_selected_list[i]]
+            G_sub.add_edges_from(selected_edges)
+            self.G_layer_list.append(G_sub)
+    
+    def extract_char_sub(self, G):
+        # charac_list = ['density', average']
+        n_node = G.number_of_nodes()
+        n_link = G.number_of_edges()
+        
+        density = nx.density(G)
+        degree_mean = 2*n_node / float(n_link)
+        cc_size = [len(c) for c in sorted(nx.connected_components(G), key=len, reverse=True)]
+        cc_mean = np.mean(cc_size)
+        
+        print('--------- No. of nodes: ', n_node)
+        print('--------- No. of links: ', n_link)
+        print('--------- Density: ', density)
+        print('--------- Average degree: ', degree_mean)
+        print('--------- Average size of connected component: ', cc_mean)
+    
+    def extract_char(self):
+        print('--- Aggregate network')
+        self.extract_char_sub(self.G)
+        
+        print('\n=== Each layer')
+        for i in range(self.n_layer):
+            print('\n------ {} layer'.format(i))
+            self.extract_char_sub(self.G_layer_list[i])
                        
     def plot_layer(self): 
         # TODO: use color to represent layers or groups, or nodes in multiple layers
@@ -119,18 +162,14 @@ class DrugNet():
                     fontsize=font_size, va='bottom')
         fig.subplots_adjust(hspace=0.28)  
         fig.subplots_adjust(wspace=0.19)
-        counter = 0
-        layer_selected = self.layer_selected
+        # i_lyr = 0
         ax_labels = [ele[0] for ele in list(axes.items())]
         for idx in range(len(ax_labels)):
-            G_sub = nx.Graph()
-            selected_edges = [(u,v) for (u,v,e) in self.G.edges(data=True) \
-                              if e['label']==layer_selected[counter]]
-            G_sub.add_edges_from(selected_edges)
+            nx.draw(self.G_layer_list[idx], node_size=2)
+            # print(layer_selected[counter], ': ', len(selected_edges))
             plt.sca(axes[ax_labels[idx]])
-            nx.draw(G_sub, node_size=2)
-            print(layer_selected[counter], ': ', len(selected_edges))
-            counter += 1
+            nx.draw(self.G_layer_list[idx], node_size=2)
+            # i_lyr += 1
         # save fig
         plt.tight_layout()
         if self.is_save_fig:
@@ -148,11 +187,16 @@ class DrugNet():
         
 def main():
     path='../data/drug_net_raw_data.xlsx'
-    layer_selected_2d_list = [['Co-Offenders', 'Kinship', 'Formal Criminal Organization', 'Legitimate'],
-                             ['Co-Offenders', 'Formal Criminal Organization', 'Legitimate'],
-                             ['Co-Offenders', 'Legitimate']]
+    is_extract_char = True
+    if is_extract_char:
+        layer_selected_2d_list = [['Co-Offenders', 'Legitimate', 'Formal Criminal Organization', 'Kinship']]    
+    else:
+        layer_selected_2d_list = [['Co-Offenders', 'Kinship', 'Formal Criminal Organization', 'Legitimate'],
+                                 ['Co-Offenders', 'Formal Criminal Organization', 'Legitimate'],
+                                 ['Co-Offenders', 'Legitimate']]
     for layer_list in layer_selected_2d_list:
-        drug_net = DrugNet(path=path, layer_selected_list=layer_list)
+        print('\n=== {} layers ===', len(layer_list))
+        drug_net = DrugNet(path=path, layer_selected_list=layer_list, is_extract_char=True)
 
 if __name__ == '__main__':
     main()
