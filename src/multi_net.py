@@ -202,9 +202,6 @@ class Reconstruct:
                     adj_pred_arr[i_lyr][i,j] = self.agg_adj[i,j]*(1 - single_prob_rev_list[i_lyr])/agg_link_prob
                     # Q[i,j] = self.agg_adj[i,j]*single_prob_list[idx]/agg_link_prob
             adj_pred_arr[:, j,i] = adj_pred_arr[:, i,j]
-        # use symmetry
-        # [exec('mat[np.tril_indices(mat.shape[0], k=-1)] = mat[np.triu_indices(mat.shape[0], k=1)]') \
-        #  for mat in adj_pred_list]
         self.adj_pred_arr = self.avoid_prob_overflow(adj_pred_arr) 
     
     def cal_link_prob_PON(self):
@@ -338,8 +335,8 @@ class Reconstruct:
 
         f1 = f1_score(adj_true, adj_pred_round)
         gmean  = geometric_mean_score(adj_true, adj_pred_round)
-        mcc = matthews_corrcoef(adj_true, adj_pred_round)
-        self.metric_value = [f1, gmean, mcc]
+        # mcc = matthews_corrcoef(adj_true, adj_pred_round)
+        self.metric_value = [f1, gmean] #, mcc]
             # fpr, tpr, thresholds = roc_curve(adj_true, adj_pred)        
             # auc_val = auc(fpr, tpr)
             # prec = precision_score(adj_true, adj_pred_round, average='binary')
@@ -466,7 +463,7 @@ class Plots:
         # linestyles = plotfuncs.linestyles()
         # metric_value_by_frac = metric_mean_by_frac[2:]
         # metric_list = ['AUC', 'Precision', 'Recall','Accuracy']
-        metric_list = ['F1', 'G-mean', 'MCC']
+        metric_list = ['F1', 'G-mean'] #, 'MCC']
         plotfuncs.format_fig(1.1)
         lw = .9
         med_size = 7
@@ -639,8 +636,8 @@ def run_plot():
 
 net_type = 'drug'
 # n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
-# n_node, n_layer = 2196, 4
-n_node, n_layer = 2139, 3
+n_node, n_layer = 2196, 4
+# n_node, n_layer = 2139, 3
 net_name = '{}_net_{}layers_{}nodes'.format(net_type, n_layer, n_node)
 path = '../data/{}.xlsx'.format(net_name)
 layer_link_list = load_data(path)
@@ -654,7 +651,26 @@ n_node_list = [len(real_node_list[i]) for i in range(n_layer)]
 n_node_obs = [[int(frac*n_node_list[i]) for i in range(n_layer)] for frac in frac_list]     
 n_rep = 10
 # metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
-metric_list = ['F1', 'G-mean', 'MCC']
+metric_list = ['F1', 'G-mean'] #, 'MCC']
+
+
+
+
+
+
+
+
+
+
+# TODO: calculate metric value of random model
+
+
+
+
+
+
+
+
 
 # parellel processing
 
