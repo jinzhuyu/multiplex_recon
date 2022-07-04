@@ -181,40 +181,23 @@ class Reconstruct:
         sgl_link_prob_compl = np.zeros((self.n_layer, n_node, n_node))
         
         for i in range(self.n_layer):
-            sgl_link_prob_compl[i,:,:] = 1 - self.deg_seq_arr[i, :]*self.deg_seq_arr[i,:].T\
-                                             / self.deg_sum_arr[i]                                       
-            
+            sgl_link_prob_compl[i,:,:] = 1 - self.deg_seq_arr[i, :, None]*self.deg_seq_arr[i,:].T\
+                                              / (self.deg_sum_arr[i] -1)                                       
+  
         agg_link_prob = 1 - np.prod(sgl_link_prob_compl, axis=0)
         
-        agg_link_prob_3d = np.repeat(agg_link_prob[:, :, np.newaxis], self.n_layer, axis=0)
-        agg_adj_3d = np.repeat(self.agg_adj_3d[:, :, np.newaxis], self.n_layer, axis=0)       
-        adj_pred_arr = self.agg_adj_3d * (1- sgl_link_prob_compl) / agg_link_prob_3d
-        
+        agg_link_prob_3d = np.repeat(agg_link_prob[:, :, np.newaxis], self.n_layer, axis=2)
+        agg_link_prob_3d = np.moveaxis(agg_link_prob_3d, 2, 0)
+
+        agg_adj_3d = np.repeat(self.agg_adj[:, :, np.newaxis], self.n_layer, axis=2) 
+        agg_adj_3d = np.moveaxis(agg_adj_3d, 2, 0)
+
+        adj_pred_arr = agg_adj_3d * (1 - sgl_link_prob_compl) / agg_link_prob_3d
+
         adj_pred_arr = np.nan_to_num(adj_pred_arr)
-            
+          
         self.adj_pred_arr = self.avoid_prob_overflow(adj_pred_arr)
-        
-        
-        # tri_up_idx = np.triu_indices(n_node, k=1)
-        # rows, cols = tri_up_idx[0].tolist(), tri_up_idx[1].tolist()
-        # #TODO: only calculate  single_prob_rev_list once for all pairs of nodes?       
-        # for i_idx in range(len(rows)):
-        #     i, j = rows[i_idx], cols[i_idx]            
-        #     # if mat has more than 5000 elements use pairwise_multiply_iterative_slicing
-        #     # https://stackoverflow.com/questions/62012339/efficiently-computing-all-pairwise-products-of-a-given-vectors-elements-in-nump/62012545#62012545
-        #     single_prob_rev_list = [1-self.deg_seq_arr[ele][i]*self.deg_seq_arr[ele][j]/\
-        #                             (self.deg_sum_arr[ele]-1) for ele in range(self.n_layer)]                
-        #     agg_link_prob = 1 - np.prod(single_prob_rev_list)
-        #     # agg_link_prob = agg_link_prob_list[i_idx] 
-        #     if agg_link_prob == 0:
-        #         adj_pred_arr[:,i,j] = 0
-        #     else:
-        #         for i_lyr in range(self.n_layer):
-        #             # single link prob using degree of two nodes: page 27 in SI
-        #             adj_pred_arr[i_lyr][i,j] = self.agg_adj[i,j]*(1 - single_prob_rev_list[i_lyr])/agg_link_prob
-        #             # Q[i,j] = self.agg_adj[i,j]*single_prob_list[idx]/agg_link_prob
-        #     adj_pred_arr[:, j,i] = adj_pred_arr[:, i,j]
-        # self.adj_pred_arr = self.avoid_prob_overflow(adj_pred_arr) 
+
     
     def cal_link_prob_PON(self):
         '''update link probability using partial observed nodes in each layer
@@ -234,7 +217,7 @@ class Reconstruct:
                 
             for i_idx in range(len(permuts_half)):
                 i, j = rows[i_idx], cols[i_idx]
-                # # TODO: suppose only a portion of links among observed nodes are observed
+                # # # TODO: suppose only a portion of links among observed nodes are observed
                 adj_pred_arr[i_curr][i,j] = self.adj_true_arr[i_curr][i,j]
                 adj_pred_arr[i_curr][j,i] = adj_pred_arr[i_curr][i,j]
     
@@ -261,7 +244,6 @@ class Reconstruct:
                                 
                                 
                     if adj_pred_arr[i_curr][i,j] == 0:
-                        # make at least one Q_ij = 1 to make A0_ij = 1
                         if len(othr_lyr_idx) == 1:
                             i_othr = othr_lyr_idx[0]
                             adj_pred_arr[i_othr][i,j], adj_pred_arr[i_othr][j,i] = 1, 1                            
@@ -292,19 +274,20 @@ class Reconstruct:
         # [exec('mat[np.tril_indices(mat.shape[0], k=-1)] = mat[np.triu_indices(mat.shape[0], k=1)]') \
         #  for mat in adj_pred_list]
         self.adj_pred_arr = self.avoid_prob_overflow(adj_pred_arr)
+        print('adj_pred_arr', adj_pred_arr[0,:,:])  
            
     def predict_adj(self):     
         #initialize the network model parameters
         if self.deg_seq_init is None:
             self.deg_seq_arr = np.random.uniform(1, self.n_node+1, size=(self.n_layer, self.n_node))
             # self.deg_seq_arr = np.array([[5.7430,    2.9123,    4.8017,    0.8513,    2.5306,    5.4944],
-            #                              [4.7532,    5.7570,    3.9344,    0.2143,    5.0948,    5.6040]])
+            #                               [4.7532,    5.7570,    3.9344,    0.2143,    5.0948,    5.6040]])
         else:
             self.deg_seq_arr = self.deg_seq_init 
         self.deg_seq_last_arr = np.empty((self.n_layer, self.n_node))
         n_link_unobs = np.array([ len(sub) for sub in self.layer_link_unobs_list ])
         for iter in range(self.itermax):
-            if (iter+1) % 100 == 0: 
+            if (iter+1) % 1 == 0: 
                 print('  === iter: {}'.format(iter+1))                 
             
             self.adj_pred_arr = np.zeros((self.n_layer, self.n_node, self.n_node))                  
@@ -542,20 +525,20 @@ def get_permuts_half_numba(vec: np.ndarray):
             k += 1
     return output
 
-@numba.njit()
-def get_2d_dot_prod_numba(x):
-    '''get dot product of each column as a 2d array 
-    '''
-    n_row, n_col = x.shape[0], x.shape[1]
-    output = np.empty((n_row, n_col*(n_col-1)//2))
-    # for i in range(n_row):
-    #     output[i,:] = np.dot(x[i][:,None], x[i][None,:])
-    return output
+# @numba.njit()
+# def get_2d_dot_prod_numba(x):
+#     '''get dot product of each column as a 2d array 
+#     '''
+#     n_row, n_col = x.shape[0], x.shape[1]
+#     output = np.empty((n_row, n_col*(n_col-1)//2))
+#     # for i in range(n_row):
+#     #     output[i,:] = np.dot(x[i][:,None], x[i][None,:])
+#     return output
 
-get_2d_dot_prod_numba(deg_seq)
+# get_2d_dot_prod_numba(deg_seq)
 
-i = 0
-np.dot(deg_seq[i][:,None], deg_seq[i][None,:])
+# i = 0
+# np.dot(deg_seq[i][:,None], deg_seq[i][None,:])
             
 def get_init_deg_seq(layer_link_list, PON_idx_list, virt_node_list):
     ''' initialize degree sequence reduce the no. of iterations
@@ -608,7 +591,7 @@ def single_run(i_frac):  #, layer_link_list, n_node):
         t000 = time()    
         reconst = Reconstruct(layer_link_list=layer_link_list, PON_idx_list=PON_idx_list,
                               layer_link_unobs_list=layer_link_unobs_list, deg_seq_init=None,
-                              n_node=n_node, itermax=int(100), eps=1e-6)    
+                              n_node=n_node, itermax=int(500), eps=1e-6)    
         t100 = time()
         print('=== {} mins on this rep in total'.format( round( (t100-t000)/60, 4) ) ) 
         metric_value_rep_list.append(reconst.metric_value)
@@ -670,15 +653,15 @@ def run_plot():
 
 
 # # import data
-# net_type = 'toy'
-# n_node, n_layer = 6, 2
+net_type = 'toy'
+n_node, n_layer = 6, 2
 
 # net_type = 'rand'
 # n_node, n_layer = 50, 2
 
-net_type = 'drug'
+# net_type = 'drug'
 # n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
-n_node, n_layer = 2196, 4
+# n_node, n_layer = 2196, 4
 # n_node, n_layer = 2139, 3
 net_name = '{}_net_{}layers_{}nodes'.format(net_type, n_layer, n_node)
 path = '../data/{}.xlsx'.format(net_name)
@@ -716,13 +699,13 @@ metric_list = ['F1', 'G-mean'] #, 'MCC']
 
 # parellel processing
 
-if __name__ == '__main__': 
+# if __name__ == '__main__': 
 
-    import matplotlib
-    matplotlib.use('Agg')
-    t00 = time()
-    run_plot()
-    print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) ) 
+#     import matplotlib
+#     matplotlib.use('Agg')
+#     t00 = time()
+#     run_plot()
+#     print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) ) 
 
      
     # for i_fd in range(n_fold):   
