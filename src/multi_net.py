@@ -129,9 +129,7 @@ class Reconstruct:
             tri_low_idx = tri_up_idx[::-1]
             self.adj_true_arr[i_lyr][tri_low_idx] = \
                 self.adj_true_arr[i_lyr][tri_up_idx]
-        # use symmetry
-        # for mat in self.adj_true_arr:
-        #     exec('mat[np.tril_indices(mat.shape[0], k=-1)] = mat[np.triu_indices(mat.shape[0], k=1)]')
+
     
     def get_agg_adj(self):
         '''get the aggregate network using the OR agggregation
@@ -178,38 +176,64 @@ class Reconstruct:
         adj_pred_arr = self.adj_pred_arr
         n_node = self.n_node
         
-        sgl_link_prob_compl = np.zeros((self.n_layer, n_node, n_node))
+        sgl_link_prob_3d = np.zeros((self.n_layer, n_node, n_node))
         
         for i in range(self.n_layer):
-            sgl_link_prob_compl[i,:,:] = 1 - self.deg_seq_arr[i, :, None]*self.deg_seq_arr[i,:].T\
-                                              / (self.deg_sum_arr[i] -1)                                       
+            sgl_link_prob_3d[i,:,:] = self.deg_seq_arr[i, :, None]*self.deg_seq_arr[i,:].T\
+                                   / (self.deg_sum_arr[i] -1)                                       
   
-        agg_link_prob = 1 - np.prod(sgl_link_prob_compl, axis=0)
+        agg_link_prob = 1 - np.prod(1 - sgl_link_prob_3d, axis=0)
         
         agg_link_prob_3d = np.repeat(agg_link_prob[:, :, np.newaxis], self.n_layer, axis=2)
         agg_link_prob_3d = np.moveaxis(agg_link_prob_3d, 2, 0)
 
         agg_adj_3d = np.repeat(self.agg_adj[:, :, np.newaxis], self.n_layer, axis=2) 
         agg_adj_3d = np.moveaxis(agg_adj_3d, 2, 0)
+        
+        agg_link_prob_3d[agg_link_prob_3d==0] = np.nan  # avoid Runtime error
 
-        adj_pred_arr = agg_adj_3d * (1 - sgl_link_prob_compl) / agg_link_prob_3d
+        adj_pred_arr = agg_adj_3d * sgl_link_prob_3d / agg_link_prob_3d
 
         adj_pred_arr = np.nan_to_num(adj_pred_arr)
           
         self.adj_pred_arr = self.avoid_prob_overflow(adj_pred_arr)
-
+        self.sgl_link_prob_3d = sgl_link_prob_3d 
+        # sgl_link_prob_3d does not change after this point within the same iteration
+        
     
     def cal_link_prob_PON(self):
         '''update link probability using partial observed nodes in each layer
         '''
         # links among observed nodes are observed
+        # self.adj_pred_arr = np.random.randint(0,5, (2,6,6))
         adj_pred_arr = self.adj_pred_arr        
         
-        # PON_idx_arr
+        # adj_pred_arr = deepcopy(adj_pred_arr)
+        # links among observed nodes are observed
+        for i_lyr in range(self.n_layer):
+            obs_idx = np.array(list(permutations(self.PON_idx_list[i_lyr], r=2))).T
+            mask = (obs_idx[0], obs_idx[1])
+            adj_pred_arr[i_lyr][mask] = self.adj_true_arr[i_lyr][mask]
         
-        # adj_pred_arr[PON_idx_arr==1] = self.adj_true_arr[PON_idx_arr==1]
+        exclude_idx_arr = np.ones((self.n_node, self.n_node)) - np.eye(self.n_node)
+        agg_link_prob = 1 - np.exp(np.log(1 - self.sgl_link_prob_3d) * exclude_idx_arr)
+        agg_link_prob_3d = np.repeat(agg_link_prob[:, :, np.newaxis], self.n_layer, axis=2)
+        agg_link_prob_3d = np.moveaxis(agg_link_prob_3d, 2, 0) 
         
+        sgl_link_prob_3d = self.sgl_link_prob_3d
+        for i_curr in range(self.n_layer):
+            for i_othr in [x for x in range(self.n_layer) if x != i_curr]:
+                mask_1 = adj_pred_arr[i_curr, :, :] == 1 & \
+                         np.logical_not(np.isin(adj_pred_arr[i_othr, :, :], [0, 1]))
+                adj_pred_arr[i_othr, mask_1] = sgl_link_prob_3d[i_othr, mask_1] * self.agg_adj[mask_1]
+                
+                # mask_0 = adj_pred_arr[i_curr, :, :] == 0 & \
+                #          np.logical_not(np.isin(adj_pred_arr[i_othr, :, :], [0, 1]))
+                # adj_pred_arr[i_othr, mask_0] = 
+                
         
+       
+        sgl_link_prob_3d = self.sgl_link_prob_3d
         for i_curr, curr_node_list in enumerate(self.PON_idx_list):
             permuts = list(permutations(curr_node_list, r=2))
             permuts_half = [ele for ele in permuts if ele[1] > ele[0]]
@@ -217,64 +241,23 @@ class Reconstruct:
                 
             for i_idx in range(len(permuts_half)):
                 i, j = rows[i_idx], cols[i_idx]
-                # # # TODO: suppose only a portion of links among observed nodes are observed
-                adj_pred_arr[i_curr][i,j] = self.adj_true_arr[i_curr][i,j]
-                adj_pred_arr[i_curr][j,i] = adj_pred_arr[i_curr][i,j]
     
                 # OR-aggregate mechanism: page 25 in SI
-                if self.agg_adj[i,j] == 1:
-                    othr_lyr_idx = [ele for ele in range(self.n_layer) if ele != i_curr]
-                    # prior link probability
-                    sgl_link_prob_list = [self.deg_seq_arr[ele][i]*self.deg_seq_arr[ele][j] \
-                                          /(self.deg_sum_arr[ele] - 1) \
-                                          for ele in range(self.n_layer)]
-                    # determine the actual predicted link [i,j] probability in other layers
-                    if adj_pred_arr[i_curr][i,j] == 1:
+                # if self.agg_adj[i,j] == 1:
+                othr_lyr_idx = [ele for ele in range(self.n_layer) if ele != i_curr]
+                # prior link probability is sgl_link_prob_3d
+                # determine the actual predicted link [i,j] probability in other layers
+                                                                                  
+                if adj_pred_arr[i_curr][i,j] == 0:
+                    prod_temp = np.prod([1-sgl_link_prob_3d[i_othr][i,j] for i_othr in othr_lyr_idx])
+                    if prod_temp != 1:  # such that prod_temp != 1
                         for i_othr in othr_lyr_idx:
-                            if adj_pred_arr[i_othr][i,j] not in [0, 1]: # TODO: not observed???
-                                                                        # question: why not =0 and not =1:
-                                
-                               
-                                
-                                adj_pred_arr[i_othr][i,j] = sgl_link_prob_list[i_othr]
-                                adj_pred_arr[i_othr][j,i] = sgl_link_prob_list[i_othr]
-                                
-                                
-                                
-                                
-                                
-                    if adj_pred_arr[i_curr][i,j] == 0:
-                        if len(othr_lyr_idx) == 1:
-                            i_othr = othr_lyr_idx[0]
-                            adj_pred_arr[i_othr][i,j], adj_pred_arr[i_othr][j,i] = 1, 1                            
-                        else: 
-                            # pi /1- prod_i(1-pi). If two layers only, this formula is always 1.
-                            prod_temp = np.prod([1-sgl_link_prob_list[i_othr] for i_othr in othr_lyr_idx])
-                            if prod_temp < 1:  # such that prod_temp != 1
-                                for i_othr in othr_lyr_idx:
-                                    adj_pred_arr[i_othr][i,j] = sgl_link_prob_list[i_othr]/ (1 - prod_temp)
-                                    adj_pred_arr[i_othr][j,i] = adj_pred_arr[i_othr][i,j]
-                        #     max_prob = np.max(sgl_link_prob_list)
-                        #     if max_prob != 0:
-                        #         # normalize each single link prob by the max
-                        #         # so that the max automatically becomes the chosen 1
-                        #         for i_othr in othr_lyr_idx:
-                        #             adj_pred_list[i_othr][i,j] = sgl_link_prob_list[i_othr]/max_prob
-                        #             adj_pred_list[i_othr][j,i] = adj_pred_list[i_othr][i,j]
-                        #     else: # TODO: randomly select one?
-                        #         rand_idx = np.random.choice(othr_lyr_idx)
-                        #         adj_pred_list[rand_idx][i,j], adj_pred_list[rand_idx][j,i] = 1, 1
-                        # else: # two layers in total
-                        #     i_othr = othr_lyr_idx[0]
-                        #     adj_pred_list[i_othr][i,j], adj_pred_list[i_othr][j,i] = 1, 1
-                # else:
-                #     for i_lyr in range(self.n_layer):  #[ele for ele in range(self.n_layer) if ele != i_curr]
-                #         adj_pred_list[i_lyr][i,j], adj_pred_list[i_lyr][j,i] = 0, 0
-        # use symmetry
-        # [exec('mat[np.tril_indices(mat.shape[0], k=-1)] = mat[np.triu_indices(mat.shape[0], k=1)]') \
-        #  for mat in adj_pred_list]
+                            if adj_pred_arr[i_othr][i,j] not in [0, 1]:
+                                adj_pred_arr[i_othr][i,j] = sgl_link_prob_3d[i_othr][i,j]/(1 - prod_temp)*self.agg_adj[i,j]
+                                adj_pred_arr[i_othr][j,i] = adj_pred_arr[i_othr][i,j]
+
         self.adj_pred_arr = self.avoid_prob_overflow(adj_pred_arr)
-        print('adj_pred_arr', adj_pred_arr[0,:,:])  
+        # print('adj_pred_arr', adj_pred_arr[0,:,:])  
            
     def predict_adj(self):     
         #initialize the network model parameters
@@ -287,7 +270,7 @@ class Reconstruct:
         self.deg_seq_last_arr = np.empty((self.n_layer, self.n_node))
         n_link_unobs = np.array([ len(sub) for sub in self.layer_link_unobs_list ])
         for iter in range(self.itermax):
-            if (iter+1) % 1 == 0: 
+            if (iter+1) % 10 == 0: 
                 print('  === iter: {}'.format(iter+1))                 
             
             self.adj_pred_arr = np.zeros((self.n_layer, self.n_node, self.n_node))                  
@@ -295,23 +278,20 @@ class Reconstruct:
             self.deg_sum_arr = np.sum(self.deg_seq_arr, axis=1) #[np.sum(ele) for ele in self.deg_seq_list]
     
             #calculate link prob by configuration model
+            tt0 = time()
             self.cal_link_prob_deg()
+            print('--- Time on cal_link_prob_deg: {} mins'.format((time() - tt0) / 60 ))
 
             # update link prob using partial node sets and all links among observed nodes
+            tt0 = time()
             self.cal_link_prob_PON()        
-       
+            print('--- Time on cal_link_prob_PON: {} mins'.format((time() - tt0) / 60 ))       
             #update network model parameters
             self.deg_seq_arr = np.sum(self.adj_pred_arr, axis=1)
 
             # check convergence of degree sequence
-            # err_abs = np.abs(self.deg_seq_last_arr - self.deg_seq_arr)
             mae = np.sum(np.abs(self.deg_seq_last_arr - self.deg_seq_arr), axis=1) / n_link_unobs
             #TODO: need to use recall or precision as metrics
-            # cond = [np.sum(np.abs(self.deg_seq_last_arr[ele]-self.deg_seq_arr[ele])) < self.eps\
-            #         for ele in range(self.n_layer)]            
-            # if all(cond):
-            #     print('\nConverges at iter: {}'.format(iter))
-            #     break
             if np.all(mae < self.eps) :
                 print('\nConverges at iter: {}'.format(iter))
                 break
@@ -591,7 +571,7 @@ def single_run(i_frac):  #, layer_link_list, n_node):
         t000 = time()    
         reconst = Reconstruct(layer_link_list=layer_link_list, PON_idx_list=PON_idx_list,
                               layer_link_unobs_list=layer_link_unobs_list, deg_seq_init=None,
-                              n_node=n_node, itermax=int(500), eps=1e-6)    
+                              n_node=n_node, itermax=int(200), eps=1e-6)    
         t100 = time()
         print('=== {} mins on this rep in total'.format( round( (t100-t000)/60, 4) ) ) 
         metric_value_rep_list.append(reconst.metric_value)
@@ -657,7 +637,7 @@ net_type = 'toy'
 n_node, n_layer = 6, 2
 
 # net_type = 'rand'
-# n_node, n_layer = 50, 2
+# n_node, n_layer = 100, 3
 
 # net_type = 'drug'
 # n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
@@ -697,7 +677,7 @@ metric_list = ['F1', 'G-mean'] #, 'MCC']
 
 
 
-# parellel processing
+# # parellel processing
 
 # if __name__ == '__main__': 
 
