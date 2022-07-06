@@ -42,7 +42,7 @@ from my_utils import *
 
 class Reconstruct:
     def __init__(self, layer_link_list, PON_idx_list=None, layer_link_unobs_list=None,
-                 deg_seq_init=None, n_node=None, itermax=500, eps=1e-5, **kwargs):
+                 n_node=None, itermax=500, eps=1e-5, **kwargs):
         '''     
         Parameters
         ----------
@@ -190,7 +190,7 @@ class Reconstruct:
         agg_adj_3d = np.repeat(self.agg_adj[:, :, np.newaxis], self.n_layer, axis=2) 
         agg_adj_3d = np.moveaxis(agg_adj_3d, 2, 0)
         
-        agg_link_prob_3d[agg_link_prob_3d==0] = np.nan  # avoid Runtime error
+        agg_link_prob_3d[agg_link_prob_3d==0] = np.nan  # avoid Runtime error: divided by 0
 
         adj_pred_arr = agg_adj_3d * sgl_link_prob_3d / agg_link_prob_3d
 
@@ -224,21 +224,22 @@ class Reconstruct:
                 
                 # if adj_pred_arr[i_curr, i, j] == 0                                
                 agg_link_prob = 1 - np.prod(1 - np.delete(self.sgl_link_prob_3d, i_curr, axis=0), axis=0)
+                agg_link_prob[agg_link_prob==0] = np.nan  # avoid Runtime error: divided by 0
+                # agg_link_prob[i,j] = 0 means that sgl_link_prob_3d[i_othr, i, j] are all zeros
                 mask_0 = adj_pred_arr[i_curr, :, :] == 0 & \
                          np.logical_not(np.isin(adj_pred_arr[i_othr, :, :], [0, 1])) 
                 adj_pred_arr[i_othr, mask_0] = self.agg_adj[mask_0] * sgl_link_prob_3d[i_othr, mask_0]/ \
                                                agg_link_prob[mask_0]
+                adj_pred_arr[i_othr, mask_0] = np.nan_to_num(adj_pred_arr[i_othr, mask_0])
         self.adj_pred_arr = self.avoid_prob_overflow(adj_pred_arr)
 
            
     def predict_adj(self):     
         #initialize the network model parameters
-        if self.deg_seq_init is None:
-            self.deg_seq_arr = np.random.uniform(1, self.n_node+1, size=(self.n_layer, self.n_node))
+
+        self.deg_seq_arr = np.random.uniform(1, self.n_node+1, size=(self.n_layer, self.n_node))
             # self.deg_seq_arr = np.array([[5.7430,    2.9123,    4.8017,    0.8513,    2.5306,    5.4944],
             #                               [4.7532,    5.7570,    3.9344,    0.2143,    5.0948,    5.6040]])
-        else:
-            self.deg_seq_arr = self.deg_seq_init 
         self.deg_seq_last_arr = np.empty((self.n_layer, self.n_node))
         n_link_unobs = np.array([ len(sub) for sub in self.layer_link_unobs_list ])
         for iter in range(self.itermax):
@@ -250,14 +251,13 @@ class Reconstruct:
             self.deg_sum_arr = np.sum(self.deg_seq_arr, axis=1) #[np.sum(ele) for ele in self.deg_seq_list]
     
             #calculate link prob by configuration model
-            tt0 = time()
             self.cal_link_prob_deg()
-            print('--- Time on cal_link_prob_deg: {} mins'.format((time() - tt0) / 60 ))
 
             # update link prob using partial node sets and all links among observed nodes
             tt0 = time()
-            self.cal_link_prob_PON()        
-            print('--- Time on cal_link_prob_PON: {} mins'.format((time() - tt0) / 60 ))       
+            self.cal_link_prob_PON()  
+            tt0_diff = (time() - tt0) 
+            print('--- Time on cal_link_prob_PON: {} seconds'.format(round(tt0_diff, 2) ))       
             #update network model parameters
             self.deg_seq_arr = np.sum(self.adj_pred_arr, axis=1)
 
@@ -491,25 +491,7 @@ def get_permuts_half_numba(vec: np.ndarray):
 
 # i = 0
 # np.dot(deg_seq[i][:,None], deg_seq[i][None,:])
-            
-def get_init_deg_seq(layer_link_list, PON_idx_list, virt_node_list):
-    ''' initialize degree sequence reduce the no. of iterations
-        note: the first iteration may do a similar job in estimating the degree sequence
-    '''
-    deg_seq_init = np.random.uniform(1, n_node+1, size=(n_layer, n_node))
-    layer_link_obs = []
-    for i_lyr in range(n_layer):
-        node_obs_temp = PON_idx_list[i_lyr]
-        links_obs_temp = [ele for ele in layer_link_list[i_lyr] \
-                          if (ele[0] in node_obs_temp and ele[1] in node_obs_temp)]
-        layer_link_obs.append(links_obs_temp)
-        # for observed real nodes, the initial degree will be the observed degree
-        for i_node in range(n_node):
-            deg_temp = len([ele for ele in links_obs_temp if i_node in ele])
-            deg_seq_init[i_lyr, i_node] = np.abs(np.random.normal(deg_temp, deg_temp))
-        
-    return deg_seq_init
-      
+                
     
 def sample_node_obs(layer_link_list, real_node_list, virt_node_list, i_frac):    
     PON_idx_list_orig = [np.random.choice(real_node_list[i_lyr], n_node_obs[i_frac][i_lyr],
@@ -539,10 +521,9 @@ def single_run(i_frac):  #, layer_link_list, n_node):
     for i_rep in range(n_rep):
         PON_idx_list, layer_link_unobs_list = sample_node_obs(layer_link_list, real_node_list,
                                                               virt_node_list, i_frac)
-        # deg_seq_init = get_init_deg_seq(layer_link_list, PON_idx_list, virt_node_list) 
         t000 = time()    
         reconst = Reconstruct(layer_link_list=layer_link_list, PON_idx_list=PON_idx_list,
-                              layer_link_unobs_list=layer_link_unobs_list, deg_seq_init=None,
+                              layer_link_unobs_list=layer_link_unobs_list,
                               n_node=n_node, itermax=int(200), eps=1e-6)    
         t100 = time()
         print('=== {} mins on this rep in total'.format( round( (t100-t000)/60, 4) ) ) 
