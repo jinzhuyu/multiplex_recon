@@ -205,7 +205,6 @@ class Reconstruct:
         '''update link probability using partial observed nodes in each layer
         '''
         # links among observed nodes are observed
-        # self.adj_pred_arr = np.random.randint(0,5, (2,6,6))
         adj_pred_arr = self.adj_pred_arr        
         
         # adj_pred_arr = deepcopy(adj_pred_arr)
@@ -215,49 +214,22 @@ class Reconstruct:
             mask = (obs_idx[0], obs_idx[1])
             adj_pred_arr[i_lyr][mask] = self.adj_true_arr[i_lyr][mask]
         
-        exclude_idx_arr = np.ones((self.n_node, self.n_node)) - np.eye(self.n_node)
-        agg_link_prob = 1 - np.exp(np.log(1 - self.sgl_link_prob_3d) * exclude_idx_arr)
-        agg_link_prob_3d = np.repeat(agg_link_prob[:, :, np.newaxis], self.n_layer, axis=2)
-        agg_link_prob_3d = np.moveaxis(agg_link_prob_3d, 2, 0) 
-        
         sgl_link_prob_3d = self.sgl_link_prob_3d
         for i_curr in range(self.n_layer):
             for i_othr in [x for x in range(self.n_layer) if x != i_curr]:
+                # if adj_pred_arr[i_curr, i, j] == 1
                 mask_1 = adj_pred_arr[i_curr, :, :] == 1 & \
                          np.logical_not(np.isin(adj_pred_arr[i_othr, :, :], [0, 1]))
-                adj_pred_arr[i_othr, mask_1] = sgl_link_prob_3d[i_othr, mask_1] * self.agg_adj[mask_1]
+                adj_pred_arr[i_othr, mask_1] = self.agg_adj[mask_1] * sgl_link_prob_3d[i_othr, mask_1]
                 
-                # mask_0 = adj_pred_arr[i_curr, :, :] == 0 & \
-                #          np.logical_not(np.isin(adj_pred_arr[i_othr, :, :], [0, 1]))
-                # adj_pred_arr[i_othr, mask_0] = 
-                
-        
-       
-        sgl_link_prob_3d = self.sgl_link_prob_3d
-        for i_curr, curr_node_list in enumerate(self.PON_idx_list):
-            permuts = list(permutations(curr_node_list, r=2))
-            permuts_half = [ele for ele in permuts if ele[1] > ele[0]]
-            rows, cols = [ele[0] for ele in permuts_half], [ele[1] for ele in permuts_half]                  
-                
-            for i_idx in range(len(permuts_half)):
-                i, j = rows[i_idx], cols[i_idx]
-    
-                # OR-aggregate mechanism: page 25 in SI
-                # if self.agg_adj[i,j] == 1:
-                othr_lyr_idx = [ele for ele in range(self.n_layer) if ele != i_curr]
-                # prior link probability is sgl_link_prob_3d
-                # determine the actual predicted link [i,j] probability in other layers
-                                                                                  
-                if adj_pred_arr[i_curr][i,j] == 0:
-                    prod_temp = np.prod([1-sgl_link_prob_3d[i_othr][i,j] for i_othr in othr_lyr_idx])
-                    if prod_temp != 1:  # such that prod_temp != 1
-                        for i_othr in othr_lyr_idx:
-                            if adj_pred_arr[i_othr][i,j] not in [0, 1]:
-                                adj_pred_arr[i_othr][i,j] = sgl_link_prob_3d[i_othr][i,j]/(1 - prod_temp)*self.agg_adj[i,j]
-                                adj_pred_arr[i_othr][j,i] = adj_pred_arr[i_othr][i,j]
-
+                # if adj_pred_arr[i_curr, i, j] == 0                                
+                agg_link_prob = 1 - np.prod(1 - np.delete(self.sgl_link_prob_3d, i_curr, axis=0), axis=0)
+                mask_0 = adj_pred_arr[i_curr, :, :] == 0 & \
+                         np.logical_not(np.isin(adj_pred_arr[i_othr, :, :], [0, 1])) 
+                adj_pred_arr[i_othr, mask_0] = self.agg_adj[mask_0] * sgl_link_prob_3d[i_othr, mask_0]/ \
+                                               agg_link_prob[mask_0]
         self.adj_pred_arr = self.avoid_prob_overflow(adj_pred_arr)
-        # print('adj_pred_arr', adj_pred_arr[0,:,:])  
+
            
     def predict_adj(self):     
         #initialize the network model parameters
@@ -633,14 +605,14 @@ def run_plot():
 
 
 # # import data
-net_type = 'toy'
-n_node, n_layer = 6, 2
+# net_type = 'toy'
+# n_node, n_layer = 6, 2
 
 # net_type = 'rand'
 # n_node, n_layer = 100, 3
 
-# net_type = 'drug'
-# n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
+net_type = 'drug'
+n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
 # n_node, n_layer = 2196, 4
 # n_node, n_layer = 2139, 3
 net_name = '{}_net_{}layers_{}nodes'.format(net_type, n_layer, n_node)
@@ -677,15 +649,15 @@ metric_list = ['F1', 'G-mean'] #, 'MCC']
 
 
 
-# # parellel processing
+# parellel processing
 
-# if __name__ == '__main__': 
+if __name__ == '__main__': 
 
-#     import matplotlib
-#     matplotlib.use('Agg')
-#     t00 = time()
-#     run_plot()
-#     print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) ) 
+    import matplotlib
+    matplotlib.use('Agg')
+    t00 = time()
+    run_plot()
+    print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) ) 
 
      
     # for i_fd in range(n_fold):   
