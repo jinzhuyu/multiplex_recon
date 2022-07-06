@@ -61,6 +61,7 @@ class Reconstruct:
         del self.__dict__["self"]
         
         self.n_layer = len(self.layer_link_list)
+        
 
         if layer_link_unobs_list == None:
             self.get_unobs_link_list()    
@@ -69,13 +70,17 @@ class Reconstruct:
             # self.get_layer_node_list()
             self.get_adj_true_arr()
             self.get_agg_adj()
+            
+            self.lyr_idx_pair = list(permutations(list(range(self.n_layer)), r=2))
+            self.get_obs_node_mask()
+            
             start_time2 = time()
             self.predict_adj()
-            print("--- {} mins on predicting adj".format( round( (time() - start_time2)/60, 4) ) ) 
+            print("--- {} seconds on predicting adj".format( round(time() - start_time2, 2) ) ) 
        
-            start_time3 = time()         
+            # start_time3 = time()         
             self.eval_perform()
-            print('--- {} mins on evaluating performance'.format( round( (time() - start_time3)/60, 4) ) )    
+            # print('--- {} mins on evaluating performance'.format( round( (time() - start_time3)/60, 4) ) )    
    
     
     # functions for generating the ground truth of a multiplex network      
@@ -136,9 +141,17 @@ class Reconstruct:
         '''
         adj_true_diff = np.ones([self.n_layer, self.n_node, self.n_node]) - self.adj_true_arr
         self.agg_adj = np.ones([self.n_node, self.n_node]) - np.prod(adj_true_diff, axis=0)
-        # J_N = np.ones([self.n_node, self.n_node])
-        # adj_true_neg_list = [J_N - ele for ele in self.adj_true_arr]
-        # self.agg_adj = J_N - reduce(np.multiply, adj_true_neg_list)
+
+        self.agg_adj_3d = np.repeat(self.agg_adj[:, :, np.newaxis], self.n_layer, axis=2) 
+        self.agg_adj_3d = np.moveaxis(self.agg_adj_3d, 2, 0)
+
+    def get_obs_node_mask(self):
+        self.obs_node_mask_list = []
+        for i_lyr in range(self.n_layer):
+            obs_idx = np.array(list(permutations(self.PON_idx_list[i_lyr], r=2))).T
+            mask = (obs_idx[0], obs_idx[1])
+            self.obs_node_mask_list.append(mask)
+
 
     def get_unobs_link_list(self):
         self.layer_link_unobs_list = []
@@ -173,21 +186,18 @@ class Reconstruct:
             used as prior link probability
         '''        
         self.sgl_link_prob_3d = np.zeros((self.n_layer, self.n_node, self.n_node))
-        
         for i in range(self.n_layer):
             self.sgl_link_prob_3d[i,:,:] = self.deg_seq_arr[i, :, None]*self.deg_seq_arr[i,:].T\
-                                   / (self.deg_sum_arr[i] -1)                                       
+                                           / (self.deg_sum_arr[i] -1)                                       
   
         agg_link_prob = 1 - np.prod(1 - self.sgl_link_prob_3d, axis=0)        
         agg_link_prob_3d = np.repeat(agg_link_prob[:, :, np.newaxis], self.n_layer, axis=2)
         agg_link_prob_3d = np.moveaxis(agg_link_prob_3d, 2, 0)
-
-        agg_adj_3d = np.repeat(self.agg_adj[:, :, np.newaxis], self.n_layer, axis=2) 
-        agg_adj_3d = np.moveaxis(agg_adj_3d, 2, 0)
+        
         agg_link_prob_3d[agg_link_prob_3d==0] = np.nan  # avoid Runtime error: divided by 0
-
-        self.adj_pred_arr = agg_adj_3d * self.sgl_link_prob_3d / agg_link_prob_3d
-        self.adj_pred_arr = np.nan_to_num(self.adj_pred_arr)         
+        self.adj_pred_arr = self.agg_adj_3d * self.sgl_link_prob_3d / agg_link_prob_3d
+        self.adj_pred_arr = np.nan_to_num(self.adj_pred_arr) 
+        
         self.adj_pred_arr[self.adj_pred_arr<0] = 0 
         self.adj_pred_arr[self.adj_pred_arr>1] = 1
         
@@ -197,31 +207,34 @@ class Reconstruct:
         '''
         # links among observed nodes are observed
         for i_lyr in range(self.n_layer):
-            obs_idx = np.array(list(permutations(self.PON_idx_list[i_lyr], r=2))).T
-            mask = (obs_idx[0], obs_idx[1])
+            mask = self.obs_node_mask_list[i_lyr]
             self.adj_pred_arr[i_lyr][mask] = self.adj_true_arr[i_lyr][mask]
         
+        # ttt0 = time()
+        agg_link_prob_list = []
         for i_curr in range(self.n_layer):
-            othr_lyr = [x for x in range(self.n_layer) if x != i_curr]
-            for i_othr in othr_lyr:
-                # if adj_pred_arr[i_curr, i, j] == 1
-                mask_1 = self.adj_pred_arr[i_curr, :, :] == 1 & \
-                         np.logical_not(np.isin(self.adj_pred_arr[i_othr, :, :], [0, 1]))
-                self.adj_pred_arr[i_othr, mask_1] = self.agg_adj[mask_1] * self.sgl_link_prob_3d[i_othr, mask_1]
-                
-                # if adj_pred_arr[i_curr, i, j] == 0                                
-                agg_link_prob = 1 - np.prod(1 - np.delete(self.sgl_link_prob_3d, i_curr, axis=0), axis=0)
-                agg_link_prob[agg_link_prob==0] = np.nan  # avoid Runtime error: divided by 0
-                # agg_link_prob[i,j] = 0 means that sgl_link_prob_3d[i_othr, i, j] over other lyrs are all zeros
-                mask_0 = self.adj_pred_arr[i_curr, :, :] == 0 & \
-                         np.logical_not(np.isin(self.adj_pred_arr[i_othr, :, :], [0, 1])) 
-                self.adj_pred_arr[i_othr, mask_0] = self.agg_adj[mask_0] * self.sgl_link_prob_3d[i_othr, mask_0]/ \
-                                                    agg_link_prob[mask_0]
-                self.adj_pred_arr [i_othr, mask_0] = np.nan_to_num(self.adj_pred_arr[i_othr, mask_0])
-        
+            agg_link_prob_temp = 1 - np.prod(1 - np.delete(self.sgl_link_prob_3d, i_curr, axis=0), axis=0)
+            agg_link_prob_temp[agg_link_prob_temp==0] = np.nan  # avoid Runtime error: divided by 0
+            agg_link_prob_list.append(agg_link_prob_temp)
+            
+        for lyr_pair in self.lyr_idx_pair:
+            i_curr, i_othr = lyr_pair[0], lyr_pair[1]
+            # if link is present in current layer
+            mask_1 = self.adj_pred_arr[i_curr, :, :] == 1 & \
+                     np.logical_not(np.isin(self.adj_pred_arr[i_othr, :, :], [0, 1]))
+            self.adj_pred_arr[i_othr, mask_1] = self.agg_adj[mask_1] * self.sgl_link_prob_3d[i_othr, mask_1]
+            
+            # if link is not present in current layer                                
+            agg_link_prob = agg_link_prob_list[i_curr]
+            # agg_link_prob[i,j] = 0 means that sgl_link_prob_3d[i_othr, i, j] over other lyrs are all zeros
+            mask_0 = self.adj_pred_arr[i_curr, :, :] == 0 & \
+                     np.logical_not(np.isin(self.adj_pred_arr[i_othr, :, :], [0, 1])) 
+            self.adj_pred_arr[i_othr, mask_0] = self.agg_adj[mask_0] * self.sgl_link_prob_3d[i_othr, mask_0]/ \
+                                                agg_link_prob[mask_0]
+            self.adj_pred_arr [i_othr, mask_0] = np.nan_to_num(self.adj_pred_arr[i_othr, mask_0])
+        # print('--- Time on updating adj_pred_arr [i_othr]: {} s'.format(time()-ttt0))
         self.adj_pred_arr[self.adj_pred_arr<0] = 0 
         self.adj_pred_arr[self.adj_pred_arr>1] = 1
-
            
     def predict_adj(self):     
         #initialize the network model parameters
@@ -229,8 +242,8 @@ class Reconstruct:
         self.deg_seq_last_arr = np.empty((self.n_layer, self.n_node))
         n_link_unobs = np.array([ len(sub) for sub in self.layer_link_unobs_list ])
         for iter in range(self.itermax):
-            if (iter+1) % 10 == 0: 
-                print('  === iter: {}'.format(iter+1))                                
+            # if (iter+1) % 10 == 0: 
+            #     print('  === iter: {}'.format(iter+1))                                
             
             self.deg_sum_arr = np.sum(self.deg_seq_arr, axis=1) #[np.sum(ele) for ele in self.deg_seq_list]
     
@@ -240,8 +253,7 @@ class Reconstruct:
             # update link prob using partial node sets and all links among observed nodes
             tt0 = time()
             self.cal_link_prob_PON()  
-            tt0_diff = (time() - tt0) 
-            print('--- Time on cal_link_prob_PON: {} seconds'.format(round(tt0_diff, 2) ))       
+            print('--- Time on cal_link_prob_PON: {} seconds'.format(round(time() - tt0, 2) ))       
             
             #update network model parameters
             self.deg_seq_arr = np.sum(self.adj_pred_arr, axis=1)
@@ -260,7 +272,7 @@ class Reconstruct:
 
             
     def eval_perform(self):
-        ''' performance using accuracy, precision, recall, as well as roc curve and AUC
+        ''' performance using F1 score and geometric mean
         '''
         self.adj_pred_arr_round = np.round(self.adj_pred_arr, 0)
         self.deg_seq_last_arr_round = np.round(self.deg_seq_last_arr) 
@@ -493,8 +505,7 @@ def single_run(i_frac):  #, layer_link_list, n_node):
         t000 = time()    
         reconst = Reconstruct(layer_link_list=layer_link_list, PON_idx_list=PON_idx_list,
                               layer_link_unobs_list=layer_link_unobs_list,
-                              n_node=n_node, itermax=int(300), eps=1e-6)    
-        reconst.print_result()
+                              n_node=n_node, itermax=int(100), eps=1e-6)    
         t100 = time()
         print('=== {} mins on this rep in total'.format( round( (t100-t000)/60, 4) ) ) 
         metric_value_rep_list.append(reconst.metric_value)
@@ -556,15 +567,15 @@ def run_plot():
 
 
 # # import data
-net_type = 'toy'
-n_node, n_layer = 6, 2
+# net_type = 'toy'
+# n_node, n_layer = 6, 2
 
 # net_type = 'rand'
 # n_node, n_layer = 100, 3
 
-# net_type = 'drug'
-# n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
-# n_node, n_layer = 2196, 4
+net_type = 'drug'
+n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
+# # n_node, n_layer = 2196, 4
 # n_node, n_layer = 2139, 3
 net_name = '{}_net_{}layers_{}nodes'.format(net_type, n_layer, n_node)
 path = '../data/{}.xlsx'.format(net_name)
@@ -574,7 +585,7 @@ real_node_list, virt_node_list = get_layer_node_list(layer_link_list, n_layer, n
 # frac_list = [0.8, 0.95]
 # frac_list = [0, 0.9, 0.95] 
 # frac_list = [round(0.1*i, 2) for i in range(0, 10)] + [0.95]
-frac_list = [0,0.05,0.1] + [round(0.2*i,1) for i in range(1, 5)] + [0.9, 0.95]
+frac_list = [0, 0.1] + [round(0.2*i,1) for i in range(1, 5)] + [0.9, 0.95]
 n_node_list = [len(real_node_list[i]) for i in range(n_layer)]
 n_node_obs = [[int(frac*n_node_list[i]) for i in range(n_layer)] for frac in frac_list]     
 n_rep = 20
