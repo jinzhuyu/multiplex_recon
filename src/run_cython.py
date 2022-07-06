@@ -3,7 +3,7 @@
 
 """
 if __name__ == '__main__':
-    
+    # python setup.py build_ext --inplace
     # without build setup
     # import pyximport; pyximport.install()  
     import multi_net_cython

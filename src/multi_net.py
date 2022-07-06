@@ -476,22 +476,7 @@ def get_permuts_half_numba(vec: np.ndarray):
             output[k,:] = [i,j]
             k += 1
     return output
-
-# @numba.njit()
-# def get_2d_dot_prod_numba(x):
-#     '''get dot product of each column as a 2d array 
-#     '''
-#     n_row, n_col = x.shape[0], x.shape[1]
-#     output = np.empty((n_row, n_col*(n_col-1)//2))
-#     # for i in range(n_row):
-#     #     output[i,:] = np.dot(x[i][:,None], x[i][None,:])
-#     return output
-
-# get_2d_dot_prod_numba(deg_seq)
-
-# i = 0
-# np.dot(deg_seq[i][:,None], deg_seq[i][None,:])
-                
+             
     
 def sample_node_obs(layer_link_list, real_node_list, virt_node_list, i_frac):    
     PON_idx_list_orig = [np.random.choice(real_node_list[i_lyr], n_node_obs[i_frac][i_lyr],
@@ -593,9 +578,9 @@ def run_plot():
 # n_node, n_layer = 100, 3
 
 net_type = 'drug'
-n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
+# n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
 # n_node, n_layer = 2196, 4
-# n_node, n_layer = 2139, 3
+n_node, n_layer = 2139, 3
 net_name = '{}_net_{}layers_{}nodes'.format(net_type, n_layer, n_node)
 path = '../data/{}.xlsx'.format(net_name)
 layer_link_list = load_data(path)
@@ -607,7 +592,7 @@ real_node_list, virt_node_list = get_layer_node_list(layer_link_list, n_layer, n
 frac_list = [0,0.05,0.1] + [round(0.2*i,1) for i in range(1, 5)] + [0.9, 0.95]
 n_node_list = [len(real_node_list[i]) for i in range(n_layer)]
 n_node_obs = [[int(frac*n_node_list[i]) for i in range(n_layer)] for frac in frac_list]     
-n_rep = 10
+n_rep = 20
 # metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
 metric_list = ['F1', 'G-mean'] #, 'MCC']
 
