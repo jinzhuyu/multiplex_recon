@@ -14,12 +14,15 @@ import multiprocessing as mp
 from functools import reduce
 from itertools import permutations, product
 from copy import deepcopy
+from pickle import load
 
-# from sklearn.metrics import roc_curve, auc
-from sklearn.metrics import precision_score, recall_score
+from sklearn.metrics import auc
+from sklearn.metrics import precision_score, recall_score, precision_recall_curve
 from sklearn.metrics import f1_score, matthews_corrcoef
 # from sklearn.metrics.cluster import fowlkes_mallows_score # geometric mean (G-mean)
-from imblearn.metrics import geometric_mean_score 
+from imblearn.metrics import geometric_mean_score
+
+
 # from prg import prg
 from time import time
 import numba
@@ -38,10 +41,13 @@ from my_utils import *
     #: use other metric for tolorance
     #: use numpy array instead of nested list in cal_link_prob deg and PON_list
 
-     
+# TODO: 1. learn the aggregate topology between every two layers first?
+      # 2. given aggregate topology, find a way to update probability of a link when the prob of link in a layer is below 0.5 
+          # as number of layers increases using other link prediciton method?
+          # (Adamic adar and preferential attachment(but covert net's hubs are small)?)
 
 class Reconstruct:
-    def __init__(self, layer_link_list, PON_idx_list=None, layer_link_unobs_list=None,
+    def __init__(self, layer_link_list, PON_idx_list=None, #net_layer_list=None, #layer_link_unobs_list=None,
                  n_node=None, itermax=100, eps=1e-6, **kwargs):
         '''     
         Parameters
@@ -63,24 +69,24 @@ class Reconstruct:
         self.n_layer = len(self.layer_link_list)
         
 
-        if layer_link_unobs_list == None:
-            self.get_unobs_link_list()    
-        else:
-            # self.get_layer_link_list()
-            # self.get_layer_node_list()
-            self.get_adj_true_arr()
-            self.get_agg_adj()
-            
-            self.lyr_idx_pair = list(permutations(list(range(self.n_layer)), r=2))
-            self.get_obs_node_mask()
-            
-            start_time2 = time()
-            self.predict_adj()
-            print("--- {} seconds on predicting adj".format( round(time() - start_time2, 2) ) ) 
-       
-            # start_time3 = time()         
-            self.eval_perform()
-            # print('--- {} mins on evaluating performance'.format( round( (time() - start_time3)/60, 4) ) )    
+        # if layer_link_unobs_list == None:
+        self.get_unobs_link_list()
+        # else:
+        # self.get_layer_link_list()
+        # self.get_layer_node_list()
+        self.get_adj_true_arr()
+        self.get_agg_adj()
+        
+        self.lyr_pair_list = list(permutations(list(range(self.n_layer)), r=2))
+        self.get_obs_node_mask()
+        
+        # start_time2 = time()
+        self.predict_adj()
+        # print("  --- {} mins on predicting adj".format( round((time() - start_time2)/60, 3) ) ) 
+   
+        # start_time3 = time()         
+        self.eval_perform()
+        # print('--- {} mins on evaluating performance'.format( round( (time() - start_time3)/60, 3) ) )    
    
     
     # functions for generating the ground truth of a multiplex network      
@@ -149,11 +155,15 @@ class Reconstruct:
         self.obs_node_mask_list = []
         for i_lyr in range(self.n_layer):
             obs_idx = np.array(list(permutations(self.PON_idx_list[i_lyr], r=2))).T
-            mask = (obs_idx[0], obs_idx[1])
+            if len(obs_idx) != 0:
+                mask = (obs_idx[0], obs_idx[1])
+            else:
+                mask = []
             self.obs_node_mask_list.append(mask)
 
-
     def get_unobs_link_list(self):
+        ''' Due to symmetry, only unobserved links in the upper half is selected 
+        '''
         self.layer_link_unobs_list = []
         # permuts = list(permutations(range(self.n_node), r=2))
         # permuts_half = [ele for ele in permuts if ele[1] > ele[0]]
@@ -161,8 +171,7 @@ class Reconstruct:
             node_obs = self.PON_idx_list[i_lyr]
             node_unobs = [ele for ele in range(self.n_node) if ele not in node_obs]
             # both nodes are unobserved
-            link_unobs_1 = get_permuts_half_numba(np.array(node_unobs))
-            link_unobs_1 = link_unobs_1.astype(int).tolist()
+            link_unobs_1 = get_permuts_half_numba(np.array(node_unobs)).astype(int).tolist()
             # ubobserved links have at least one unobserved node (if vertex-induced, use links among observed nodes orig)
             # one node unobserved
             link_prod_temp = list(product(node_obs, node_unobs))
@@ -170,8 +179,21 @@ class Reconstruct:
             # layer_link_unobs = [ele for ele in link_posbl if \
             #                     (ele[0] in layer_node_unobs or ele[1] in layer_node_unobs)]
             self.layer_link_unobs_list.append(np.array(link_unobs_1 + link_unobs_2))  
+        self.n_link_unobs = np.array([ len(sub) for sub in self.layer_link_unobs_list ])
         # print(self.layer_link_unobs_list)
-
+    def get_obs_link_list(self):
+        ''' Due to symmetry, only unobserved links in the upper half is selected 
+        '''
+        
+        self.n_link_obs = []
+        # permuts = list(permutations(range(self.n_node), r=2))
+        # permuts_half = [ele for ele in permuts if ele[1] > ele[0]]
+        for i_lyr in range(self.n_layer):
+            node_obs = self.PON_idx_list[i_lyr]
+            link_obs = get_permuts_half_numba(np.array(node_obs)).astype(int).tolist()
+            link_obs = np.array(link_obs).T
+            n_link_obs_temp = np.sum(self.agg_adj[(link_select[0], link_select[1])] == 1)
+            self.n_link_obs.append(n_link_obs_temp)
     # functions used in learn layer adj        
     # def avoid_prob_overflow(self):
     #     ''' avoid probability overflow in configuration model
@@ -184,6 +206,7 @@ class Reconstruct:
     def cal_link_prob_deg(self):
         ''' calculate link probability between two nodes using their degrees (configuration model)
             used as prior link probability
+            entries where the respective aggregate adj is 1 are updated
         '''        
         self.sgl_link_prob_3d = np.zeros((self.n_layer, self.n_node, self.n_node))
         for i in range(self.n_layer):
@@ -208,7 +231,8 @@ class Reconstruct:
         # links among observed nodes are observed
         for i_lyr in range(self.n_layer):
             mask = self.obs_node_mask_list[i_lyr]
-            self.adj_pred_arr[i_lyr][mask] = self.adj_true_arr[i_lyr][mask]
+            if mask:  # not empty
+                self.adj_pred_arr[i_lyr][mask] = self.adj_true_arr[i_lyr][mask]
         
         # ttt0 = time()
         agg_link_prob_list = []
@@ -217,14 +241,15 @@ class Reconstruct:
             agg_link_prob_temp[agg_link_prob_temp==0] = np.nan  # avoid Runtime error: divided by 0
             agg_link_prob_list.append(agg_link_prob_temp)
             
-        for lyr_pair in self.lyr_idx_pair:
+        for lyr_pair in self.lyr_pair_list:
             i_curr, i_othr = lyr_pair[0], lyr_pair[1]
-            # if link is present in current layer
+            # if link is present in the aggregate network
+                # if link is present in current layer and link is not between observed nodes
             mask_1 = self.adj_pred_arr[i_curr, :, :] == 1 & \
                      np.logical_not(np.isin(self.adj_pred_arr[i_othr, :, :], [0, 1]))
             self.adj_pred_arr[i_othr, mask_1] = self.agg_adj[mask_1] * self.sgl_link_prob_3d[i_othr, mask_1]
             
-            # if link is not present in current layer                                
+                # if link is not present in current layer and link is not between observed nodes                               
             agg_link_prob = agg_link_prob_list[i_curr]
             # agg_link_prob[i,j] = 0 means that sgl_link_prob_3d[i_othr, i, j] over other lyrs are all zeros
             mask_0 = self.adj_pred_arr[i_curr, :, :] == 0 & \
@@ -235,12 +260,113 @@ class Reconstruct:
         # print('--- Time on updating adj_pred_arr [i_othr]: {} s'.format(time()-ttt0))
         self.adj_pred_arr[self.adj_pred_arr<0] = 0 
         self.adj_pred_arr[self.adj_pred_arr>1] = 1
-           
+    
+    # def cal_link_prob_MAA(self):
+    #     # get average degree in each layer: <k>_alpha
+    #         # self.degree_mean_arr  = 2*n_link / self.n_node
+    #     # get degree of each node  in each layer: k_w^alpha
+        
+    #     # get number of unobserved links in each layer
+        
+    #     self.adj_pred_arr
+    #     for i_lyr in range(self.n_layer):
+    #         link_unobs = self.layer_link_unobs_list[i_lyr]
+    #         for w in nx.common_neighbors(G, u, v):
+    #             MAA = sum(1/np.sqrt( np.log(G_lyr[i_lyr0].degree(w))*np.log(G_lyr[i_lyr1].degree(w))) )
+    # def get_JC_mask_list(self):  
+    #     '''JC score for all unobserved links
+    #     '''
+    #     self.JC_mask_list = []
+    #     for i_lyr in range(self.n_layer):
+    #         jc_score = list(nx.jaccard_coefficient(self.net_layer_list[i_lyr], list(net_layer_list[i_lyr].edges)))
+    #         jc_score_sort = sorted(jc_score, key = lambda x: x[2], reverse=True)
+    #         link_select = np.array([ (ele[0], ele[1]) for ele in jc_score_sort[:self.n_link_unobs[i_lyr]] ])
+    #         mask = (link_select[0], link_select[1])
+    #         self.JC_mask_list.append(mask)
+    
+        
+    #     # not in 0 and 1
+    # def get_jc_score(self, G, u, v):
+    #     '''
+    #     ref.: https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.link_prediction.jaccard_coefficient.html
+    #     '''
+    #     union_size = len(set(G[u]) | set(G[v]))
+    #     if union_size == 0:
+    #         return 0
+    #     else:
+    #         return len(list(nx.common_neighbors(G, u, v))) / union_size  
+    def pred_link_simil(self):
+        '''predict links using similarity index 
+        '''
+        # self.layer_link_unobs_list = 
+        # for i_lyr in range(self.n_layer):
+        #     # Convert it into a 1D array and find the indices in the 1D array
+        #     index_value = self.layer_adj_arr[i_lyr, :,:]
+        #     idx_1d = index_value.flatten().argsort()[-n_link_unobs:]   
+        #     # convert the idx_1d back into indices arrays for each dimension
+        #     x_idx, y_idx = np.unravel_index(idx_1d, index_value.shape)      
+        #     # change the value of adj matrix accordingly
+        #     self.layer_adj_arr[i_lyr, (x_idx, y_idx)] = 1 
+
+        index_list = ['jaccard_coefficient', 'preferential_attachment',
+                      'common_neighbor_centrality', 'adamic_adar_index']
+        adj_pred_arr_list = []
+        for index in index_list:
+            adj_pred_arr_temp = self.adj_pred_arr
+            for i_lyr in range(self.n_layer):
+                G_temp = nx.from_numpy_matrix(np.ceil(self.adj_pred_arr[i_lyr]))
+                # TODO: use link probability as weight
+                # link_unobs = self.layer_link_unobs_list[i_lyr] 
+                n_link_left = np.sum(self.agg_adj==1) / 2 - self.n_link_obs[i_lyr]   # obtain from aggregate network topology: where aggregate adj ==1 - observed links among nodes 
+                
+                score = exec( 'list(nx.{}(G_temp, self.layer_link_unobs_list[i_lyr]))'.format(index) )
+                score_select = sorted(score, key = lambda x: x[2], reverse=True)[:n_link_left]         
+                idx_link_select = [(ele[0], ele[1]) for ele in score_select]
+                if len(idx_link_select) >= 1:
+                    idx_link_select = np.array(idx_link_select).T
+                    adj_pred_arr_temp[i_lyr, (idx_link_select[0], idx_link_select[1])] = 1
+            adj_pred_arr_list.append(adj_pred_arr_temp)
+        return adj_pred_arr_list 
+         
+    def cal_link_prob_jc(self):
+        ''' adamic_adar_index, preferential_attachment, common_neighbor_centrality
+            ref.: https://networkx.org/documentation/stable/reference/algorithms/link_prediction.html
+        '''
+        # JC_mask_list = []
+        for i_lyr in range(self.n_layer):
+            G_temp = nx.from_numpy_matrix(np.ceil(self.adj_pred_arr[i_lyr]))
+            # TODO: use link probability as weight
+            # link_unobs = self.layer_link_unobs_list[i_lyr] 
+            link_unobs_left = np.array( np.where( (self.adj_pred_arr[i_lyr] >0) & (self.adj_pred_arr[i_lyr] <1) ) )
+            # n_link_unobs_left = link_unobs_left.shape[1]
+            link_unobs_left_half_arr = link_unobs_left[:, link_unobs_left[0,:] < link_unobs_left[1,:]]
+            link_unobs_left_half_list = list(zip(link_unobs_left_half_arr[0], link_unobs_left_half_arr[1]))
+            
+            # list(G_temp.edges) only contain edges in the upper half
+            # jc_score = [(u, v, self.get_jc_score(G_temp, u, v)) for [u,v] in link_unobs_left_half_list]
+            jc_score = list(nx.jaccard_coefficient(G_temp, link_unobs_left_half_list))
+            # jc_score_sort = sorted(jc_score, key = lambda x: x[2], reverse=True)
+            # jc_score_select = [ele for ele in jc_score if ele[2] >= 0.25]
+            
+            # link_unobs = self.layer_link_unobs_list[i_lyr] 
+            # n_link_unobs_left = int(np.sum( (self.adj_pred_arr[i_lyr] >0) & (self.adj_pred_arr[i_lyr] <1) ) / 2)
+            # mask_1 = np.isin(np.triu(adj_pred_temp, k=1), [0, 1])           
+            link_select = [(ele[0], ele[1]) for ele in jc_score if ele[2] >= 0.333]
+            if len(link_select) >=1:
+                link_select = np.array(link_select).T
+                try:
+                    self.adj_pred_arr[i_lyr, (link_select[0], link_select[1])] = 1
+                except:
+                    print('------ link_select', link_select)
+                        
+            # JC_mask_list.append(mask)
+            # self.adj_pred_arr[i_lyr, self.JC_mask_list[i_lyr]] = 1
+         
     def predict_adj(self):     
         #initialize the network model parameters
         self.deg_seq_arr = np.random.uniform(1, self.n_node+1, size=(self.n_layer, self.n_node))
-        self.deg_seq_last_arr = np.empty((self.n_layer, self.n_node))
-        n_link_unobs = np.array([ len(sub) for sub in self.layer_link_unobs_list ])
+        self.deg_seq_last_arr = np.zeros((self.n_layer, self.n_node))
+        self.adj_pred_arr_last = np.zeros((self.n_layer, self.n_node, self.n_node))
         for iter in range(self.itermax):
             # if (iter+1) % 10 == 0: 
             #     print('  === iter: {}'.format(iter+1))                                
@@ -251,24 +377,31 @@ class Reconstruct:
             self.cal_link_prob_deg()
 
             # update link prob using partial node sets and all links among observed nodes
-            tt0 = time()
+            # tt0 = time()
             self.cal_link_prob_PON()  
-            print('--- Time on cal_link_prob_PON: {} seconds'.format(round(time() - tt0, 2) ))       
+            # print('--- Time on cal_link_prob_PON: {} seconds'.format(round(time() - tt0, 2) ))  
+            
+            # self.cal_link_prob_jc()
             
             #update network model parameters
             self.deg_seq_arr = np.sum(self.adj_pred_arr, axis=1)
 
             # check convergence of degree sequence
-            mae = np.sum(np.abs(self.deg_seq_last_arr - self.deg_seq_arr), axis=1) / n_link_unobs
+            # mae_deg = np.sum(np.abs(self.deg_seq_last_arr - self.deg_seq_arr), axis=1) #/ self.n_link_unobs
+            mae_link_prob = np.abs(self.adj_pred_arr_last - self.adj_pred_arr)
             #TODO: may need to use recall or precision as metrics
-            if np.all(mae < self.eps) :
+            # if np.all(mae < self.eps) :
+            if np.all(mae_link_prob < self.eps):
                 print('\nConverges at iter: {}'.format(iter))
                 break
             else:
                 if iter == self.itermax-1:
-                    print('\nNOT converged at the last iteration. MAE: {}\n'.format(mae))            
+                    # print('\nNOT converged at the last iteration.\n') 
+                    print('\nNOT converged at the last iteration. MAE: {}\n'.\
+                          format(np.sum(mae_link_prob)))            
             
-            self.deg_seq_last_arr = self.deg_seq_arr
+            # self.deg_seq_last_arr = self.deg_seq_arr
+            self.adj_pred_arr_last = self.adj_pred_arr
 
             
     def eval_perform(self):
@@ -290,11 +423,28 @@ class Reconstruct:
         adj_pred = np.concatenate(adj_pred_unobs_list)
         adj_pred_round = np.round(adj_pred)
         
-
+        precision, recall, _ = precision_recall_curve(adj_true, adj_pred)
+        # print('\n--- len recall: ', len(recall))
+        # print('\n--- recall: ', np.round(np.array(recall), 3) )
+        # print('\n--- len precision: ', len(precision))
+        # print('\n--- precision: ', np.round(np.array(precision), 3) )
+        auc_pr = auc(recall, precision)
+        # plt.plot(recall, precision)
+        # plt.title('AUC={}'.format(auc_pr))
+        # plt.xlabel('Recall')
+        # plt.savefig('AUC_{}.pdf'.format(auc_pr))
+        # plt.show()
         f1 = f1_score(adj_true, adj_pred_round)
         gmean  = geometric_mean_score(adj_true, adj_pred_round)
-        # mcc = matthews_corrcoef(adj_true, adj_pred_round)
-        self.metric_value = [f1, gmean] #, mcc]
+        
+        # n_pos = sum(np.array(adj_true)==1)
+        # n_total = len(adj_true)
+        # f1_null = 2*n_pos/(2*n_pos+n_total)
+        # gmean_null = np.sqrt(0.5*n_pos/n_total)
+        
+        mcc = matthews_corrcoef(adj_true, adj_pred_round)
+        # self.metric_value = [fpr, tpr, auc_val, prec, recall, acc]  
+        self.metric_value = [recall, precision, auc_pr, gmean, mcc, f1] #, mcc]
             # fpr, tpr, thresholds = roc_curve(adj_true, adj_pred)        
             # auc_val = auc(fpr, tpr)
             # prec = precision_score(adj_true, adj_pred_round, average='binary')
@@ -370,15 +520,19 @@ class Reconstruct:
 
 class Plots:         
   
-    def get_mean_roc(fpr_mean, fpr_list, tpr_list):
-        tprs_intp_list = []
-        for i in range(len(fpr_list)):
-            tprs_intp_list.append(np.interp(fpr_mean, fpr_list[i], tpr_list[i]))       
-        tpr_mean = np.mean(np.array(tprs_intp_list), axis=0).tolist()       
-        return tpr_mean
+    def get_mean_prc(x_mean, x_list, y_list):
+        '''get the mean of precision (y) values at mean of recall (x)
+           when # of x and y points are unequal over different repetitions
+        return: a list of y mean values associated with x mean values
+        '''
+        y_intp_list = []
+        for i in range(len(x_list)):
+            y_intp_list.append(np.interp(x_mean, x_list[i][::-1], y_list[i])[::-1])       
+        # y_mean = np.mean(np.array(y_intp_list), axis=0).tolist()       
+        return np.mean(np.array(y_intp_list), axis=0).tolist()   
         
     def plot_roc(frac_list, metric_mean_by_frac, n_layer, n_node):
-        fpr_list, tpr_list, auc_list = metric_mean_by_frac[0], metric_mean_by_frac[1], metric_mean_by_frac[2]
+        recall_list, precision_list, auc_list = metric_mean_by_frac[0], metric_mean_by_frac[1], metric_mean_by_frac[2]
         # linestyles = plotfuncs.linestyles()
         plotfuncs.format_fig(1.2)
         lw = .9
@@ -398,39 +552,44 @@ class Plots:
             selected_idx = [intvl*ele for ele in range(n_select) if intvl*ele < n_frac]
         plt.figure(figsize=(5.5, 5.5*4/5), dpi=400)
         for i_idx, idx in enumerate(selected_idx):
-            plt.plot(fpr_list[idx], tpr_list[idx], color=colors[i_idx], marker=markers[i_idx], 
-                     ms=med_size, lw=lw,linestyle = '--', alpha=.85,
-                     # label="{:.2f} ({:0.2f})".format(frac_list[i], auc_list[i]))
+            plt.plot(recall_list[idx], precision_list[idx], color=colors[i_idx], #marker='', #markers[i_idx], 
+                     # ms=med_size, 
+                     lw=lw,linestyle = linestyles[idx][1], alpha=.85,
+                     # label="{:.2f} ({:0.2f})".format(frac_list[idx], auc_list[idx]))
                      label="{:.2f}".format(frac_list[idx]))
                 
-        plt.plot([0, 1], [0, 1], "k--", lw=lw)
+        # plt.plot([0, 1], [0, 1], "k--", lw=lw)
+        # baseline is random classifier. P/ (P+N)
+        # https://stats.stackexchange.com/questions/251175/what-is-baseline-in-precision-recall-curve
         plt.xlim([-0.015, 1.015])
         plt.ylim([-0.015, 1.015])
-        plt.xlabel("False positive rate")
-        plt.ylabel("True positive rate")
-        plt.xticks([0.2*i for i in range(5+1)])
+        plt.xlabel("Recall")
+        plt.ylabel("Precision")
+        plt.xticks(np.linspace(0, 1, num=6, endpoint=True))
         # plt.legend(loc="lower right", fontsize=14.5, title=r'$c$') #title=r'$c$  (AUC)')
         ax = plt.gca()
         handles, labels = ax.get_legend_handles_labels()
-        ax.legend(reversed(handles), reversed(labels), title=r'$c$', loc='lower right', fontsize=14.5,)        
+        ax.legend(reversed(handles), reversed(labels), title=r'$c$', loc='lower left', fontsize=14.5,)        
 
-        # plt.savefig('../output/roc_{}layers_{}nodes.pdf'.format(n_layer, n_node))
+        plt.savefig('../output/prc_{}layers_{}nodes.pdf'.format(n_layer, n_node))
         plt.show()
 
     def plot_other(frac_list, metric_mean_by_frac, n_layer, n_node):
         # linestyles = plotfuncs.linestyles()
         # metric_value_by_frac = metric_mean_by_frac[2:]
         # metric_list = ['AUC', 'Precision', 'Recall','Accuracy']
-        metric_list = ['F1', 'G-mean'] #, 'MCC']
+        first_score_metric = 2
+        metric_mean_by_frac_select = metric_mean_by_frac[first_score_metric:]
+        metric_select = ['Recall', 'Precision', 'AUC-PR', 'G-mean', 'MCC', 'F1'][first_score_metric:(-1)]
         plotfuncs.format_fig(1.1)
         lw = .9
         med_size = 7
-        colors = ['tab:{}'.format(x) for x in ['red', 'blue', 'green', 'orange']]
-        markers = ['o', 'v', 's', 'd']
+        colors = ['tab:{}'.format(x) for x in ['red', 'blue', 'green', 'orange', 'purple', 'brown']]
+        markers = ['o', 'v', 's', 'd', '*', '^']
         plt.figure(figsize=(5, 4), dpi=400)
-        for i in range(len(metric_list)):
-            plt.plot(frac_list, metric_mean_by_frac[i], color=colors[i], marker=markers[i], alpha=.85,
-                     ms=med_size, lw=lw,linestyle = '--', label=metric_list[i])
+        for i in range(len(metric_select)):
+            plt.plot(frac_list, metric_mean_by_frac_select[i], color=colors[i], marker=markers[i], alpha=.85,
+                     ms=med_size, lw=lw,linestyle = '--', label=metric_select[i])
                 
         plt.xlim(right=1.03)
         plt.ylim([0, 1.03])
@@ -473,44 +632,50 @@ def get_permuts_half_numba(vec: np.ndarray):
             k += 1
     return output
              
+# there are always unobserved links when the network is large enough    
+# def sample_node_obs(layer_link_list, real_node_list, virt_node_list, i_frac):    
+#     PON_idx_list_orig = [np.random.choice(real_node_list[i_lyr], n_node_obs[i_frac][i_lyr],
+#                          replace=False).tolist() for i_lyr in range(n_layer)]                
+#     # append virtual nodes: all nodes - nodes in each layer
+#     PON_idx_list = [PON_idx_list_orig[i_lyr] + virt_node_list[i_lyr] \
+#                     for i_lyr in range(n_layer)]
     
-def sample_node_obs(layer_link_list, real_node_list, virt_node_list, i_frac):    
-    PON_idx_list_orig = [np.random.choice(real_node_list[i_lyr], n_node_obs[i_frac][i_lyr],
-                         replace=False).tolist() for i_lyr in range(n_layer)]                
-    # append virtual nodes: all nodes - nodes in each layer
-    PON_idx_list = [PON_idx_list_orig[i_lyr] + virt_node_list[i_lyr] \
-                    for i_lyr in range(n_layer)]
-    
-    # avoid trivial cases where all links are observed
-    is_empty = []
-    reconst_temp = Reconstruct(layer_link_list=layer_link_list,
-                               PON_idx_list=PON_idx_list, n_node=n_node)
-    layer_link_unobs_list = reconst_temp.layer_link_unobs_list
-    for i_lyr in range(reconst_temp.n_layer):
-        if reconst_temp.layer_link_unobs_list[i_lyr].size == 0:
-            is_empty.append(i_lyr)
-    if len(is_empty) == reconst_temp.n_layer:
-        print('--- No layers have unobserved links. Will resample observed nodes.')
-        return sample_node_obs(layer_link_list, real_node_list, virt_node_list, i_frac)
-    else:
-        return PON_idx_list, layer_link_unobs_list
+#     # avoid trivial cases where all links are observed
+#     is_empty = []
+#     reconst_temp = Reconstruct(layer_link_list=layer_link_list,
+#                                PON_idx_list=PON_idx_list, n_node=n_node)
+#     layer_link_unobs_list = reconst_temp.layer_link_unobs_list
+#     for i_lyr in range(reconst_temp.n_layer):
+#         if reconst_temp.layer_link_unobs_list[i_lyr].size == 0:
+#             is_empty.append(i_lyr)
+#     if len(is_empty) == reconst_temp.n_layer:
+#         print('--- No layers have unobserved links. Will resample observed nodes.')
+#         return sample_node_obs(layer_link_list, real_node_list, virt_node_list, i_frac)
+#     else:
+#         return PON_idx_list, layer_link_unobs_list
 
 # i_frac = 1
 # for 2 layer 6 node toy net, PON_idx_list = [[0,1,2], [0,4,5]] leads to zero error
 def single_run(i_frac):  #, layer_link_list, n_node):
     metric_value_rep_list = []
     for i_rep in range(n_rep):
-        PON_idx_list, layer_link_unobs_list = sample_node_obs(layer_link_list, real_node_list,
-                                                              virt_node_list, i_frac)
-        t000 = time()    
+        # PON_idx_list, layer_link_unobs_list = sample_node_obs(layer_link_list, real_node_list,
+        #                                                       virt_node_list, i_frac)
+        t000 = time()
+        PON_idx_list_orig = [np.random.choice(real_node_list[i_lyr], n_node_obs[i_frac][i_lyr],
+                             replace=False).tolist() for i_lyr in range(n_layer)]                
+        # append virtual nodes: all nodes - nodes in each layer
+        PON_idx_list = [PON_idx_list_orig[i_lyr] + virt_node_list[i_lyr] \
+                        for i_lyr in range(n_layer)]
         reconst = Reconstruct(layer_link_list=layer_link_list, PON_idx_list=PON_idx_list,
-                              layer_link_unobs_list=layer_link_unobs_list,
-                              n_node=n_node, itermax=int(100), eps=1e-6)    
+                              # net_layer_list=net_layer_list,
+                              # layer_link_unobs_list=layer_link_unobs_list,
+                              n_node=n_node, itermax=int(80), eps=5e-3)    
         t100 = time()
-        print('=== {} mins on this rep in total'.format( round( (t100-t000)/60, 4) ) ) 
+        # print('=== {} mins on this rep in total'.format( round( (t100-t000)/60, 3) ) ) 
         metric_value_rep_list.append(reconst.metric_value)
-        if i_rep == n_rep - 1:
-            print('--- rep: {}'.format(i_rep))
+        # if i_rep == n_rep - 1:
+            # print('--- rep: {}'.format(i_rep))
     return metric_value_rep_list
 # self = reconst
 # reconst.print_result()
@@ -543,26 +708,28 @@ def run_plot():
                 metric_value_by_frac[i_mtc][i_frac].append(results[i_frac][i_rep][i_mtc])
     # calculate the mean
     metric_mean_by_frac = [[ [] for _ in range(len(frac_list))] for _ in metric_list]    
-    # fpr_mean = np.linspace(0, 1, 20)
+    recall_mean = np.linspace(0, 1, 40)
     for i_mtc in range(len(metric_list)): # enumerate(metric_list):
-        # if mtc == 'fpr':
-        #     for i_frac in range(len(frac_list)):
-        #         metric_mean_by_frac[i_mtc][i_frac] = fpr_mean
-        # elif mtc == 'tpr':
-        #     for i_frac in range(len(frac_list)):
-        #         fpr_list = metric_value_by_frac[i_mtc-1][i_frac]
-        #         tpr_list = metric_value_by_frac[i_mtc][i_frac]
-        #         tpr_mean = Plots.get_mean_roc(fpr_mean, fpr_list, tpr_list)
-        #         metric_mean_by_frac[i_mtc][i_frac] = tpr_mean
-        # else:                
-        for i_frac in range(len(frac_list)):
-            # print(metric_value_by_frac[i_mtc][i_frac])
-            metric_mean_by_frac[i_mtc][i_frac] = np.nanmean(np.array(metric_value_by_frac[i_mtc][i_frac]))
+        if i_mtc == 0:
+            for i_frac in range(len(frac_list)):
+                metric_mean_by_frac[i_mtc][i_frac] = recall_mean
+        elif i_mtc == 1:
+            for i_frac in range(len(frac_list)):
+                recall_list = metric_value_by_frac[i_mtc-1][i_frac]
+                prec_list = metric_value_by_frac[i_mtc][i_frac]
+                # print('\n--- prec_list', prec_list)
+                prec_mean = Plots.get_mean_prc(recall_mean, recall_list, prec_list)
+                # print('\n--- prec_mean', prec_mean)
+                metric_mean_by_frac[i_mtc][i_frac] = prec_mean
+        else:                
+            for i_frac in range(len(frac_list)):
+                # print(metric_value_by_frac[i_mtc][i_frac])
+                metric_mean_by_frac[i_mtc][i_frac] = np.nanmean(np.array(metric_value_by_frac[i_mtc][i_frac]))
     # metric_value_by_frac = [auc_list, prec_list, recall_list, acc_list]
     # print('\nmetric_value_by_frac: ', metric_value_by_frac)
     print('\nmetric_mean_by_frac: ', metric_mean_by_frac)
     #Plots
-    # Plots.plot_roc(frac_list, metric_mean_by_frac, n_layer, n_node)
+    Plots.plot_roc(frac_list, metric_mean_by_frac, n_layer, n_node) 
     Plots.plot_other(frac_list, metric_mean_by_frac, n_layer, n_node)
 
 
@@ -571,55 +738,50 @@ def run_plot():
 # n_node, n_layer = 6, 2
 
 # net_type = 'rand'
-# n_node, n_layer = 100, 3
+# n_node, n_layer = 50, 2
 
 net_type = 'drug'
 n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
-# # n_node, n_layer = 2196, 4
+# n_node, n_layer = 2196, 4
 # n_node, n_layer = 2139, 3
+# load each layer (a nx class object)
+# with open('../data/drug_net_layer_list.pkl', 'rb') as f:
+#     net_layer_list = load(f)
+    
 net_name = '{}_net_{}layers_{}nodes'.format(net_type, n_layer, n_node)
 path = '../data/{}.xlsx'.format(net_name)
 layer_link_list = load_data(path)
 real_node_list, virt_node_list = get_layer_node_list(layer_link_list, n_layer, n_node)
 
+# layer_list_name = '{}_net_layer_list_{}layers_{}nodes'.format(net_type, n_layer, n_node)
+# path_layer_list = '../data/{}.pkl'.format(layer_list_name) 
+# with open(path_layer_list, 'rb') as f:
+#     net_layer_list = load(f)
+
+
 # frac_list = [0.8, 0.95]
 # frac_list = [0, 0.9, 0.95] 
 # frac_list = [round(0.1*i, 2) for i in range(0, 10)] + [0.95]
-frac_list = [0, 0.1] + [round(0.2*i,1) for i in range(1, 5)] + [0.9, 0.95]
+# frac_list = [0, 0.1] + [round(0.2*i,1) for i in range(1, 5)] + [0.9] # [0.9, 0.95]
+frac_list = [round(0.2*i,1) for i in range(5)] + [0.9, 0.95]
 n_node_list = [len(real_node_list[i]) for i in range(n_layer)]
 n_node_obs = [[int(frac*n_node_list[i]) for i in range(n_layer)] for frac in frac_list]     
-n_rep = 20
+n_rep = 10
 # metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
-metric_list = ['F1', 'G-mean'] #, 'MCC']
+metric_list = ['Recall', 'Precision', 'AUC-PR', 'G-mean', 'MCC', 'F1']
 
 
+# TODO: use other similarity-based prediction methods
 
+## parellel processing
 
+if __name__ == '__main__': 
 
- 
-
-
-
-
-# TODO: calculate metric value of random model
-
-
-
-
-
-
-
-
-
-# # parellel processing
-
-# if __name__ == '__main__': 
-
-#     import matplotlib
-#     matplotlib.use('Agg')
-#     t00 = time()
-#     run_plot()
-#     print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) ) 
+    import matplotlib
+    matplotlib.use('Agg')
+    t00 = time()
+    run_plot()
+    print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) ) 
 
      
     # for i_fd in range(n_fold):   
