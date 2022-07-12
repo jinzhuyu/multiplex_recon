@@ -48,7 +48,10 @@ from my_utils import *
 
 class Reconstruct:
     def __init__(self, layer_link_list, PON_idx_list=None, #net_layer_list=None, #layer_link_unobs_list=None,
-                 n_node=None, itermax=100, eps=1e-6, **kwargs):
+                 n_node=None, itermax=100, eps=1e-6, 
+                 simil_index_list=['jaccard_coefficient', 'preferential_attachment',
+                                   'common_neighbor_centrality', 'adamic_adar_index'],
+                 **kwargs):
         '''     
         Parameters
         ----------
@@ -151,6 +154,7 @@ class Reconstruct:
         self.agg_adj_3d = np.repeat(self.agg_adj[:, :, np.newaxis], self.n_layer, axis=2) 
         self.agg_adj_3d = np.moveaxis(self.agg_adj_3d, 2, 0)
 
+
     def get_obs_node_mask(self):
         self.obs_node_mask_list = []
         for i_lyr in range(self.n_layer):
@@ -181,6 +185,7 @@ class Reconstruct:
             self.layer_link_unobs_list.append(np.array(link_unobs_1 + link_unobs_2))  
         self.n_link_unobs = np.array([ len(sub) for sub in self.layer_link_unobs_list ])
         # print(self.layer_link_unobs_list)
+    
     def get_obs_link_list(self):
         ''' Due to symmetry, only unobserved links in the upper half is selected 
         '''
@@ -192,7 +197,7 @@ class Reconstruct:
             node_obs = self.PON_idx_list[i_lyr]
             link_obs = get_permuts_half_numba(np.array(node_obs)).astype(int).tolist()
             link_obs = np.array(link_obs).T
-            n_link_obs_temp = np.sum(self.agg_adj[(link_select[0], link_select[1])] == 1)
+            n_link_obs_temp = np.sum(self.agg_adj[(link_obs[0], link_obs[1])] == 1)
             self.n_link_obs.append(n_link_obs_temp)
     # functions used in learn layer adj        
     # def avoid_prob_overflow(self):
@@ -307,19 +312,16 @@ class Reconstruct:
         #     x_idx, y_idx = np.unravel_index(idx_1d, index_value.shape)      
         #     # change the value of adj matrix accordingly
         #     self.layer_adj_arr[i_lyr, (x_idx, y_idx)] = 1 
-
-        index_list = ['jaccard_coefficient', 'preferential_attachment',
-                      'common_neighbor_centrality', 'adamic_adar_index']
         adj_pred_arr_list = []
-        for index in index_list:
+        for simil_index in self.simil_index_list:
             adj_pred_arr_temp = self.adj_pred_arr
             for i_lyr in range(self.n_layer):
                 G_temp = nx.from_numpy_matrix(np.ceil(self.adj_pred_arr[i_lyr]))
                 # TODO: use link probability as weight
                 # link_unobs = self.layer_link_unobs_list[i_lyr] 
-                n_link_left = np.sum(self.agg_adj==1) / 2 - self.n_link_obs[i_lyr]   # obtain from aggregate network topology: where aggregate adj ==1 - observed links among nodes 
+                n_link_left = int(np.sum(self.agg_adj==1) / 2) - self.n_link_obs[i_lyr]   # obtain from aggregate network topology: where aggregate adj ==1 - observed links among nodes 
                 
-                score = exec( 'list(nx.{}(G_temp, self.layer_link_unobs_list[i_lyr]))'.format(index) )
+                exec( 'score = list(nx.{}(G_temp, self.layer_link_unobs_list[i_lyr]))'.format(index) )
                 score_select = sorted(score, key = lambda x: x[2], reverse=True)[:n_link_left]         
                 idx_link_select = [(ele[0], ele[1]) for ele in score_select]
                 if len(idx_link_select) >= 1:
@@ -405,7 +407,7 @@ class Reconstruct:
 
             
     def eval_perform(self):
-        ''' performance using F1 score and geometric mean
+        ''' performance evaluation using multiple metrics for imbalanced data, e.g., geometric mean, MCC
         '''
         self.adj_pred_arr_round = np.round(self.adj_pred_arr, 0)
         self.deg_seq_last_arr_round = np.round(self.deg_seq_last_arr) 
@@ -424,45 +426,10 @@ class Reconstruct:
         adj_pred_round = np.round(adj_pred)
         
         precision, recall, _ = precision_recall_curve(adj_true, adj_pred)
-        # print('\n--- len recall: ', len(recall))
-        # print('\n--- recall: ', np.round(np.array(recall), 3) )
-        # print('\n--- len precision: ', len(precision))
-        # print('\n--- precision: ', np.round(np.array(precision), 3) )
         auc_pr = auc(recall, precision)
-        # plt.plot(recall, precision)
-        # plt.title('AUC={}'.format(auc_pr))
-        # plt.xlabel('Recall')
-        # plt.savefig('AUC_{}.pdf'.format(auc_pr))
-        # plt.show()
-        f1 = f1_score(adj_true, adj_pred_round)
-        gmean  = geometric_mean_score(adj_true, adj_pred_round)
-        
-        # n_pos = sum(np.array(adj_true)==1)
-        # n_total = len(adj_true)
-        # f1_null = 2*n_pos/(2*n_pos+n_total)
-        # gmean_null = np.sqrt(0.5*n_pos/n_total)
-        
+        gmean  = geometric_mean_score(adj_true, adj_pred_round)      
         mcc = matthews_corrcoef(adj_true, adj_pred_round)
-        # self.metric_value = [fpr, tpr, auc_val, prec, recall, acc]  
-        self.metric_value = [recall, precision, auc_pr, gmean, mcc, f1] #, mcc]
-            # fpr, tpr, thresholds = roc_curve(adj_true, adj_pred)        
-            # auc_val = auc(fpr, tpr)
-            # prec = precision_score(adj_true, adj_pred_round, average='binary')
-            # if 1 not in adj_pred_round or 0 not in adj_true:
-            #     fpr = [0 for _ in tpr]
-            #     auc_val = np.nan
-            #     prec = np.nan
-            # if 1 not in adj_true or 0 not in adj_pred_round:
-            #     tpr = [1 for _ in fpr] 
-            #     auc_val = np.nan
-            #     prec = np.nan
-            # # if(np.isnan(prec).any()):
-            # # print('\n--- auc_val', auc_val, 'fpr', np.round(fpr, 2), 'tpr', np.round(tpr, 2))
-            # # print('--- adj_true', adj_true, 'adj_pred_round', adj_pred_round, '\n') 
-            #     # print('\n--- adj_pred', adj_pred)
-            # recall = recall_score(adj_true, adj_pred_round, average='binary')
-            # acc = accuracy_score(adj_true, adj_pred_round)
-            # self.metric_value = [fpr, tpr, auc_val, prec, recall, acc]  
+        self.metric_value = [recall, precision, auc_pr, gmean, mcc] #, f1]
 
         # # True Positive (TP): we predict a label of 1 (positive), and the true label is 1.
         # pred_labels, true_labels = adj_pred_round, adj_true       
@@ -737,11 +704,11 @@ def run_plot():
 # net_type = 'toy'
 # n_node, n_layer = 6, 2
 
-# net_type = 'rand'
-# n_node, n_layer = 50, 2
+net_type = 'rand'
+n_node, n_layer = 50, 2
 
-net_type = 'drug'
-n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
+# net_type = 'drug'
+# n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
 # n_node, n_layer = 2196, 4
 # n_node, n_layer = 2139, 3
 # load each layer (a nx class object)
@@ -775,13 +742,13 @@ metric_list = ['Recall', 'Precision', 'AUC-PR', 'G-mean', 'MCC', 'F1']
 
 ## parellel processing
 
-if __name__ == '__main__': 
+# if __name__ == '__main__': 
 
-    import matplotlib
-    matplotlib.use('Agg')
-    t00 = time()
-    run_plot()
-    print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) ) 
+#     import matplotlib
+#     matplotlib.use('Agg')
+#     t00 = time()
+#     run_plot()
+#     print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) ) 
 
      
     # for i_fd in range(n_fold):   
