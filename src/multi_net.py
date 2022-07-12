@@ -430,21 +430,6 @@ class Reconstruct:
         gmean  = geometric_mean_score(adj_true, adj_pred_round)      
         mcc = matthews_corrcoef(adj_true, adj_pred_round)
         self.metric_value = [recall, precision, auc_pr, gmean, mcc] #, f1]
-
-        # # True Positive (TP): we predict a label of 1 (positive), and the true label is 1.
-        # pred_labels, true_labels = adj_pred_round, adj_true       
-        # TP = np.sum(np.logical_and(pred_labels == 1, true_labels == 1))        
-        # # True Negative (TN): we predict a label of 0 (negative), and the true label is 0.
-        # TN = np.sum(np.logical_and(pred_labels == 0, true_labels == 0))         
-        # # False Positive (FP): we predict a label of 1 (positive), but the true label is 0.
-        # FP = np.sum(np.logical_and(pred_labels == 1, true_labels == 0))         
-        # # False Negative (FN): we predict a label of 0 (negative), but the true label is 1.
-        # FN = np.sum(np.logical_and(pred_labels == 0, true_labels == 1))       
-        # prec_cal = TP / (TP + FP)  #!!! why is FP = 0??? no ones in pred adj?
-        # recall_cal = TP / (TP + FN)  # because FN is high if FP is low
-        # acc_cal = (TP+TN) / (TP+TN + FP+FN)         
-        # print('TP: {}, FP: {}, TN: {}, FN: {}'.format(TP,FP,TN,FN))        
-        # print('prec_cal: {}, recall_cal: {}, acc_cal: {}'.format(prec_cal,recall_cal,acc_cal))
         
     
     def print_result(self): 
