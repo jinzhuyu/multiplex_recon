@@ -10,12 +10,13 @@ import matplotlib.transforms as mtransforms
 import networkx as nx
 from copy import deepcopy
 
-      
+from sklearn.tree import DecisionTreeRegressor
+     
 
 class DrugNet():
     
     def __init__(self, path, layer_selected_list, is_save_data=False, 
-                 is_extract_char=False, is_plot=False, is_save_fig=False, **kwargs):
+                 is_get_net_charac=False, is_plot=False, is_save_fig=False, **kwargs):
         '''     
         Parameters
             Path: path to the links of networks.
@@ -30,7 +31,8 @@ class DrugNet():
         vars = locals()
         self.__dict__.update(vars)
         del self.__dict__["self"] 
-        
+
+    def main(self):        
         self.n_layer = len(self.layer_selected_list)
         
         self.load_data()
@@ -38,10 +40,13 @@ class DrugNet():
         self.select_layers()
         self.correct_node_id()
         self.rename_col()
-        if self.is_extract_char:
+        self.select_attri()
+        
+        if self.is_get_net_charac:
             self.gen_net()
             self.get_layer()
-            self.extract_char()
+            self.get_net_charac()
+        
         if self.is_save_data:
             self.save_df() 
         
@@ -51,7 +56,8 @@ class DrugNet():
     
     def load_data(self):
         self.link_df_orig = pd.read_excel(self.path, sheet_name='LINKS IND AND GROUP')
-    
+        self.attri_df_orig = pd.read_excel(self.path, sheet_name='ACTOR ATTRIBUTES')
+        
     def merge_layer(self):
         '''merge 'Associate/Friendship' into 'Legitimate'
            merge 'Negative/Enemies' into 'Formal Criminal Organization' 
@@ -72,38 +78,105 @@ class DrugNet():
         '''
         self.link_df_select = self.link_df.loc[self.link_df['Type_relation'].isin(self.layer_selected_list)]
     
-    def correct_node_id(self):     
-        df_temp = deepcopy(self.link_df_select)
+    def correct_node_id(self):
+        link_df_temp = deepcopy(self.link_df_select)
         # let id start from 0
-        node_id_min = min(list(df_temp.loc[:,['Actor_A', 'Actor_B']].min()))
+        node_id_min = min(list(link_df_temp.loc[:,['Actor_A', 'Actor_B']].min()))
         if node_id_min >= 1:
-            df_temp[['Actor_A', 'Actor_B']] =  df_temp[['Actor_A', 'Actor_B']] - node_id_min 
+            link_df_temp[['Actor_A', 'Actor_B']] =  link_df_temp[['Actor_A', 'Actor_B']] - node_id_min 
         # find missing node ids
-        node_id = pd.concat([df_temp['Actor_A'], df_temp['Actor_B']], ignore_index=True).unique().tolist()
+        node_id = pd.concat([link_df_temp['Actor_A'], link_df_temp['Actor_B']], ignore_index=True).unique().tolist()
         node_id_missed = [i for i in range(max(node_id)) if i not in node_id]
+        print('--- Skipped node id: ', node_id_missed)
         # correct id error in df
-        df_temp_new = df_temp
+        link_df_temp_new = link_df_temp
         for col in ['Actor_A', 'Actor_B']:
-            node_list_temp = df_temp[col].tolist()
+            node_list_temp = link_df_temp[col].tolist()
             counter = 0
             for this_id in node_id_missed:                          
                 this_id -= counter
                 node_list_temp = [ele - 1 if ele >= this_id else ele for ele in node_list_temp]                
                 counter += 1
-            df_temp_new[col] = pd.Series(node_list_temp, index=df_temp_new.index)
-        node_id_new = pd.concat([df_temp_new['Actor_A'], df_temp_new['Actor_B']],
+            link_df_temp_new[col] = pd.Series(node_list_temp, index=link_df_temp_new.index)
+        node_id_new = pd.concat([link_df_temp_new['Actor_A'], link_df_temp_new['Actor_B']],
                                 ignore_index=True).unique().tolist()          
         self.node_id = node_id_new
         self.n_node = len(node_id_new)
-        self.link_df = df_temp_new
-
+        self.link_df = link_df_temp_new
+        
+        self.attri_df = self.attri_df_orig[~self.attri_df_orig['Actor_ID'].isin(node_id_missed)].reset_index() 
+        self.attri_df['Actor_ID'] = pd.Series(list(range(len(self.attri_df. index))), index=self.attri_df.index)     
+        
     def rename_col(self):
         self.link_df.rename(columns={'Actor_A': 'From', 'Actor_B': 'To', 'Type_relation': 'Relation'} , 
                             inplace=True)
+        self.attri_df.rename(columns={'Actor_ID': 'Node_ID'}, inplace=True)
+        
+    def select_attri(self):
+        self.attri_df = self.attri_df[['Node_ID', 'Gender', 'DOB_Year', 'Age_First_Analysis',
+                                       'Drug_Activity', 'Recode_Level', 'Drug_Type',
+                                       'Group_Membership_Type', 'Group_Membership_Code']]
+        
+    def impute_miss_data(self):
+        # if an actor is not involved in drug activity
+        self.attri_df.loc[self.attri_df['Drug_Activity']==0, ['Recode_Level', 'Drug_Type']] = 'NONE'
+        for col in ['Gender', 'DOB_Year', 'Age_First_Analysis']:
+            self.attri_df.loc[self.attri_df[col]=='.', col] = np.nan
+        
+        self.attri_df.loc[self.attri_df['Gender']=='Body', 'Gender'] = np.nan
+        self.attri_df.loc[self.attri_df['Gender']=='Male', 'Gender'] = 1
+        self.attri_df.loc[self.attri_df['Gender']=='Female', 'Gender'] = 0
+        
+        cols_to_factor = ['Recode_Level', 'Drug_Type', 'Group_Membership_Type', 'Drug_Activity']
+        self.attri_df[cols_to_factor] = self.attri_df[cols_to_factor].apply(lambda x: pd.factorize(x)[0])
+        
+        self.attri_df['Group_Membership_Code'] = self.attri_df['Group_Membership_Code'].astype('float')
+        
+        cols_with_NA = ['Gender', 'DOB_Year', 'Age_First_Analysis'] #[['Gender', 'DOB_Year', 'Age_First_Analysis'], ['DOB_Year', 'Age_First_Analysis']]
+        id_col = self.attri_df.loc[:, 'Node_ID']
+        self.attri_df = self.attri_df.drop(['Node_ID'], axis=1)
+        df_without_NA = self.attri_df.dropna()
+        is_NA_idx = self.attri_df[cols_with_NA].isna().any(axis=1)
+        df_with_NA_only = self.attri_df[is_NA_idx]
+       
+        # transform to float
+        df_without_NA[cols_with_NA] = df_without_NA[cols_with_NA].astype('float')
+
+        cols_no_NA = [ele for ele in df_without_NA.columns if ele not in cols_with_NA]
+        cols_with_NA_new = [ele+'_New' for ele in cols_with_NA]
+        X_train = df_without_NA.loc[:, cols_no_NA]
+        X_test = df_with_NA_only.loc[:, cols_no_NA]    
+        for idx, col in enumerate(cols_with_NA):
+            print('--- Impute: ', col)
+            y_train = df_without_NA[col]
+                    
+            # fit model on training data
+            model = DecisionTreeRegressor(max_depth=8)
+            model.fit(X_train, y_train)
+            
+            # make predictions for test data
+            y_pred = model.predict(X_test)
+            self.attri_df.loc[is_NA_idx, cols_with_NA_new[idx]] = y_pred
+        
+        for idx, col in enumerate(cols_with_NA):
+            is_na_idx = self.attri_df[col].isna()
+            self.attri_df.loc[is_na_idx, col] = self.attri_df.loc[is_na_idx, cols_with_NA_new[idx]].round(0)
+           
+        # remove cols_with_NA_new
+        self.attri_df = self.attri_df.drop(cols_with_NA_new, axis=1)
+        # add node id back
+        self.attri_df['Node_ID'] = id_col
+        cols = list(self.attri_df.columns)
+        cols = [cols[-1]] + cols[:-1]
+        self.attri_df = self.attri_df[cols]
+        
     def save_df(self):
         self.link_df.to_excel('../data/drug_net_{}layers_{}nodes.xlsx'. \
                               format(self.n_layer, self.n_node), index=False)                 
-
+        self.impute_miss_data()
+        self.attri_df.to_excel('../data/drug_net_attri_{}layers_{}nodes.xlsx'. \
+                               format(self.n_layer, self.n_node), index=False)
+            
     def gen_net(self):        
         G = nx.MultiGraph()
         self.layer_id_list = self.link_df['Relation'].unique() .tolist()  
@@ -120,7 +193,7 @@ class DrugNet():
             G_sub.add_edges_from(selected_edges)
             self.G_layer_list.append(G_sub)
     
-    def extract_char_sub(self, G):
+    def get_net_charac_sub(self, G):
         # charac_list = ['density', average']
         n_node = G.number_of_nodes()
         n_link = G.number_of_edges()
@@ -130,20 +203,21 @@ class DrugNet():
         cc_size = [len(c) for c in sorted(nx.connected_components(G), key=len, reverse=True)]
         cc_mean = np.mean(cc_size)
         
+        n_digit = 4
         print('--------- No. of nodes: ', n_node)
         print('--------- No. of links: ', n_link)
-        print('--------- Density: ', density)
-        print('--------- Average degree: ', degree_mean)
-        print('--------- Average size of connected component: ', cc_mean)
+        print('--------- Density: ', round(density, n_digit))
+        print('--------- Average degree: ', round(degree_mean, n_digit))
+        print('--------- Average size of connected component: ', round(cc_mean, n_digit))
     
-    def extract_char(self):
-        print('--- Aggregate network')
-        self.extract_char_sub(self.G)
+    def get_net_charac(self):
+        print('\n--- Aggregate network')
+        self.get_net_charac_sub(self.G)
         
-        print('\n=== Each layer')
+        print('\n--- Each layer')
         for i in range(self.n_layer):
             print('\n------ {} layer'.format(i))
-            self.extract_char_sub(self.G_layer_list[i])
+            self.get_net_charac_sub(self.G_layer_list[i])
                        
     def plot_layer(self): 
         # TODO: use color to represent layers or groups, or nodes in multiple layers
@@ -187,16 +261,18 @@ class DrugNet():
         
 def main():
     path='../data/drug_net_raw_data.xlsx'
-    is_extract_char = True
-    if is_extract_char:
+    is_get_net_charac = False
+    if is_get_net_charac:
         layer_selected_2d_list = [['Co-Offenders', 'Legitimate', 'Formal Criminal Organization', 'Kinship']]    
     else:
         layer_selected_2d_list = [['Co-Offenders', 'Kinship', 'Formal Criminal Organization', 'Legitimate'],
                                  ['Co-Offenders', 'Formal Criminal Organization', 'Legitimate'],
                                  ['Co-Offenders', 'Legitimate']]
     for layer_list in layer_selected_2d_list:
-        print('\n=== {} layers ===', len(layer_list))
-        drug_net = DrugNet(path=path, layer_selected_list=layer_list, is_extract_char=True)
+        print('\n=== {} layers ==='.format(len(layer_list)))
+        drug_net = DrugNet(path=path, layer_selected_list=layer_list, is_save_data=True,
+                           is_get_net_charac=is_get_net_charac)
+        drug_net.main()
 
 if __name__ == '__main__':
     main()
