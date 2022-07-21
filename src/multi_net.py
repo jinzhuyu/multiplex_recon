@@ -18,7 +18,7 @@ from pickle import load
 
 from sklearn.metrics import auc
 from sklearn.metrics import precision_score, recall_score, precision_recall_curve
-from sklearn.metrics import f1_score, matthews_corrcoef
+from sklearn.metrics import f1_score, matthews_corrcoef, balanced_accuracy_score, accuracy_score
 # from sklearn.metrics.cluster import fowlkes_mallows_score # geometric mean (G-mean)
 from imblearn.metrics import geometric_mean_score
 
@@ -51,7 +51,7 @@ from my_utils import *
           # (Adamic adar and preferential attachment(but covert net's hubs are small)?)
 
 class Reconstruct:
-    def __init__(self, layer_link_list, PON_idx_list=None, #net_layer_list=None, #layer_link_unobs_list=None,
+    def __init__(self, layer_link_list, node_attri_df, PON_idx_list=None, #net_layer_list=None, #layer_link_unobs_list=None,
                  n_node=None, itermax=100, eps=1e-6, 
                  simil_index_list=['jaccard_coefficient', 'preferential_attachment',
                                    'common_neighbor_centrality', 'adamic_adar_index'],
@@ -73,6 +73,8 @@ class Reconstruct:
         self.__dict__.update(vars)
         del self.__dict__["self"]
         
+    def main(self):
+            
         self.n_layer = len(self.layer_link_list)
         
 
@@ -356,7 +358,7 @@ class Reconstruct:
 
             # update link prob using partial node sets and all links among observed nodes
             # tt0 = time()
-            self.cal_link_prob_PON()  
+            # self.cal_link_prob_PON()  
             # print('--- Time on cal_link_prob_PON: {} seconds'.format(round(time() - tt0, 2) ))  
             
             # self.cal_link_prob_jc()
@@ -370,12 +372,12 @@ class Reconstruct:
             #TODO: may need to use recall or precision as metrics
             # if np.all(mae < self.eps) :
             if np.all(mae_link_prob < self.eps):
-                print('\nConverges at iter: {}'.format(iter))
+                # print('\nConverges at iter: {}'.format(iter))
                 break
-            else:
-                if iter == self.itermax-1:
-                    print('\nNOT converged at the last iteration. MAE: {}\n'.\
-                          format(np.sum(mae_link_prob)))            
+            # else:
+            #     if iter == self.itermax-1:
+            #         print('\nNOT converged at the last iteration. MAE: {}\n'.\
+            #               format(np.sum(mae_link_prob)))            
             
             # self.deg_seq_last_arr = self.deg_seq_arr
             self.adj_pred_arr_last = self.adj_pred_arr
@@ -383,6 +385,86 @@ class Reconstruct:
             # self.deg_seq_last_arr_round = np.round(self.deg_seq_last_arr)   
         return self.adj_pred_arr_last
 
+    # similarity measure for categorical data
+        # ref.: https://epubs.siam.org/doi/epdf/10.1137/1.9781611972788.22
+    def _apply_prediction(self, func, ebunch):
+        '''ebunch: list of tuple containing a pair of nodes. E.g., ebunch = [(1,2), (2,3)] 
+        '''
+        return ((u, v, func(u, v)) for [u, v] in ebunch)
+    
+    # def jaccard(self, ebunch):
+    #     def predict(u, v):
+    #         u_attri, v_attri = node_attri_df.iloc[u, 1:], node_attri_df.iloc[v, 1:]
+    #         intersec_size = sum(u_attri==v_attri)
+    #         union_size = 2 * u_attri.size - intersec_size
+    #         if union_size == 0:
+    #             return 0
+    #         else:
+    #             return  intersec_size / union_size
+    #     return self._apply_prediction(predict, ebunch)
+
+    def overlap(self, ebunch):
+        def predict(u, v):
+            u_attri, v_attri = self.node_attri_df.iloc[u, 1:], self.node_attri_df.iloc[v, 1:]
+            intersec_size = sum(u_attri==v_attri)
+            return  intersec_size / u_attri.size
+        return self._apply_prediction(predict, ebunch)
+
+    def eskin(self, ebunch):
+        n_unique = self.node_attri_df.nunique()[1:].to_numpy()
+        sim_score = n_unique**2 / (n_unique**2 + 2)
+        def predict(u, v):
+            sim_score[self.node_attri_df.iloc[u, 1:]==self.node_attri_df.iloc[v, 1:]] = 1
+            return  np.sum(sim_score) / (self.node_attri_df.shape[1]-1)
+        return self._apply_prediction(predict, ebunch)
+
+    def IOF(self, ebunch):
+        freq_list = []
+        for col in self.node_attri_df.columns[1:]:
+            freq_list.append(self.node_attri_df[col].value_counts().to_dict())              
+        def predict(u, v):
+            u_attri, v_attri = self.node_attri_df.iloc[u, 1:], self.node_attri_df.iloc[v, 1:]
+            sim_score = np.zeros(self.node_attri_df.shape[1]-1)
+            n_attri = self.node_attri_df.shape[1]-1
+            for k in range(n_attri):
+                sim_score[k] = 1 / (1 + np.log(freq_list[k][u_attri[k]]) * \
+                                    np.log(freq_list[k][v_attri[k]]) )
+            sim_score[u_attri==v_attri] = 1
+            return  np.sum(sim_score) / n_attri
+        return self._apply_prediction(predict, ebunch)
+
+    def OF(self, ebunch):
+        freq_list = []
+        for col in self.node_attri_df.columns[1:]:
+            freq_list.append(self.node_attri_df[col].value_counts().to_dict())              
+        def predict(u, v):
+            u_attri, v_attri = self.node_attri_df.iloc[u, 1:], self.node_attri_df.iloc[v, 1:]
+            sim_score = np.zeros(self.node_attri_df.shape[1]-1)
+            n_attri = self.node_attri_df.shape[1]-1
+            n_data = self.node_attri_df.shape[0]
+            for k in range(n_attri):
+                sim_score[k] = 1 / (1 + np.log(n_data/freq_list[k][u_attri[k]]) * \
+                                    np.log(n_data/freq_list[k][v_attri[k]]) )
+            sim_score[u_attri==v_attri] = 1
+            return  np.sum(sim_score) / n_attri
+        return self._apply_prediction(predict, ebunch)
+
+    def Goodall4(self, ebunch): 
+        freq_list = []
+        for col in self.node_attri_df.columns[1:]:
+            freq_list.append(self.node_attri_df[col].value_counts().to_dict())          
+        def predict(u, v):
+            u_attri, v_attri = self.node_attri_df.iloc[u, 1:], self.node_attri_df.iloc[v, 1:]
+            sim_score = np.zeros(self.node_attri_df.shape[1]-1)
+            n_attri = self.node_attri_df.shape[1]-1
+            n_data = self.node_attri_df.shape[0]
+            for k in range(n_attri):
+                if u_attri[k] == v_attri[k]:
+                    sim_score[k] = freq_list[k][u_attri[k]]*(freq_list[k][u_attri[k]] -1)/ \
+                                   ( n_data*(n_data-1) )
+            return  np.sum(sim_score) / n_attri
+        return self._apply_prediction(predict, ebunch)
+    
     def pred_adj_simil(self):
         '''predict links using similarity index 
         '''
@@ -424,6 +506,7 @@ class Reconstruct:
         #             idx_link_select = np.array(idx_link_select).T
         #             adj_pred_arr_temp[i_lyr, (idx_link_select[0], idx_link_select[1])] = 1
         #     adj_pred_arr_simil.append(adj_pred_arr_temp)
+        print('--- Jaccard')
         adj_pred_arr_temp = deepcopy(adj_pred_arr)
         for i_lyr in range(self.n_layer):
             G_temp = nx.from_numpy_matrix(np.ceil(adj_pred_arr[i_lyr]))
@@ -433,14 +516,30 @@ class Reconstruct:
             score_select = sorted(score, key = lambda x: x[2], reverse=True)[:n_link_left]         
             idx_link_select = [(ele[0], ele[1]) for ele in score_select]
             if len(idx_link_select) >= 1:
-                print(len(idx_link_select))
+                # print('--- Using jaccard: ', len(idx_link_select))
                 idx_link_select = np.array(idx_link_select).T
                 adj_pred_arr_temp[i_lyr, (idx_link_select[0], idx_link_select[1])] = 1
             else:
-                print('------- No new links by jaccard_coefficient')
+                print('------- No new links generated using jaccard')
         adj_pred_arr_simil.append(adj_pred_arr_temp)
         
-        
+        print('--- Include node attributes')
+        print('--- Eskin')
+        adj_pred_arr_temp = deepcopy(adj_pred_arr)
+        for i_lyr in range(self.n_layer):
+            # G_temp = nx.from_numpy_matrix(np.ceil(adj_pred_arr[i_lyr]))
+            n_link_left = int(np.sum(self.agg_adj==1) / 2) - self.n_link_obs[i_lyr]   # obtain from aggregate network topology: where aggregate adj ==1 - observed links among nodes 
+            
+            score = list(self.eskin(self.layer_link_unobs_list[i_lyr]))
+            score_select = sorted(score, key = lambda x: x[2], reverse=True)[:n_link_left]         
+            idx_link_select = [(ele[0], ele[1]) for ele in score_select]
+            if len(idx_link_select) >= 1:
+                # print('---Using eskin: ', len(idx_link_select))
+                idx_link_select = np.array(idx_link_select).T
+                adj_pred_arr_temp[i_lyr, (idx_link_select[0], idx_link_select[1])] = 1
+            else:
+                print('------- No new links generated using eskin')
+        adj_pred_arr_simil.append(adj_pred_arr_temp)        
         # adj_pred_arr_temp = adj_pred_arr
         # for i_lyr in range(self.n_layer):
         #     G_temp = nx.from_numpy_matrix(np.ceil(adj_pred_arr[i_lyr]))
@@ -503,6 +602,7 @@ class Reconstruct:
         return adj_pred_arr_simil
     
     def run_all_models(self):
+        print('--- EM')
         adj_pred_arr_EM = self.predict_adj_EM()
         adj_pred_arr_simil = self.pred_adj_simil()
         self.adj_pred_arr_list = [adj_pred_arr_EM] + adj_pred_arr_simil
@@ -531,8 +631,12 @@ class Reconstruct:
             adj_pred_unobs = np.round(adj_pred_unobs)
         gmean  = geometric_mean_score(self.adj_true_unobs, adj_pred_unobs)      
         mcc = matthews_corrcoef(self.adj_true_unobs, adj_pred_unobs)
+        # f1 = f1_score(self.adj_true_unobs, adj_pred_unobs)
+        recall_val = recall_score(self.adj_true_unobs, adj_pred_unobs)
+        precision_val = precision_score(self.adj_true_unobs, adj_pred_unobs)
+        # b_acc = balanced_accuracy_score(self.adj_true_unobs, adj_pred_unobs)  #balanced_accuracy_score
         # metric_value = [recall, precision, auc_pr, gmean, mcc] #, f1] 
-        return [recall, precision, auc_pr, gmean, mcc]
+        return [recall, precision, auc_pr, gmean, mcc, recall_val, precision_val]
     
     def get_metric_value(self):
         self.get_adj_true_unobs()
@@ -605,8 +709,8 @@ class Plots:
         plotfuncs.format_fig(1.1)
         lw = .9
         med_size = 7
-        colors = ['tab:{}'.format(x) for x in ['red', 'blue', 'green', 'orange', 'purple', 'brown']]
-        markers = ['o', 'v', 's', 'd', '*', '^']
+        colors = ['tab:{}'.format(x) for x in ['red', 'blue', 'green', 'orange', 'purple', 'pink', 'brown']]
+        markers = ['o', 'v', '>', '*', 's', 'd']
         plt.figure(figsize=(5, 4), dpi=400)
         for i in range(len(model_list)):
             plt.plot(frac_list, metric_mean_by_model[i], color=colors[i], marker=markers[i], alpha=.85,
@@ -626,13 +730,15 @@ class Plots:
 # metric_mean_by_frac[i_mtc][i_mdl][i_frac]
 
     def plot_each_metric(frac_list, metric_mean_by_frac, n_layer, n_node):        
-        metric_list = ['Recall', 'Precision', 'AUC-PR', 'G-mean', 'MCC']
+        metric_list = ['Recall', 'Precision', 'AUC-PR', 'G-mean', 'MCC', 'Recall', 'Precision']
         first_metric_select = 2
-        model_list = ['EM'] + ['JC', 'Random'] #, 'PA', 'CN', 'AA']
+        model_list = ['EM'] + ['JC', 'AA', 'RM'] #, 'PA', 'CN', 'AA']
         for i_mtc in range(first_metric_select, len(metric_list)):
             # print('\n------ metric_mean_by_model_frac[i_mtc]', np.array(metric_mean_by_model_frac[i_mtc-2]))
             Plots.plot_each_metric_sub(frac_list, metric_mean_by_frac[i_mtc],
-                                       metric_list[i_mtc], model_list, n_layer, n_node)   
+                                       metric_list[i_mtc], model_list, n_layer, n_node) 
+            # if metric_list[i_mtc] in ['MCC', 'Recall', 'Precision']:
+            #     print('------', metric_list[i_mtc], metric_mean_by_frac[i_mtc])
         
     def plot_roc(frac_list, metric_mean_by_frac, n_layer, n_node):
         recall_list, precision_list, auc_list = metric_mean_by_frac[0], metric_mean_by_frac[1], metric_mean_by_frac[2]
@@ -646,7 +752,7 @@ class Plots:
         # else:
         #     colors = cm.get_cmap('tab20').colors  
         colors = ['tab:{}'.format(x) for x in ['red', 'blue', 'green', 'orange', 'purple']]
-        markers = ['o', 'v', 's', 'd', '*', 'x', 'v', 'o', 'x', 'd', '*', 's']
+        markers = ['o', 'v', 's', '>', '*', 'x', '<', 'o', 'x', 'd', '*', 's']
         n_select = 5
         if n_frac <= n_select:
             selected_idx = [ele for ele in range(n_frac)]
@@ -683,13 +789,13 @@ class Plots:
         # metric_list = ['AUC', 'Precision', 'Recall','Accuracy']
         first_score_metric = 2
         metric_mean_by_frac_select = metric_mean_by_frac[first_score_metric:]
-        metric_select = ['Recall', 'Precision', 'AUC-PR', 'G-mean', 'MCC']
+        metric_select = ['Recall', 'Precision', 'AUC-PR', 'G-mean', 'MCC', 'Recall', 'Precision']
         metric_select= metric_select[first_score_metric:]
         plotfuncs.format_fig(1.1)
         lw = .9
         med_size = 7
-        colors = ['tab:{}'.format(x) for x in ['red', 'blue', 'green', 'orange', 'purple', 'brown']]
-        markers = ['o', 'v', 's', 'd', '*', '^']
+        colors = ['tab:{}'.format(x) for x in ['red', 'blue', 'green', 'orange', 'purple', 'pink', 'brown']]
+        markers = ['o', 'v', '>', '*', 's', 'd']
         plt.figure(figsize=(5, 4), dpi=400)
         for i in range(len(metric_select)):
             plt.plot(frac_list, metric_mean_by_frac_select[i], color=colors[i], marker=markers[i], alpha=.85,
@@ -771,10 +877,12 @@ def single_run(i_frac):  #, layer_link_list, n_node):
         # append virtual nodes: all nodes - nodes in each layer
         PON_idx_list = [PON_idx_list_orig[i_lyr] + virt_node_list[i_lyr] \
                         for i_lyr in range(n_layer)]
-        reconst = Reconstruct(layer_link_list=layer_link_list, PON_idx_list=PON_idx_list,
+        reconst = Reconstruct(layer_link_list=layer_link_list, node_attri_df=node_attri_df,
+                              PON_idx_list=PON_idx_list,
                               # net_layer_list=net_layer_list,
                               # layer_link_unobs_list=layer_link_unobs_list,
-                              n_node=n_node, itermax=int(5), eps=1e-2)    
+                              n_node=n_node, itermax=int(1), eps=1e-2)    
+        reconst.main() 
         # t100 = time()
         # print('=== {} mins on this rep in total'.format( round( (t100-t000)/60, 3) ) ) 
         metric_value_rep_list.append(reconst.metric_value_list)
@@ -854,10 +962,10 @@ def run_plot():
 # n_node, n_layer = 6, 2
 
 # net_type = 'rand'
-# n_node, n_layer = 100, 2
+# n_node, n_layer = 50, 2
 
 net_type = 'drug'
-# n_node, n_layer = 2114, 2 # 2139, 3 # 2196, 4
+# n_node, n_layer = 2114, 2
 n_node, n_layer = 2196, 4
 # n_node, n_layer = 2139, 3
 # load each layer (a nx class object)
@@ -865,8 +973,13 @@ n_node, n_layer = 2196, 4
 #     net_layer_list = load(f)
     
 net_name = '{}_net_{}layers_{}nodes'.format(net_type, n_layer, n_node)
-path = '../data/{}.xlsx'.format(net_name)
-layer_link_list = load_data(path)
+layer_link_list = load_data('../data/{}.xlsx'.format(net_name))
+if net_type == 'drug':
+    node_attri_df = pd.read_excel('../data/drug_net_attri_{}layers_{}nodes.xlsx'. \
+                                  format(n_layer, n_node))
+    node_attr_dict = node_attri_df.set_index('Node_ID').to_dict('index')
+else:
+    node_attr_dict = None
 real_node_list, virt_node_list = get_layer_node_list(layer_link_list, n_layer, n_node)
 
 # layer_list_name = '{}_net_layer_list_{}layers_{}nodes'.format(net_type, n_layer, n_node)
@@ -879,18 +992,18 @@ real_node_list, virt_node_list = get_layer_node_list(layer_link_list, n_layer, n
 # frac_list = [0, 0.9, 0.95] 
 # frac_list = [round(0.1*i, 2) for i in range(0, 10)] + [0.95]
 # frac_list = [0, 0.1] + [round(0.2*i,1) for i in range(1, 5)] + [0.9] # [0.9, 0.95]
-frac_list = [round(0.2*i,1) for i in range(5)] + [0.9]
-# frac_list = [0.2, 0.4] #, 0.6, 0.8]
+# frac_list = [round(0.2*i,1) for i in range(5)] + [0.9]
+frac_list = [0.2, 0.4, 0.6, 0.8]
 n_node_list = [len(real_node_list[i]) for i in range(n_layer)]
 n_node_obs = [[int(frac*n_node_list[i]) for i in range(n_layer)] for frac in frac_list]     
 
 # metric_list = ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
-metric_list = ['Recall', 'Precision', 'AUC-PR', 'G-mean', 'MCC']
-model_list = ['DegEM'] + ['JC', 'Random']  #, 'PA', 'CN', 'AA']
+metric_list = ['Recall', 'Precision', 'AUC-PR', 'G-mean', 'MCC', 'Recall', 'Precision']
+model_list = ['EM'] + ['JC', 'Eskin (with attributes)', 'RM']  #, 'PA', 'CN', 'AA']
 n_metric = len(metric_list)
 n_model = len(model_list)
 n_frac = len(frac_list)
-n_rep = 4
+n_rep = 1
 # TODO: use other similarity-based prediction methods
 
 # parellel processing
