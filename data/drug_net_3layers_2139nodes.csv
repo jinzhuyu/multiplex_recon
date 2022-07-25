@@ -1,0 +1,3447 @@
+From,To,Relation,Relation_details,Actor_A_OCgroupmemberships,Actor_B_OCgroupmemberships
+0,416,Co-Offenders,btb selling cocaine,G45,NONE
+0,429,Legitimate,Associate,G45,NONE
+0,1041,Legitimate,Associate,G45,NONE
+0,1889,Legitimate,bt purchase property together in the US,G45,NONE
+0,1978,Legitimate,used to be in business together,G45,NONE
+0,525,Legitimate,btb associate,G45,G2
+0,658,Co-Offenders,bt sell cocaine,G45,G45
+0,233,Legitimate,Associate,G45,G9
+4,1687,Co-Offenders,"Cocaine Rip, Shooting",G175,G175
+4,1687,Formal Criminal Organization,Enemies,G175,G175
+5,4,Co-Offenders,"debt collection, drugs, home invasions, extortion & kidnapping",G175,G175
+10,214,Legitimate,btb personal associate,G9,G9
+10,214,Formal Criminal Organization,,G9,G9
+16,1683,Legitimate,associate,"G73, G131",G110
+16,1925,Legitimate,Associate,"G73, G131",G110
+17,110,Co-Offenders,,"G73, G131",NONE
+17,499,Legitimate,Former Associate,"G73, G131",NONE
+17,697,Legitimate,Former Associate,"G73, G131",NONE
+17,833,Legitimate,Former Associate,"G73, G131",NONE
+17,960,Formal Criminal Organization,in a dispute with group,"G73, G131",NONE
+17,1912,Co-Offenders,Same Cell,"G73, G131",NONE
+17,266,Formal Criminal Organization,in a dispute with group,"G73, G131",G122
+17,505,Co-Offenders,Same Cell,"G73, G131",G131
+17,16,Co-Offenders,,"G73, G131","G73, G131"
+20,1925,Co-Offenders,working together re drugs,G183,G110
+20,3,Co-Offenders,"Kidnappings, debt collection, drug rips & robberies",G183,G183
+20,78,Co-Offenders,"Kidnappings, debt collection, drug rips & robberies",G183,G183
+20,147,Co-Offenders,"Kidnappings, debt collection, drug rips & robberies",G183,G183
+20,509,Co-Offenders,"Kidnappings, debt collection, drug rips & robberies",G183,G183
+20,672,Co-Offenders,"Kidnappings, debt collection, drug rips & robberies",G183,G183
+20,743,Co-Offenders,"Kidnappings, debt collection, drug rips & robberies",G183,G183
+20,750,Co-Offenders,"Kidnappings, debt collection, drug rips & robberies",G183,G183
+20,783,Co-Offenders,"Kidnappings, debt collection, drug rips & robberies",G183,G183
+20,1305,Co-Offenders,"Kidnappings, debt collection, drug rips & robberies",G183,G183
+20,1368,Co-Offenders,"Kidnappings, debt collection, drug rips & robberies",G183,G183
+20,1570,Co-Offenders,"Kidnappings, debt collection, drug rips & robberies",G183,G183
+20,1733,Co-Offenders,"Kidnappings, debt collection, drug rips & robberies",G183,G183
+20,19,Co-Offenders,possession of narcotics,G183,G183
+20,3,Formal Criminal Organization,,G183,G183
+20,19,Formal Criminal Organization,,G183,G183
+20,78,Formal Criminal Organization,,G183,G183
+20,147,Formal Criminal Organization,,G183,G183
+20,509,Formal Criminal Organization,,G183,G183
+20,672,Formal Criminal Organization,,G183,G183
+20,743,Formal Criminal Organization,,G183,G183
+20,750,Formal Criminal Organization,,G183,G183
+20,783,Formal Criminal Organization,,G183,G183
+20,1305,Formal Criminal Organization,,G183,G183
+20,1368,Formal Criminal Organization,,G183,G183
+20,1570,Formal Criminal Organization,,G183,G183
+20,1733,Formal Criminal Organization,,G183,G183
+21,1249,Legitimate,user of Blackberry,"G47, G81","G47, G81"
+23,1486,Legitimate,assoicate,NONE,G169
+25,168,Co-Offenders,associate,G11,NONE
+25,168,Formal Criminal Organization,Ch2,G11,NONE
+25,1534,Co-Offenders,associate,G11,NONE
+25,24,Co-Offenders,"cocaine/ marihuana, btb:  prostitution",G11,G11
+25,118,Co-Offenders,"cocaine/ marihuana, btb:  prostitution",G11,G11
+25,119,Co-Offenders,"cocaine/ marihuana, btb:  prostitution",G11,G11
+25,1104,Co-Offenders,"cocaine/ marihuana, btb:  prostitution",G11,G11
+25,24,Formal Criminal Organization,member/ associate Ch2,G11,G11
+25,1110,Co-Offenders,"cocaine/ marihuana, btb:  prostitution",G11,"G11, G18"
+26,523,Co-Offenders,cocaine courier,G54,G54
+27,523,Legitimate,former roommates,G54,G54
+27,523,Co-Offenders,drug partner,G54,G54
+27,26,Co-Offenders,former cocaine courier,G54,G54
+28,77,Legitimate,Associate,NONE,G167
+32,1964,Legitimate,associate,NONE,NONE
+34,1967,Legitimate,Associate,G179,G179
+37,1979,Legitimate,involved with vehicle leases,"G55, G60, G107",G107
+39,38,Co-Offenders,arrested for cocaine,G93,NONE
+39,551,Formal Criminal Organization,feud between,G93,G127
+44,1536,Co-Offenders,"Illegal gambling, selling of stolen property",G27,G27
+44,1536,Formal Criminal Organization,Ch6,G27,G27
+44,1536,Legitimate,director of business,G27,G27
+45,43,Co-Offenders,"Robberies, assaults, & weapons possession",G182,G182
+45,411,Co-Offenders,"Robberies, assaults, & weapons possession",G182,G182
+45,412,Co-Offenders,"Robberies, assaults, & weapons possession",G182,G182
+45,508,Co-Offenders,"Robberies, assaults, & weapons possession",G182,G182
+45,606,Co-Offenders,"Robberies, assaults, & weapons possession",G182,G182
+45,713,Co-Offenders,"Robberies, assaults, & weapons possession",G182,G182
+45,1122,Co-Offenders,"Robberies, assaults, & weapons possession",G182,G182
+45,1167,Co-Offenders,"Robberies, assaults, & weapons possession",G182,G182
+45,1451,Co-Offenders,"Robberies, assaults, & weapons possession",G182,G182
+45,1928,Co-Offenders,"Robberies, assaults, & weapons possession",G182,G182
+45,2005,Co-Offenders,"Robberies, assaults, & weapons possession",G182,G182
+45,43,Formal Criminal Organization,,G182,G182
+45,411,Formal Criminal Organization,,G182,G182
+45,412,Formal Criminal Organization,,G182,G182
+45,508,Formal Criminal Organization,,G182,G182
+45,606,Formal Criminal Organization,,G182,G182
+45,713,Formal Criminal Organization,,G182,G182
+45,1122,Formal Criminal Organization,,G182,G182
+45,1167,Formal Criminal Organization,,G182,G182
+45,1451,Formal Criminal Organization,,G182,G182
+45,1928,Formal Criminal Organization,,G182,G182
+45,2005,Formal Criminal Organization,,G182,G182
+49,888,Co-Offenders,btb associate,NONE,NONE
+49,888,Legitimate,longshoreman,NONE,NONE
+50,1529,Legitimate,RO company,"G8, G9, G10, G24",NONE
+50,1891,Legitimate,associate,"G8, G9, G10, G24","G23, G24"
+50,825,Legitimate,RO company,"G8, G9, G10, G24","G24, G80"
+60,2022,Co-Offenders,Cocaine,NONE,NONE
+61,132,Co-Offenders,btb marihuana,G46,G100
+61,651,Legitimate,,G46,G46
+61,548,Co-Offenders,btb marihuana,G46,G46
+61,441,Co-Offenders,marihuana possession,G46,G46
+61,968,Co-Offenders,marihuana possession,G46,G46
+61,650,Co-Offenders,Same Cell,G46,G46
+61,651,Co-Offenders,Same Cell,G46,G46
+61,756,Co-Offenders,Same Cell,G46,G46
+67,1447,Co-Offenders,btb cocaine connection,"G13, G15, G16",NONE
+67,1447,Formal Criminal Organization,Ch3 former,"G13, G15, G16",NONE
+67,456,Co-Offenders,btb criminal associate,"G13, G15, G16",G15
+67,68,Co-Offenders,same cell,"G13, G15, G16",G15
+67,68,Formal Criminal Organization,Ch3,"G13, G15, G16",G15
+67,68,Legitimate,director of 5 registered firms,"G13, G15, G16",G15
+67,700,Co-Offenders,btb supplying cocaine,"G13, G15, G16","G15, G25, G34, G67"
+67,700,Legitimate,"paid 725 $700,000 for warehouse","G13, G15, G16","G15, G25, G34, G67"
+68,700,Co-Offenders,btb supplying cocaine,G15,"G15, G25, G34, G67"
+69,71,Legitimate,Director/ Manager,NONE,NONE
+75,1662,Co-Offenders,btb flying shipments of marihuana,"G47, G82",NONE
+75,1258,Co-Offenders,bt have imported cocaine,"G47, G82",G13
+75,700,Co-Offenders,cocaine,"G47, G82","G15, G25, G34, G67"
+75,1264,Legitimate,met in an prison,"G47, G82",G47
+75,74,Co-Offenders,assists in transferring proceeds into Canada,"G47, G82",G47
+75,1264,Co-Offenders,bt have imported cocaine,"G47, G82",G47
+75,1986,Co-Offenders,btb hired for protection & for transfer of funds into foreign country,"G47, G82",G47
+75,836,Co-Offenders,btb working together in cocaine importation,"G47, G82",G47
+75,1215,Co-Offenders,in charge of one helicopter re marihuana,"G47, G82",G47
+75,455,Co-Offenders,partners in a marihuana smuggling enterprise,"G47, G82",G47
+75,1754,Co-Offenders,Same Cell,"G47, G82",G47
+75,1767,Co-Offenders,Same Cell,"G47, G82",G47
+75,1810,Co-Offenders,Same Cell,"G47, G82",G47
+75,2056,Co-Offenders,Same Cell,"G47, G82",G47
+75,455,Legitimate, “owner” of one helicopter,"G47, G82",G47
+75,1215,Formal Criminal Organization,bt have had a falling out,"G47, G82",G47
+75,2075,Co-Offenders,Same Cell,"G47, G82","G47, G58, G81"
+75,684,Co-Offenders,btb flying shipments of marihuana,"G47, G82","G47, G65"
+75,21,Co-Offenders,Same Cell,"G47, G82","G47, G81"
+75,1249,Co-Offenders,RO of Blackberries linked to organization,"G47, G82","G47, G81"
+75,572,Co-Offenders,Same Cell,"G47, G82","G47, G84"
+75,1060,Co-Offenders,Same Cell,"G47, G82","G47, G84"
+75,1271,Co-Offenders,bt have worked together,"G47, G82","G60, G110"
+75,1362,Legitimate,btb partner in helicopter,"G47, G82",G73
+75,1055,Co-Offenders,involved in the money aspect of marihuana exportation,"G47, G82",G81
+75,233,Co-Offenders,bt have worked together,"G47, G82",G9
+77,331,Legitimate,Associate,G167,NONE
+77,990,Co-Offenders,Same Cell,G167,G167
+77,1875,Co-Offenders,Same Cell,G167,G167
+77,1995,Co-Offenders,Same Cell,G167,G167
+77,1183,Legitimate,Associate,G167,G175
+79,1691,Formal Criminal Organization,Feud,G175,NONE
+79,551,Formal Criminal Organization,Feud,G175,G127
+79,1162,Legitimate,Associates,G175,G175
+79,1880,Legitimate,Associates,G175,G175
+80,1126,Formal Criminal Organization,Shooting,G175,NONE
+80,1691,Formal Criminal Organization,Feud,G175,NONE
+80,79,Co-Offenders,"debt collection, drugs, home invasions, extortion & kidnapping",G175,G175
+82,81,Formal Criminal Organization,,"G23, G40, G43","G23, G40, G43, G111"
+87,367,Co-Offenders,main supplier of heroin,NONE,NONE
+89,88,Legitimate,director /officer,NONE,NONE
+89,91,Legitimate,director /officer,NONE,NONE
+89,351,Legitimate,director /officer,NONE,NONE
+90,88,Legitimate,director /officer,NONE,NONE
+90,89,Co-Offenders,bt launder money,NONE,NONE
+90,89,Legitimate,director /officer,NONE,NONE
+90,91,Legitimate,director /officer,NONE,NONE
+97,1785,Formal Criminal Organization,Assualt,G179,NONE
+103,1666,Formal Criminal Organization,bt have planned/ attempted to kill each other,G48,G110
+103,1960,Legitimate,best friend,G48,G48
+103,803,Co-Offenders,bt have stolen meth from other gang,G48,G48
+103,1960,Co-Offenders,bt have stolen meth from other gang,G48,G48
+103,803,Formal Criminal Organization,,G48,G48
+104,1036,Formal Criminal Organization,btb involved in attemps to shoot other oc individuals,"G48, G107",NONE
+104,1030,Co-Offenders,Same Cell,"G48, G107",G110
+104,1030,Formal Criminal Organization,,"G48, G107",G110
+104,1960,Legitimate,former associate,"G48, G107",G48
+104,567,Legitimate,long-time friend,"G48, G107",G48
+104,22,Co-Offenders,Same Cell,"G48, G107",G48
+104,48,Co-Offenders,Same Cell,"G48, G107",G48
+104,72,Co-Offenders,Same Cell,"G48, G107",G48
+104,101,Co-Offenders,Same Cell,"G48, G107",G48
+104,102,Co-Offenders,Same Cell,"G48, G107",G48
+104,103,Co-Offenders,Same Cell,"G48, G107",G48
+104,236,Co-Offenders,Same Cell,"G48, G107",G48
+104,259,Co-Offenders,Same Cell,"G48, G107",G48
+104,344,Co-Offenders,Same Cell,"G48, G107",G48
+104,488,Co-Offenders,Same Cell,"G48, G107",G48
+104,558,Co-Offenders,Same Cell,"G48, G107",G48
+104,567,Co-Offenders,Same Cell,"G48, G107",G48
+104,778,Co-Offenders,Same Cell,"G48, G107",G48
+104,803,Co-Offenders,Same Cell,"G48, G107",G48
+104,860,Co-Offenders,Same Cell,"G48, G107",G48
+104,873,Co-Offenders,Same Cell,"G48, G107",G48
+104,935,Co-Offenders,Same Cell,"G48, G107",G48
+104,1056,Co-Offenders,Same Cell,"G48, G107",G48
+104,1177,Co-Offenders,Same Cell,"G48, G107",G48
+104,1556,Co-Offenders,Same Cell,"G48, G107",G48
+104,1584,Co-Offenders,Same Cell,"G48, G107",G48
+104,1639,Co-Offenders,Same Cell,"G48, G107",G48
+104,1921,Co-Offenders,Same Cell,"G48, G107",G48
+104,1960,Co-Offenders,Same Cell,"G48, G107",G48
+104,1961,Co-Offenders,Same Cell,"G48, G107",G48
+104,1974,Co-Offenders,Same Cell,"G48, G107",G48
+104,2055,Co-Offenders,Same Cell,"G48, G107",G48
+104,2094,Co-Offenders,Same Cell,"G48, G107",G48
+104,22,Formal Criminal Organization,,"G48, G107",G48
+104,48,Formal Criminal Organization,,"G48, G107",G48
+104,72,Formal Criminal Organization,,"G48, G107",G48
+104,101,Formal Criminal Organization,,"G48, G107",G48
+104,102,Formal Criminal Organization,,"G48, G107",G48
+104,103,Formal Criminal Organization,,"G48, G107",G48
+104,236,Formal Criminal Organization,,"G48, G107",G48
+104,259,Formal Criminal Organization,,"G48, G107",G48
+104,344,Formal Criminal Organization,,"G48, G107",G48
+104,488,Formal Criminal Organization,,"G48, G107",G48
+104,558,Formal Criminal Organization,,"G48, G107",G48
+104,567,Formal Criminal Organization,,"G48, G107",G48
+104,778,Formal Criminal Organization,,"G48, G107",G48
+104,803,Formal Criminal Organization,,"G48, G107",G48
+104,860,Formal Criminal Organization,,"G48, G107",G48
+104,873,Formal Criminal Organization,,"G48, G107",G48
+104,935,Formal Criminal Organization,,"G48, G107",G48
+104,1056,Formal Criminal Organization,,"G48, G107",G48
+104,1177,Formal Criminal Organization,,"G48, G107",G48
+104,1556,Formal Criminal Organization,,"G48, G107",G48
+104,1584,Formal Criminal Organization,,"G48, G107",G48
+104,1639,Formal Criminal Organization,,"G48, G107",G48
+104,1921,Formal Criminal Organization,,"G48, G107",G48
+104,1961,Formal Criminal Organization,,"G48, G107",G48
+104,1974,Formal Criminal Organization,,"G48, G107",G48
+104,2055,Formal Criminal Organization,,"G48, G107",G48
+104,2094,Formal Criminal Organization,,"G48, G107",G48
+104,2109,Co-Offenders,Same Cell,"G48, G107","G48, G107"
+104,2109,Formal Criminal Organization,,"G48, G107","G48, G107"
+104,552,Co-Offenders,Same Cell,"G48, G107","G48, G127"
+104,552,Formal Criminal Organization,,"G48, G107","G48, G127"
+104,911,Legitimate,Associate,"G48, G107","G48, G179"
+104,911,Co-Offenders,Same Cell,"G48, G107","G48, G179"
+104,911,Formal Criminal Organization,,"G48, G107","G48, G179"
+104,277,Co-Offenders,Same Cell,"G48, G107","G48, G56"
+104,1545,Co-Offenders,Same Cell,"G48, G107","G48, G56"
+104,1548,Co-Offenders,Same Cell,"G48, G107","G48, G56"
+104,277,Formal Criminal Organization,,"G48, G107","G48, G56"
+104,1545,Formal Criminal Organization,,"G48, G107","G48, G56"
+104,1548,Formal Criminal Organization,,"G48, G107","G48, G56"
+104,687,Formal Criminal Organization,btb involved in attemps to shoot other oc individuals,"G48, G107","G50, G110"
+111,1936,Legitimate,Associate,NONE,NONE
+115,143,Co-Offenders,cocaine trafficking & money laundering,G49,NONE
+115,143,Legitimate,working together in legitimate business,G49,NONE
+115,545,Legitimate,Former Associate,G49,NONE
+115,616,Legitimate,Associate,G49,NONE
+115,616,Co-Offenders,bt have acquired  airplane to transport cocaine,G49,NONE
+115,973,Legitimate,Former Associate,G49,NONE
+115,1625,Legitimate,Former Associate,G49,NONE
+115,1737,Legitimate,Former Associate,G49,NONE
+115,2002,Legitimate,Former Associate,G49,NONE
+115,2123,Legitimate,Former Associate,G49,NONE
+115,422,Legitimate,Associate,G49,G49
+115,1795,Legitimate,Associate,G49,G49
+115,1149,Legitimate,Former Associate,G49,G49
+115,1150,Legitimate,Former Associate,G49,G49
+115,1149,Co-Offenders,cocaine trafficking & money laundering,G49,G49
+115,1150,Co-Offenders,cocaine trafficking & money laundering,G49,G49
+115,157,Co-Offenders,Same Cell,G49,G49
+115,1503,Co-Offenders,Same Cell,G49,G49
+115,422,Co-Offenders,worked with 437 using his group to import cocaine.,G49,G49
+115,1795,Co-Offenders,working together in the drug trade,G49,G49
+115,1574,Legitimate,Associate,G49,"G49, G99"
+115,1707,Legitimate,Associate,G49,G51
+115,1781,Legitimate,Associate,G49,G51
+115,1783,Legitimate,Associate,G49,G51
+115,2137,Legitimate,Associate,G49,"G8, G29, G72"
+115,2137,Co-Offenders,btb obtaining cocaine from sources,G49,"G8, G29, G72"
+121,67,Co-Offenders,btb: cocaine trafficking,"G15, G78","G13, G15, G16"
+121,67,Legitimate,director ,"G15, G78","G13, G15, G16"
+121,68,Co-Offenders,btb: cocaine trafficking,"G15, G78",G15
+121,68,Legitimate,director,"G15, G78",G15
+123,771,Legitimate,associate,G44,NONE
+123,771,Formal Criminal Organization,,G44,NONE
+123,2042,Formal Criminal Organization,,G44,NONE
+123,726,Formal Criminal Organization,,G44,G44
+124,634,Co-Offenders,btb installing secret compartments into vehicles,G133,G133
+124,961,Co-Offenders,btb installing secret compartments into vehicles,G133,G133
+124,1102,Co-Offenders,btb installing secret compartments into vehicles,G133,G133
+124,1588,Co-Offenders,btb installing secret compartments into vehicles,G133,G133
+124,1937,Co-Offenders,btb installing secret compartments into vehicles,G133,G133
+124,634,Legitimate,employee,G133,G133
+124,961,Legitimate,employee,G133,G133
+124,1102,Legitimate,employee,G133,G133
+124,1588,Legitimate,co-owners,G133,G133
+124,1937,Legitimate,employee,G133,G133
+124,956,Co-Offenders,btb installing secret compartments into vehicles,G133,G186
+124,956,Legitimate,employee,G133,G186
+127,309,Co-Offenders,"Marihuana, cocaine, extortion, prostitution, B&E",G180,G180
+127,904,Co-Offenders,"Marihuana, cocaine, extortion, prostitution, B&E",G180,G180
+127,1731,Co-Offenders,"Marihuana, cocaine, extortion, prostitution, B&E",G180,G180
+127,309,Formal Criminal Organization,,G180,G180
+127,904,Formal Criminal Organization,,G180,G180
+127,1731,Formal Criminal Organization,,G180,G180
+130,966,Co-Offenders,firearms supplied by 135,G56,G56
+130,998,Co-Offenders,machine guns,G56,G56
+132,1605,Co-Offenders,drop of marihuana btb orchestrated,G100,G100
+132,1735,Co-Offenders,marihuana drop,G100,G100
+132,1526,Co-Offenders,drop of marihuana btb orchestrated,G100,"G95, G100"
+133,1025,Co-Offenders,btb supplied heroin,G89,G78
+141,82,Legitimate,was close associate,G66,"G23, G40, G43"
+141,82,Formal Criminal Organization,,G66,"G23, G40, G43"
+141,81,Legitimate,passenger in vehicle,G66,"G23, G40, G43, G111"
+141,81,Formal Criminal Organization,,G66,"G23, G40, G43, G111"
+141,1312,Legitimate,was close associate,G66,"G23, G41, G66, G89"
+141,1312,Formal Criminal Organization,,G66,"G23, G41, G66, G89"
+145,551,Legitimate,Associate,G135,G127
+145,551,Co-Offenders,btb ‘hitman” for 574,G135,G127
+146,293,Co-Offenders,Cocaine source,NONE,NONE
+146,461,Co-Offenders,Cocaine source,NONE,NONE
+146,580,Co-Offenders,Drugs,NONE,NONE
+146,982,Co-Offenders,Drugs,NONE,NONE
+151,1143,Co-Offenders,,G37,G31
+151,1143,Formal Criminal Organization,,G37,G31
+151,397,Co-Offenders,same cell,G37,G37
+151,453,Co-Offenders,same cell,G37,G37
+151,458,Co-Offenders,same cell,G37,G37
+151,549,Co-Offenders,same cell,G37,G37
+151,1038,Co-Offenders,same cell,G37,G37
+151,1727,Co-Offenders,same cell,G37,G37
+151,1858,Co-Offenders,same cell,G37,G37
+151,2074,Co-Offenders,same cell,G37,G37
+151,397,Formal Criminal Organization,,G37,G37
+151,453,Formal Criminal Organization,,G37,G37
+151,458,Formal Criminal Organization,,G37,G37
+151,549,Formal Criminal Organization,,G37,G37
+151,1038,Formal Criminal Organization,,G37,G37
+151,1727,Formal Criminal Organization,,G37,G37
+151,1858,Formal Criminal Organization,,G37,G37
+151,2074,Formal Criminal Organization,,G37,G37
+153,152,Co-Offenders,a lower level group of drug dealers,G62,G62
+153,676,Co-Offenders,a lower level group of drug dealers,G62,G62
+162,420,Co-Offenders,btb cocaine supplier,G10,G10
+162,601,Co-Offenders,btb cocaine supplier,G10,G10
+167,717,Co-Offenders,was hired by 172 to transport marihuana/ cocaine & firearms,G50,NONE
+167,334,Co-Offenders,driver contracted by 172 to smuggle drugs/ weapons,G50,G50
+167,222,Co-Offenders,"involved in marihuana grow ops, supplying cocaine",G50,G50
+167,1391,Co-Offenders,Same Cell,G50,G50
+167,1502,Co-Offenders,Same Cell,G50,G50
+167,222,Legitimate, owns a res. Purchased 227,G50,G50
+167,687,Co-Offenders,Same Cell,G50,"G50, G110"
+171,98,Legitimate,Associate,G51,NONE
+171,228,Legitimate,Associate,G51,NONE
+171,264,Legitimate,Associate,G51,NONE
+171,1032,Legitimate,Associate,G51,NONE
+171,1040,Legitimate,Associate,G51,NONE
+171,1574,Legitimate,Associate,G51,"G49, G99"
+171,1507,Co-Offenders,Same Cell,G51,G51
+171,1707,Co-Offenders,Same Cell,G51,G51
+171,1781,Co-Offenders,Same Cell,G51,G51
+171,1783,Co-Offenders,Same Cell,G51,G51
+171,978,Co-Offenders,Same Cell,G51,"G51, G99"
+171,1827,Legitimate,Associate,G51,G99
+171,2096,Legitimate,Associate,G51,G99
+171,391,Co-Offenders,Same Cell,G51,G99
+174,140,Co-Offenders,associate,"G18, G21",NONE
+174,884,Co-Offenders,bt have met re cocaine trafficking,"G18, G21",NONE
+174,913,Co-Offenders,associate,"G18, G21",NONE
+174,1353,Co-Offenders,associate,"G18, G21",NONE
+174,1393,Co-Offenders,associate,"G18, G21",NONE
+174,1393,Formal Criminal Organization,Ch4,"G18, G21",NONE
+174,1989,Co-Offenders,"2048 paid a ""tax"" re operation","G18, G21",NONE
+174,1110,Co-Offenders,same cell,"G18, G21","G11, G18"
+174,797,Co-Offenders,disturbance,"G18, G21","G11, G19, G21"
+174,797,Formal Criminal Organization,,"G18, G21","G11, G19, G21"
+174,1711,Legitimate,operates closely,"G18, G21",G18
+174,1710,Co-Offenders,moves 179's drugs,"G18, G21",G18
+174,165,Co-Offenders,same cell,"G18, G21",G18
+174,435,Co-Offenders,same cell,"G18, G21",G18
+174,513,Co-Offenders,same cell,"G18, G21",G18
+174,547,Co-Offenders,same cell,"G18, G21",G18
+174,565,Co-Offenders,same cell,"G18, G21",G18
+174,971,Co-Offenders,same cell,"G18, G21",G18
+174,1111,Co-Offenders,same cell,"G18, G21",G18
+174,1161,Co-Offenders,same cell,"G18, G21",G18
+174,1711,Co-Offenders,same cell,"G18, G21",G18
+174,1844,Co-Offenders,same cell,"G18, G21",G18
+174,2066,Co-Offenders,same cell,"G18, G21",G18
+174,2095,Co-Offenders,same cell,"G18, G21",G18
+174,1711,Formal Criminal Organization,Ch4,"G18, G21",G18
+174,533,Co-Offenders,same cell,"G18, G21","G18, G99"
+174,410,Co-Offenders,same cell,"G18, G21",G184
+174,941,Legitimate,associate,"G18, G21","G19, G21"
+174,1020,Co-Offenders,associate,"G18, G21","G19, G21, G22"
+174,862,Co-Offenders,associate,"G18, G21","G19, G21, G22, G109"
+174,1772,Legitimate,1823: mentor,"G18, G21",G21
+174,434,Legitimate,associate,"G18, G21",G21
+174,1772,Co-Offenders,both charged,"G18, G21",G21
+174,1772,Formal Criminal Organization,Ch4,"G18, G21",G21
+174,2065,Legitimate,associate,"G18, G21",G22
+174,2065,Formal Criminal Organization,Ch4 former,"G18, G21",G22
+174,910,Co-Offenders,same cell,"G18, G21",G8
+174,1524,Co-Offenders,intercepted re drug talk,"G18, G21",G99
+177,819,Legitimate,associate,G101,"G23, G69"
+183,36,Legitimate,Associate,G52,NONE
+183,250,Legitimate,Associate,G52,NONE
+183,721,Legitimate,Associate,G52,NONE
+183,772,Legitimate,Associate,G52,NONE
+183,936,Legitimate,Associate,G52,NONE
+183,1607,Legitimate,Associate,G52,NONE
+183,1820,Legitimate,Associate,G52,NONE
+183,1438,Legitimate,Associate,G52,G52
+183,184,Co-Offenders,Same Cell,G52,G52
+186,640,Legitimate,former associate,NONE,NONE
+188,1913,Co-Offenders,rented hotel to deal drugs,G20,G20
+197,1225,Legitimate,worked for  1263,NONE,NONE
+197,423,Legitimate,bt have worked for  438,NONE,G99
+201,1044,Co-Offenders,Cocaine,NONE,NONE
+203,1746,Co-Offenders,marihuana exportation,G30,"G23, G30, G43"
+214,1652,Formal Criminal Organization,"involved in a drug rip, resulting in the shooting of 219",G9,G93
+217,1249,Legitimate,Blackberry registered to 1287,G81,"G47, G81"
+219,1861,Co-Offenders,weapons,NONE,NONE
+219,388,Legitimate,Associate,NONE,G56
+219,388,Co-Offenders,weapons,NONE,G56
+222,1672,Legitimate,associate,G50,"G39, G68"
+222,1672,Formal Criminal Organization,,G50,"G39, G68"
+230,527,Legitimate,Associate,NONE,NONE
+230,663,Legitimate,Associate,NONE,NONE
+230,1497,Legitimate,director,NONE,NONE
+233,33,Legitimate,associate,G9,NONE
+233,33,Co-Offenders,same cell,G9,NONE
+233,33,Formal Criminal Organization,,G9,NONE
+233,256,Legitimate,associate,G9,NONE
+233,290,Legitimate,owner/ manager,G9,NONE
+233,383,Legitimate,associate,G9,NONE
+233,747,Legitimate,associate,G9,NONE
+233,747,Formal Criminal Organization,Ch2,G9,NONE
+233,748,Co-Offenders,btb drug trafficking,G9,NONE
+233,748,Formal Criminal Organization,Ch2,G9,NONE
+233,748,Legitimate,business  is next door,G9,NONE
+233,993,Legitimate,associate,G9,NONE
+233,1594,Legitimate,associate,G9,NONE
+233,1914,Co-Offenders,btb cocaine/ money courier,G9,NONE
+233,1973,Legitimate,associate,G9,NONE
+233,1973,Formal Criminal Organization,,G9,NONE
+233,2121,Legitimate,associate,G9,NONE
+233,537,Legitimate,associate,G9,G121
+233,476,Legitimate,Associate,G9,"G16, G27, G38, G58"
+233,476,Co-Offenders,btb drug trafficking associate,G9,"G16, G27, G38, G58"
+233,1898,Co-Offenders,drug supplier,G9,"G40, G90"
+233,50,Co-Offenders,same cell,G9,"G8, G9, G10, G24"
+233,50,Formal Criminal Organization,Ch2,G9,"G8, G9, G10, G24"
+233,1117,Legitimate,associate,G9,G9
+233,10,Co-Offenders,assualt,G9,G9
+233,214,Co-Offenders,cocaine network,G9,G9
+233,1117,Co-Offenders,,G9,G9
+233,1722,Co-Offenders,same cell,G9,G9
+233,10,Formal Criminal Organization,,G9,G9
+233,214,Formal Criminal Organization,Ch2,G9,G9
+233,1722,Formal Criminal Organization,,G9,G9
+233,1722,Legitimate,executive,G9,G9
+233,446,Co-Offenders,cocaine network,G9,"G9, G38"
+233,1723,Co-Offenders,cocaine network,G9,"G9, G38"
+240,2137,Co-Offenders,bt have trafficked  cocaine,"G4, G5, G6, G7","G8, G29, G72"
+243,965,Co-Offenders,btb supported by 248,G97,NONE
+247,1045,Legitimate,director /officer,NONE,NONE
+248,249,Co-Offenders,cocaine & meth transportation,G1,G1
+248,1153,Co-Offenders,bt have supplied cocaine,G1,G1
+248,1474,Co-Offenders,assault conspiracy,G1,G1
+248,249,Formal Criminal Organization,member/ hangaround Ch1,G1,G1
+248,1153,Formal Criminal Organization,Ch1,G1,G1
+248,1474,Formal Criminal Organization,Ch1,G1,G1
+248,688,Co-Offenders,cocaine &  meth,G1,"G1, G3"
+248,688,Formal Criminal Organization,Ch1,G1,"G1, G3"
+248,2006,Co-Offenders,assault conspiracy,G1,"G1, G6"
+248,2006,Formal Criminal Organization,Ch1 former,G1,"G1, G6"
+249,279,Co-Offenders,arrested together,G1,NONE
+255,589,Co-Offenders,property used by 612 in dealing crack,G2,NONE
+269,887,Legitimate,former associate,G68,NONE
+269,887,Co-Offenders,cross border marihuana smuggling,G68,NONE
+269,1120,Legitimate,former associate,G68,NONE
+269,1120,Co-Offenders,cross border marihuana smuggling,G68,NONE
+269,1856,Legitimate,former associate,G68,G107
+269,1856,Co-Offenders,flew marihuana into the US,G68,G107
+269,710,Legitimate,btb flying a helicopter,G68,G68
+271,1691,Formal Criminal Organization,Feud,NONE,NONE
+271,551,Formal Criminal Organization,Feud,NONE,G127
+273,1650,Co-Offenders,stock manipulations &  money laundering,"G8, G14","G8, G14"
+273,1650,Formal Criminal Organization,,"G8, G14","G8, G14"
+273,1650,Legitimate,director,"G8, G14","G8, G14"
+273,1660,Legitimate,director,"G8, G14","G8, G14, G21"
+273,657,Co-Offenders,cocaine importation & distribution,"G8, G14","G8, G14, G80"
+273,657,Formal Criminal Organization,Ch1 former,"G8, G14","G8, G14, G80"
+273,657,Legitimate,director,"G8, G14","G8, G14, G80"
+275,1992,Co-Offenders,btb involved in “chop shop”,G69,G69
+275,1992,Legitimate,lives on 282 property,G69,G69
+277,1545,Co-Offenders,partner in trafficking  large quantities of firearms,"G48, G56","G48, G56"
+277,1545,Formal Criminal Organization,,"G48, G56","G48, G56"
+277,966,Co-Offenders,firearms supplied,"G48, G56",G56
+285,211,Co-Offenders,bt sell cocaine,G63,G63
+285,764,Co-Offenders,bt sell cocaine,G63,G63
+293,64,Co-Offenders,btb operating under control of 66,NONE,NONE
+294,1976,Co-Offenders,btb selling cocaine,NONE,NONE
+295,1194,Legitimate,Associate,G53,"G10, G26, G90"
+295,1194,Co-Offenders,cocaine,G53,"G10, G26, G90"
+295,857,Co-Offenders,cocaine & marihuana,G53,G53
+295,886,Co-Offenders,cocaine & marihuana,G53,G53
+295,1096,Co-Offenders,cocaine & marihuana,G53,G53
+295,1206,Co-Offenders,cocaine & marihuana,G53,G53
+295,1228,Co-Offenders,cocaine & marihuana,G53,G53
+297,675,Co-Offenders,drugs,G54,G54
+297,1019,Co-Offenders,drugs,G54,G54
+297,1357,Co-Offenders,drugs,G54,G54
+297,1816,Co-Offenders,drugs,G54,G54
+297,26,Co-Offenders,Same Cell,G54,G54
+297,27,Co-Offenders,Same Cell,G54,G54
+297,419,Co-Offenders,Same Cell,G54,G54
+297,523,Co-Offenders,Same Cell,G54,G54
+297,1019,Legitimate,Director,G54,G54
+297,27,Legitimate,former director,G54,G54
+301,304,Co-Offenders,Drugs,NONE,NONE
+301,589,Co-Offenders,Drugs,NONE,NONE
+301,1463,Legitimate,Boyfriend /Girlfriend,NONE,NONE
+301,1463,Co-Offenders,"Cocaine, heroin, Ecstasy",NONE,NONE
+301,1868,Legitimate,Associate,NONE,G40
+309,904,Co-Offenders,"Marihuana, cocaine, extortion, prostitution, B&E",G180,G180
+309,904,Formal Criminal Organization,,G180,G180
+311,1563,Co-Offenders,money laundering,NONE,NONE
+318,322,Co-Offenders,bt sell cocaine,G138,NONE
+318,995,Co-Offenders,meth production,G138,G138
+318,1035,Co-Offenders,meth production,G138,G138
+318,1035,Formal Criminal Organization,,G138,G138
+318,2115,Co-Offenders,bt supply cocaine,G138,"G138, G140"
+318,2115,Formal Criminal Organization,,G138,"G138, G140"
+331,1995,Legitimate,Associate,NONE,G167
+332,304,Co-Offenders,Meth,NONE,NONE
+336,1787,Legitimate,travelled together to the US,G112,G112
+339,335,Legitimate,Associate,G132,NONE
+340,66,Legitimate,Associate,"G121, G122",NONE
+340,113,Co-Offenders,Same Cell,"G121, G122",G122
+340,195,Co-Offenders,Same Cell,"G121, G122",G122
+340,266,Co-Offenders,Same Cell,"G121, G122",G122
+340,338,Co-Offenders,Same Cell,"G121, G122",G122
+340,782,Co-Offenders,Same Cell,"G121, G122",G122
+340,1582,Co-Offenders,Same Cell,"G121, G122",G122
+340,1585,Co-Offenders,Same Cell,"G121, G122",G122
+340,1753,Co-Offenders,Same Cell,"G121, G122",G122
+340,718,Co-Offenders,Same Cell,"G121, G122","G122, G186"
+340,485,Legitimate,Associate,"G121, G122",G123
+340,486,Legitimate,Associate,"G121, G122",G123
+342,1888,Co-Offenders,counterfeit drivers licences,G55,G139
+342,312,Co-Offenders,Same Cell,G55,G55
+342,316,Co-Offenders,Same Cell,G55,G55
+342,328,Co-Offenders,Same Cell,G55,G55
+342,368,Co-Offenders,Same Cell,G55,G55
+342,1047,Co-Offenders,Same Cell,G55,G55
+342,1048,Co-Offenders,Same Cell,G55,G55
+342,1066,Co-Offenders,Same Cell,G55,G55
+342,1085,Co-Offenders,Same Cell,G55,G55
+342,1197,Co-Offenders,Same Cell,G55,G55
+342,1198,Co-Offenders,Same Cell,G55,G55
+342,1202,Co-Offenders,Same Cell,G55,G55
+342,1203,Co-Offenders,Same Cell,G55,G55
+342,1839,Co-Offenders,Same Cell,G55,G55
+342,1849,Co-Offenders,Same Cell,G55,G55
+342,1887,Co-Offenders,Same Cell,G55,G55
+342,2082,Co-Offenders,Same Cell,G55,G55
+342,2083,Co-Offenders,Same Cell,G55,G55
+342,2085,Co-Offenders,Same Cell,G55,G55
+342,2100,Co-Offenders,Same Cell,G55,G55
+342,2082,Legitimate,former employee,G55,G55
+342,1066,Legitimate,part of the now-defunct business,G55,G55
+342,1085,Legitimate,part of the now-defunct business,G55,G55
+342,2083,Legitimate,part of the now-defunct business,G55,G55
+342,37,Co-Offenders,Same Cell,G55,"G55, G60, G107"
+342,37,Legitimate,part of the now-defunct business,G55,"G55, G60, G107"
+342,2108,Co-Offenders,Same Cell,G55,"G55, G82"
+342,2108,Legitimate,part of the now-defunct business,G55,"G55, G82"
+347,28,Co-Offenders,"Extortion, attempted kidnapping",G161,NONE
+347,701,Co-Offenders,"Extortion, attempted kidnapping",G161,NONE
+347,1324,Co-Offenders,"Ecstasy, extortion, money laundering, etc.",G161,G161
+347,1667,Co-Offenders,"Ecstasy, extortion, money laundering, etc.",G161,G161
+347,1773,Co-Offenders,"Ecstasy, extortion, money laundering, etc.",G161,G161
+347,1773,Formal Criminal Organization,Beaten for unpaid debt,G161,G161
+349,609,Co-Offenders,MDMA,NONE,NONE
+349,806,Co-Offenders,MDMA,NONE,NONE
+349,2086,Co-Offenders,MDMA,NONE,NONE
+351,1654,Legitimate,"Real estate sale; coworkers,",NONE,NONE
+351,1362,Legitimate,btb associates,NONE,G73
+355,1725,Legitimate,Associate,G157,NONE
+355,356,Legitimate,Associate,G157,G157
+355,723,Legitimate,Associate,G157,G157
+355,1274,Legitimate,Associate,G157,G157
+355,1786,Legitimate,Associate,G157,G157
+355,2127,Legitimate,Associate,G157,G157
+355,356,Co-Offenders,"Shoulder surfing, Theft",G157,G157
+355,723,Co-Offenders,"Shoulder surfing, Theft",G157,G157
+355,1274,Co-Offenders,"Shoulder surfing, Theft",G157,G157
+355,1786,Co-Offenders,"Leaders; ""Shoulder surfing"", Theft",G157,G157
+355,2127,Co-Offenders,"Shoulder surfing, Theft",G157,G157
+361,97,Co-Offenders,Dial-a-doping,G179,G179
+375,1129,Co-Offenders,ephedrine/ cocaine smuggling,"G136, G152",NONE
+375,313,Co-Offenders,ephedrine/ cocaine smuggling,"G136, G152",G140
+377,498,Legitimate,Associate,G130,NONE
+377,933,Legitimate,Associate,G130,NONE
+377,933,Co-Offenders,involved in a gang-style beating,G130,NONE
+377,985,Legitimate,Associate,G130,NONE
+377,1069,Legitimate,Associate,G130,NONE
+377,1400,Legitimate,Associate,G130,NONE
+377,1952,Legitimate,Associate,G130,NONE
+377,378,Co-Offenders,Same Cell,G130,G130
+377,379,Co-Offenders,Same Cell,G130,G130
+386,759,Co-Offenders,marihuana/ cocaine,G30,G30
+386,1745,Co-Offenders,marihuana/ cocaine,G30,G30
+386,1322,Co-Offenders,marihuana/ cocaine,G30,G98
+388,51,Legitimate,Associate,G56,NONE
+388,51,Co-Offenders,electronic card skimming,G56,NONE
+388,414,Legitimate,Associate,G56,NONE
+388,414,Co-Offenders,grow rips & home invasions,G56,NONE
+388,1140,Legitimate,Associate,G56,NONE
+388,1147,Legitimate,Associate,G56,NONE
+388,1372,Legitimate,Associate,G56,NONE
+388,277,Co-Offenders,illegal trafficking of firearms,G56,"G48, G56"
+388,1545,Co-Offenders,illegal trafficking of firearms,G56,"G48, G56"
+388,998,Co-Offenders,firearms,G56,G56
+388,1145,Co-Offenders,firearms,G56,G56
+388,1996,Co-Offenders,firearms,G56,G56
+388,130,Co-Offenders,firearms supplied,G56,G56
+388,1456,Co-Offenders,main firearms supplier,G56,G56
+388,2052,Co-Offenders,weapons converted to fully automatic,G56,G56
+394,711,Legitimate,partners,G107,G107
+396,54,Co-Offenders,convicted of weapons possession & smuggling,G70,G70
+399,215,Legitimate,Associate,G168,NONE
+399,215,Co-Offenders,"marihuana, cocaine, & ephedrine",G168,NONE
+399,2012,Formal Criminal Organization,Attempted Murder,G168,NONE
+399,1470,Legitimate,Associate,G168,G123
+399,47,Co-Offenders,"drugs, stock manipulation, extortion, money laundering, etc.",G168,G168
+399,400,Co-Offenders,"drugs, stock manipulation, extortion, money laundering, etc.",G168,G168
+399,401,Co-Offenders,"drugs, stock manipulation, extortion, money laundering, etc.",G168,G168
+399,403,Co-Offenders,"drugs, stock manipulation, extortion, money laundering, etc.",G168,G168
+399,1514,Co-Offenders,"drugs, stock manipulation, extortion, money laundering, etc.",G168,G168
+399,2137,Legitimate,Associate,G168,"G8, G29, G72"
+399,50,Legitimate,Associate,G168,"G8, G9, G10, G24"
+402,1650,Legitimate,btb past owner,G27,"G8, G14"
+405,1530,Co-Offenders,btb providing drugs,G83,G20
+405,221,Co-Offenders,drug supplier,G83,G83
+405,1958,Co-Offenders,drug supplier,G83,G83
+405,529,Co-Offenders,drug supplier,G83,"G83, G106"
+405,1524,Co-Offenders,arrested for trafficking drugs,G83,G99
+422,1795,Co-Offenders,routine exports of marihuana,G49,G49
+422,1574,Legitimate,associate,G49,"G49, G99"
+422,1574,Co-Offenders,routine exports of marihuana,G49,"G49, G99"
+422,1783,Co-Offenders,routine exports of marihuana,G49,G51
+424,1215,Co-Offenders,btb working together re marihuana drop,G47,G47
+424,572,Co-Offenders,btb working together re marihuana drop,G47,"G47, G84"
+442,1962,Formal Criminal Organization,shot by 2020,G110,NONE
+442,443,Co-Offenders,Same Cell,G110,G110
+442,443,Formal Criminal Organization,,G110,G110
+443,914,Formal Criminal Organization,fight,G110,NONE
+445,1480,Co-Offenders,Insurance fraud,G165,NONE
+445,1864,Co-Offenders,Insurance fraud,G165,G165
+447,1342,Legitimate,btb associate,G58,G72
+449,1818,Co-Offenders,Mortgage Fraud,NONE,NONE
+461,64,Co-Offenders,btb Operating under control of 66,NONE,NONE
+470,471,Formal Criminal Organization,,G184,G184
+471,469,Formal Criminal Organization,,G184,G184
+471,472,Formal Criminal Organization,,G184,G184
+471,473,Formal Criminal Organization,,G184,G184
+476,299,Legitimate,Associate,"G16, G27, G38, G58",NONE
+476,475,Legitimate,Associate,"G16, G27, G38, G58",NONE
+476,1346,Legitimate,Associate,"G16, G27, G38, G58",NONE
+476,1346,Co-Offenders,btb drug contact in other area,"G16, G27, G38, G58",NONE
+476,1973,Legitimate,Associate,"G16, G27, G38, G58",NONE
+476,2128,Legitimate,Associate,"G16, G27, G38, G58",NONE
+476,524,Legitimate,Associate,"G16, G27, G38, G58",G2
+476,2075,Co-Offenders,used to be currency courier,"G16, G27, G38, G58","G47, G58, G81"
+476,818,Co-Offenders,face charges in Alberta,"G16, G27, G38, G58",G58
+476,828,Co-Offenders,"charged  with trafficking, & conspiracy to traffic in a controlled substance","G16, G27, G38, G58",G58
+476,620,Co-Offenders,face charges in Alberta,"G16, G27, G38, G58",G58
+476,447,Co-Offenders,previously of the Same Cell,"G16, G27, G38, G58",G58
+476,633,Co-Offenders,Same Cell,"G16, G27, G38, G58",G58
+476,868,Co-Offenders,Same Cell,"G16, G27, G38, G58",G58
+476,1498,Co-Offenders,Same Cell,"G16, G27, G38, G58",G58
+476,1522,Co-Offenders,Same Cell,"G16, G27, G38, G58",G58
+476,1542,Co-Offenders,Same Cell,"G16, G27, G38, G58",G58
+476,1756,Co-Offenders,Same Cell,"G16, G27, G38, G58",G58
+476,2047,Co-Offenders,Same Cell,"G16, G27, G38, G58",G58
+476,1273,Co-Offenders,"trafficking, & conspiracy to traffic in a controlled substance","G16, G27, G38, G58",G58
+476,1343,Co-Offenders,"trafficking, & conspiracy to traffic in a controlled substance","G16, G27, G38, G58",G58
+476,1543,Co-Offenders,"trafficking, & conspiracy to traffic in a controlled substance","G16, G27, G38, G58",G58
+476,543,Co-Offenders,used to transport contraband,"G16, G27, G38, G58",G58
+476,952,Co-Offenders,cocaine importation,"G16, G27, G38, G58","G58, G113"
+476,1965,Co-Offenders,cocaine importation,"G16, G27, G38, G58","G58, G113"
+476,1722,Legitimate,Associate,"G16, G27, G38, G58",G9
+480,1212,Legitimate,Associate,G59,NONE
+480,1272,Legitimate,Associate,G59,NONE
+480,479,Co-Offenders,Same Cell,G59,G59
+480,834,Co-Offenders,Same Cell,G59,G59
+480,244,Co-Offenders,,G59,G59
+480,1466,Legitimate,Associate,G59,"G59, G94"
+480,984,Co-Offenders,Same Cell,G59,"G59, G94"
+480,1466,Co-Offenders,have been criminally active together since the early 1970's,G59,"G59, G94"
+482,1563,Legitimate,sold business to 1613,"G60, G107",NONE
+482,37,Co-Offenders,Same Cell,"G60, G107","G55, G60, G107"
+482,1282,Legitimate,close and trusted associate,"G60, G107",G60
+482,169,Co-Offenders,Same Cell,"G60, G107",G60
+482,170,Co-Offenders,Same Cell,"G60, G107",G60
+482,200,Co-Offenders,Same Cell,"G60, G107",G60
+482,282,Co-Offenders,Same Cell,"G60, G107",G60
+482,541,Co-Offenders,Same Cell,"G60, G107",G60
+482,892,Co-Offenders,Same Cell,"G60, G107",G60
+482,1012,Co-Offenders,Same Cell,"G60, G107",G60
+482,1282,Co-Offenders,Same Cell,"G60, G107",G60
+482,1453,Co-Offenders,Same Cell,"G60, G107",G60
+482,1581,Co-Offenders,Same Cell,"G60, G107",G60
+482,1651,Co-Offenders,Same Cell,"G60, G107",G60
+482,2076,Co-Offenders,Same Cell,"G60, G107",G60
+482,169,Formal Criminal Organization,,"G60, G107",G60
+482,1012,Formal Criminal Organization,,"G60, G107",G60
+482,1453,Formal Criminal Organization,,"G60, G107",G60
+482,1271,Co-Offenders,Same Cell,"G60, G107","G60, G110"
+482,1271,Formal Criminal Organization,,"G60, G107","G60, G110"
+482,781,Co-Offenders,marihuana drop,"G60, G107","G60, G90, G107"
+485,63,Legitimate,Former Associate,G123,NONE
+485,460,Legitimate,Associate,G123,NONE
+485,501,Legitimate,Associate,G123,NONE
+485,510,Legitimate,Former Associate,G123,NONE
+485,807,Legitimate,Associate,G123,NONE
+485,986,Legitimate,Former Associate,G123,NONE
+485,1336,Legitimate,Associate,G123,NONE
+485,1336,Co-Offenders,btb main supplier of dial-a-dope operation,G123,NONE
+485,1399,Legitimate,Former Associate,G123,NONE
+485,1402,Legitimate,Former Associate,G123,NONE
+485,1402,Co-Offenders,murder/  manslaughter,G123,NONE
+485,1428,Legitimate,Associate,G123,NONE
+485,1468,Legitimate,Former Associate,G123,NONE
+485,1603,Legitimate,Former Associate,G123,NONE
+485,1694,Legitimate,Associate,G123,NONE
+485,1694,Co-Offenders,bt provide drug lines with guns & drugs,G123,NONE
+485,1793,Legitimate,Associate,G123,NONE
+485,1940,Legitimate,Associate,G123,NONE
+485,1950,Legitimate,Associate,G123,NONE
+485,2030,Legitimate,Associate,G123,NONE
+485,2030,Co-Offenders,bt provide drug lines with guns & drugs,G123,NONE
+485,53,Legitimate,Associate,G123,G123
+485,536,Legitimate,Associate,G123,G123
+485,1469,Legitimate,Former Associate,G123,G123
+485,486,Co-Offenders,Same Cell,G123,G123
+485,538,Co-Offenders,Same Cell,G123,G123
+485,696,Co-Offenders,Same Cell,G123,G123
+485,766,Co-Offenders,Same Cell,G123,G123
+485,767,Co-Offenders,Same Cell,G123,G123
+485,1015,Co-Offenders,Same Cell,G123,G123
+485,1279,Co-Offenders,Same Cell,G123,G123
+485,1908,Co-Offenders,Same Cell,G123,G123
+485,2087,Co-Offenders,Same Cell,G123,G123
+485,1600,Legitimate,Former Associate,G123,G65
+485,17,Formal Criminal Organization,a rift between the two parties,G123,"G73, G131"
+486,538,Co-Offenders,seizure of drugs,G123,G123
+486,1279,Co-Offenders,seizure of drugs,G123,G123
+489,1985,Co-Offenders,acted as a drug courier,G120,NONE
+493,963,Legitimate,associate,G66,NONE
+493,963,Co-Offenders,btb members of a gang,G66,NONE
+493,727,Co-Offenders,bt pay a “tax” to 754,G66,"G23, G39, G41, G66, G89"
+493,1312,Co-Offenders,bt pay a “tax” to 1353,G66,"G23, G41, G66, G89"
+495,66,Formal Criminal Organization,enemy,G126,NONE
+495,109,Formal Criminal Organization,enemy,G126,NONE
+495,987,Legitimate,Associate,G126,NONE
+495,1164,Co-Offenders,Same Cell,G126,"G121, G126"
+495,116,Co-Offenders,Same Cell,G126,G126
+495,649,Co-Offenders,Same Cell,G126,G126
+495,693,Co-Offenders,Same Cell,G126,G126
+495,878,Co-Offenders,Same Cell,G126,G126
+495,930,Co-Offenders,Same Cell,G126,G126
+495,942,Co-Offenders,Same Cell,G126,G126
+495,1690,Co-Offenders,Same Cell,G126,G126
+495,1692,Co-Offenders,bt install compartments in vehicles for smuggling,G126,G126
+496,546,Co-Offenders,illegal telemarketing activity,"G61, G134",NONE
+496,546,Legitimate,linked to business,"G61, G134",NONE
+496,1553,Co-Offenders,illegal telemarketing activity,"G61, G134",NONE
+496,1553,Legitimate,linked to business,"G61, G134",NONE
+496,131,Co-Offenders,Same Cell,"G61, G134","G61, G134"
+496,856,Co-Offenders,Same Cell,"G61, G134","G61, G134"
+503,502,Co-Offenders,btb exporting marihuana,G120,G120
+511,1094,Co-Offenders,driving a vehicle containing large amount of marihuana,NONE,NONE
+519,2026,Co-Offenders,Same Cell,G154,"G149, G154"
+519,278,Co-Offenders,Same Cell,G154,G154
+519,317,Co-Offenders,Same Cell,G154,G154
+519,448,Co-Offenders,Same Cell,G154,G154
+519,514,Co-Offenders,Same Cell,G154,G154
+519,515,Co-Offenders,Same Cell,G154,G154
+519,516,Co-Offenders,Same Cell,G154,G154
+519,517,Co-Offenders,Same Cell,G154,G154
+519,518,Co-Offenders,Same Cell,G154,G154
+519,520,Co-Offenders,Same Cell,G154,G154
+519,521,Co-Offenders,Same Cell,G154,G154
+519,1404,Co-Offenders,Same Cell,G154,G154
+519,1418,Co-Offenders,Same Cell,G154,G154
+519,1421,Co-Offenders,Same Cell,G154,G154
+519,1422,Co-Offenders,Same Cell,G154,G154
+519,1457,Co-Offenders,Same Cell,G154,G154
+519,1458,Co-Offenders,Same Cell,G154,G154
+519,1555,Co-Offenders,Same Cell,G154,G154
+519,1946,Co-Offenders,Same Cell,G154,G154
+519,1947,Co-Offenders,Same Cell,G154,G154
+519,1948,Co-Offenders,Same Cell,G154,G154
+519,2020,Co-Offenders,Same Cell,G154,G154
+524,185,Co-Offenders,Drugs,G2,NONE
+524,186,Co-Offenders,Drugs,G2,NONE
+524,589,Co-Offenders,property used in dealing crack,G2,NONE
+524,1834,Formal Criminal Organization,Ch1 former,G2,NONE
+524,1834,Legitimate,director,G2,NONE
+524,245,Co-Offenders,"btb: cocaine drug trafficking, & illegal gaming",G2,G2
+524,462,Co-Offenders,"btb: cocaine drug trafficking, & illegal gaming",G2,G2
+524,525,Co-Offenders,"btb: cocaine drug trafficking, & illegal gaming",G2,G2
+524,1577,Co-Offenders,"btb: cocaine drug trafficking, & illegal gaming",G2,G2
+524,255,Co-Offenders,crack shack property,G2,G2
+524,525,Formal Criminal Organization,member/ associate Ch1,G2,G2
+524,255,Legitimate,Co-own 11 residences,G2,G2
+524,245,Legitimate,Director,G2,G2
+524,1577,Legitimate,Director,G2,G2
+524,462,Legitimate,director in numerous businesses,G2,G2
+524,525,Legitimate,director in numerous businesses,G2,G2
+524,2092,Co-Offenders,"btb: cocaine drug trafficking, & illegal gaming",G2,G22
+524,2092,Legitimate,director in numerous businesses,G2,G22
+524,404,Co-Offenders,"btb: cocaine drug trafficking, & illegal gaming",G2,G27
+524,1609,Formal Criminal Organization,member/ associate Ch1,G2,G86
+524,1609,Legitimate,owns  businesses in buildings owned by 1659,G2,G86
+526,402,Co-Offenders,btb selling stolen property,NONE,G27
+526,402,Legitimate,director /officer,NONE,G27
+526,1650,Legitimate,btb past owner,NONE,"G8, G14"
+527,663,Legitimate,Former Business Partners,NONE,NONE
+551,951,Legitimate,Associate,G127,NONE
+551,1186,Legitimate,Associate,G127,NONE
+551,1691,Legitimate,Associate,G127,NONE
+551,1881,Formal Criminal Organization,feud,G127,NONE
+551,1934,Legitimate,Associate,G127,NONE
+551,542,Legitimate,Associate,G127,G127
+551,553,Co-Offenders,Same Cell,G127,G127
+551,80,Formal Criminal Organization,feud,G127,G175
+551,2094,Legitimate,Associate,G127,G48
+551,552,Co-Offenders,Same Cell,G127,"G48, G127"
+562,111,Legitimate,Strong Association,G172,NONE
+562,111,Co-Offenders,Cocaine,G172,NONE
+562,670,Legitimate,Strong Association,G172,NONE
+562,670,Co-Offenders,Cocaine,G172,NONE
+562,1657,Co-Offenders,Cocaine,G172,NONE
+562,1876,Co-Offenders,Cocaine,G172,G173
+562,1876,Legitimate,btb silent partner,G172,G173
+562,794,Legitimate,First Level Associate,G172,G175
+562,794,Co-Offenders,Cocaine,G172,G175
+562,832,Co-Offenders,Cocaine,G172,G175
+562,2137,Legitimate,Associate,G172,"G8, G29, G72"
+563,1703,Legitimate,close associate,"G62, G66",G62
+563,758,Co-Offenders,a high level dealer,"G62, G66",G62
+563,564,Co-Offenders,btb supplying drugs,"G62, G66",G62
+563,1845,Co-Offenders,drug paraphernalia,"G62, G66",G62
+563,149,Co-Offenders,Same Cell,"G62, G66",G62
+563,153,Co-Offenders,Same Cell,"G62, G66",G62
+563,276,Co-Offenders,Same Cell,"G62, G66",G62
+563,286,Co-Offenders,Same Cell,"G62, G66",G62
+563,291,Co-Offenders,Same Cell,"G62, G66",G62
+563,676,Co-Offenders,Same Cell,"G62, G66",G62
+563,1431,Co-Offenders,Same Cell,"G62, G66",G62
+563,1571,Co-Offenders,Same Cell,"G62, G66",G62
+563,1703,Co-Offenders,Same Cell,"G62, G66",G62
+563,2062,Co-Offenders,Same Cell,"G62, G66",G62
+563,1845,Legitimate,manages 586s store,"G62, G66",G62
+567,218,Formal Criminal Organization,involved in a shooting,G48,NONE
+567,1177,Co-Offenders,bt have conducted surveillance,G48,G48
+567,1177,Formal Criminal Organization,,G48,G48
+569,2011,Legitimate,btb owner of helicopter,G13,"G13, G14"
+569,67,Legitimate,btb owner of helicopter,G13,"G13, G15, G16"
+577,839,Legitimate,Associate,NONE,NONE
+577,1975,Legitimate,Associate,NONE,NONE
+577,903,Legitimate,Associate,NONE,G158
+590,994,Co-Offenders,crack cocaine,G57,G57
+590,175,Co-Offenders,Same Cell,G57,G57
+590,175,Formal Criminal Organization,,G57,G57
+590,994,Formal Criminal Organization,,G57,G57
+591,592,Legitimate,same address,G26,NONE
+600,555,Legitimate,associate,G36,NONE
+600,555,Formal Criminal Organization,,G36,NONE
+600,965,Co-Offenders,bt sell cocaine,G36,NONE
+600,1490,Legitimate,,G36,NONE
+604,1613,Legitimate,,NONE,NONE
+604,2106,Legitimate,,NONE,NONE
+618,1574,Legitimate,Associate,NONE,"G49, G99"
+618,1574,Co-Offenders,trafficking and growing marihuana,NONE,"G49, G99"
+619,561,Co-Offenders,Supplier,G64,NONE
+619,969,Co-Offenders,directed by 642 to assault a cocaine trafficker,G64,NONE
+619,1263,Co-Offenders,directed by 642 re drug-related matters,G64,G64
+619,1679,Co-Offenders,directed by 642 re drug-related matters,G64,G64
+619,799,Co-Offenders,directs cocaine distribution network,G64,G64
+619,298,Co-Offenders,drug offences,G64,G64
+619,617,Co-Offenders,money re cocaine payments,G64,G64
+619,1853,Co-Offenders,Same Cell,G64,G64
+619,1230,Co-Offenders,Supplier,G64,G64
+619,1684,Co-Offenders,Supplier for 642 et al,G64,G64
+619,2124,Co-Offenders,Supplier for 642 et al,G64,G64
+619,617,Legitimate,Directors,G64,G64
+619,298,Legitimate,former co-directors,G64,G64
+619,385,Legitimate,,G64,G64
+619,2004,Formal Criminal Organization,bt have someone assaulted for selling cocaine,G64,G64
+619,298,Formal Criminal Organization,threatened,G64,G64
+623,1016,Legitimate,Associate,G141,NONE
+623,375,Legitimate,Associate,G141,"G136, G152"
+623,314,Co-Offenders,a reliable drug distributor,G141,G141
+623,358,Co-Offenders,"importing & trafficking heroin, cocaine, Ecstacy & meth",G141,G141
+623,732,Co-Offenders,"importing & trafficking heroin, cocaine, Ecstacy & meth",G141,G141
+635,1936,Legitimate,Associate,NONE,NONE
+637,145,Co-Offenders,"btb importing/ exporting heroin, cocaine & marihuana","G118, G135",G135
+637,265,Co-Offenders,"btb importing/ exporting heroin, cocaine & marihuana","G118, G135",G135
+637,919,Co-Offenders,"btb importing/ exporting heroin, cocaine & marihuana","G118, G135",G135
+637,957,Co-Offenders,"btb importing/ exporting heroin, cocaine & marihuana","G118, G135",G135
+637,1713,Co-Offenders,bt obtain heroin,"G118, G135",G135
+640,641,Co-Offenders,Money Laundering,NONE,NONE
+641,246,Co-Offenders,Money Laundering,NONE,NONE
+641,643,Co-Offenders,Money Laundering,NONE,NONE
+642,249,Legitimate,btb associates,NONE,G1
+643,246,Co-Offenders,Money Laundering,NONE,NONE
+650,756,Co-Offenders,monitoring US border patrol frequency,G46,G46
+652,595,Co-Offenders,arrested & charged,G112,G112
+652,1278,Co-Offenders,arrested together,G112,G112
+657,1830,Legitimate,,"G8, G14, G80",NONE
+657,1869,Formal Criminal Organization,,"G8, G14, G80",NONE
+657,1869,Legitimate,btb formerly linked re real estate,"G8, G14, G80",NONE
+657,2011,Co-Offenders,cocaine importation & distribution,"G8, G14, G80","G13, G14"
+657,2011,Formal Criminal Organization,Ch3,"G8, G14, G80","G13, G14"
+657,2011,Legitimate,director,"G8, G14, G80","G13, G14"
+657,1127,Legitimate,associate,"G8, G14, G80",G14
+657,1650,Co-Offenders,cocaine importation;  stock manipulations/  money laundering,"G8, G14, G80","G8, G14"
+657,1650,Formal Criminal Organization,,"G8, G14, G80","G8, G14"
+657,1650,Legitimate,director,"G8, G14, G80","G8, G14"
+657,1660,Co-Offenders,cocaine importation & distribution,"G8, G14, G80","G8, G14, G21"
+657,1660,Legitimate,director,"G8, G14, G80","G8, G14, G21"
+660,1905,Co-Offenders,Cocaine,G185,NONE
+660,1906,Co-Offenders,Cocaine,G185,NONE
+660,574,Co-Offenders,Same Cell,G185,G185
+660,661,Co-Offenders,"Assualt, theft PPT, & fraud",G185,G185
+660,662,Co-Offenders,"Assualt, theft PPT, & fraud",G185,G185
+660,751,Co-Offenders,Same Cell,G185,G185
+660,1255,Co-Offenders,Same Cell,G185,G185
+660,1315,Co-Offenders,Same Cell,G185,G185
+660,1328,Co-Offenders,Same Cell,G185,G185
+660,1610,Co-Offenders,Same Cell,G185,G185
+660,1804,Co-Offenders,Same Cell,G185,G185
+660,574,Formal Criminal Organization,,G185,G185
+660,661,Formal Criminal Organization,,G185,G185
+660,662,Formal Criminal Organization,,G185,G185
+660,751,Formal Criminal Organization,,G185,G185
+660,1255,Formal Criminal Organization,,G185,G185
+660,1315,Formal Criminal Organization,,G185,G185
+660,1328,Formal Criminal Organization,,G185,G185
+660,1610,Formal Criminal Organization,,G185,G185
+660,1804,Formal Criminal Organization,,G185,G185
+662,661,Co-Offenders,"Assualt, theft PPT, & fraud",G185,G185
+662,661,Formal Criminal Organization,,G185,G185
+664,528,Legitimate,director /officer,NONE,NONE
+664,852,Legitimate,officers,NONE,NONE
+666,668,Co-Offenders,theft ring,G63,NONE
+666,669,Legitimate,associate,G63,NONE
+666,761,Co-Offenders,btb theft ring,G63,NONE
+666,1260,Co-Offenders,btb theft ring,G63,NONE
+666,1261,Co-Offenders,theft ring,G63,NONE
+666,1628,Co-Offenders,btb theft ring,G63,NONE
+667,722,Co-Offenders,btb enforcer,G35,NONE
+667,722,Formal Criminal Organization,,G35,NONE
+667,1214,Co-Offenders,associate,G35,NONE
+667,1214,Formal Criminal Organization,,G35,NONE
+667,1432,Co-Offenders,btb working together,G35,NONE
+667,1432,Formal Criminal Organization,,G35,NONE
+667,1964,Co-Offenders,,G35,NONE
+667,727,Co-Offenders,btb supplied,G35,"G23, G39, G41, G66, G89"
+667,1312,Co-Offenders,btb working closely together re cocaine,G35,"G23, G41, G66, G89"
+667,1938,Co-Offenders,btb working together,G35,G35
+667,755,Co-Offenders,cocaine,G35,G35
+667,457,Formal Criminal Organization,,G35,G35
+667,755,Formal Criminal Organization,,G35,G35
+667,850,Formal Criminal Organization,,G35,G35
+667,1533,Formal Criminal Organization,,G35,G35
+667,1926,Formal Criminal Organization,,G35,G35
+667,1938,Formal Criminal Organization,,G35,G35
+672,459,Co-Offenders,arrested for possession of cocaine,G183,G98
+684,1662,Legitimate,,"G47, G65",NONE
+684,1662,Co-Offenders,btb flying marihuana,"G47, G65",NONE
+684,74,Legitimate,operated helicopter,"G47, G65",G47
+684,823,Co-Offenders,bt assist with the marihuana harvests,"G47, G65",G65
+684,1892,Co-Offenders,bt clip marihuana for the grow ops,"G47, G65",G65
+684,239,Co-Offenders,Same Cell,"G47, G65",G65
+684,387,Co-Offenders,Same Cell,"G47, G65",G65
+684,646,Co-Offenders,Same Cell,"G47, G65",G65
+684,679,Co-Offenders,Same Cell,"G47, G65",G65
+684,680,Co-Offenders,Same Cell,"G47, G65",G65
+684,681,Co-Offenders,Same Cell,"G47, G65",G65
+684,682,Co-Offenders,Same Cell,"G47, G65",G65
+684,683,Co-Offenders,Same Cell,"G47, G65",G65
+684,885,Co-Offenders,Same Cell,"G47, G65",G65
+684,1131,Co-Offenders,Same Cell,"G47, G65",G65
+684,1132,Co-Offenders,Same Cell,"G47, G65",G65
+684,1963,Co-Offenders,Same Cell,"G47, G65",G65
+684,2053,Co-Offenders,Same Cell,"G47, G65",G65
+684,2078,Co-Offenders,Same Cell,"G47, G65",G65
+684,702,Legitimate,sold his helicopter,"G47, G65",G65
+687,1036,Co-Offenders,both arrested re shooting,"G50, G110",NONE
+687,567,Formal Criminal Organization,suspect  re. shooting,"G50, G110",G48
+688,393,Co-Offenders,"btb: drug import/ export, & extortion","G1, G3",NONE
+688,393,Formal Criminal Organization,Ch1,"G1, G3",NONE
+688,179,Co-Offenders,phone calls ,"G1, G3",G22
+688,1803,Co-Offenders,"btb: drug import/ export, & extortion","G1, G3",G3
+688,370,Co-Offenders,"btb: drug import/ export, & extortion","G1, G3",G3
+688,708,Co-Offenders,"btb: drug import/ export, & extortion","G1, G3",G3
+688,1002,Co-Offenders,"btb: drug import/ export, & extortion","G1, G3",G3
+688,2001,Co-Offenders,"btb: drug import/ export, & extortion","G1, G3",G3
+688,1803,Formal Criminal Organization,Ch1,"G1, G3",G3
+688,708,Formal Criminal Organization,Ch1,"G1, G3",G3
+688,1002,Formal Criminal Organization,Ch1,"G1, G3",G3
+688,2001,Formal Criminal Organization,Ch1,"G1, G3",G3
+688,370,Formal Criminal Organization,member/ prospect Ch1,"G1, G3",G3
+688,1917,Co-Offenders,"btb: drug import/ export, & extortion","G1, G3","G3, G5"
+688,1917,Formal Criminal Organization,Ch1,"G1, G3","G3, G5"
+688,1619,Co-Offenders,btb directed by in cocaine distribution,"G1, G3",G84
+689,898,Co-Offenders,Heroin Smuggling Group,NONE,"G118, G121, G135"
+689,694,Legitimate,associate,NONE,G121
+689,325,Co-Offenders,Money Laundering Group,NONE,G121
+689,537,Co-Offenders,Marihuana Smuggling Group,NONE,G121
+689,671,Co-Offenders,Synthetic Chemical Drug Smuggling Group,NONE,G121
+689,692,Co-Offenders,Same Cell,NONE,G121
+689,694,Co-Offenders,Marihuana Smuggling Group,NONE,G121
+689,950,Co-Offenders,Synthetic Chemical Drug Smuggling Group,NONE,G121
+689,1163,Co-Offenders,Heroin Smuggling Group,NONE,G121
+689,1366,Co-Offenders,Money Laundering Group,NONE,G121
+689,1557,Co-Offenders,Synthetic Chemical Drug Smuggling Group,NONE,G121
+689,1712,Co-Offenders,Synthetic Chemical Drug Smuggling Group,NONE,G121
+689,1774,Co-Offenders,Synthetic Chemical Drug Smuggling Group,NONE,G121
+689,2009,Co-Offenders,Synthetic Chemical Drug Smuggling Group,NONE,G121
+689,1366,Legitimate,owner,NONE,G121
+689,340,Co-Offenders,Money Laundering Group,NONE,"G121, G122"
+689,1164,Co-Offenders,Marihuana Smuggling Group,NONE,"G121, G126"
+691,1220,Legitimate,good friends,G66,NONE
+691,563,Co-Offenders,btb supplying with drugs,G66,"G62, G66"
+691,1003,Legitimate,boyfriend/ girlfriend,G66,G66
+691,1187,Legitimate,past associate,G66,G66
+691,1602,Legitimate,past associate,G66,G66
+691,1705,Legitimate,past associate,G66,G66
+691,1704,Co-Offenders,bt: threatened re gambling debt,G66,G66
+691,493,Co-Offenders,btb receiving  cocaine supply,G66,G66
+691,1358,Co-Offenders,btb receiving  cocaine supply,G66,G66
+691,1434,Co-Offenders,btb receiving  cocaine supply,G66,G66
+691,141,Co-Offenders,"cocaine, heroin, & marihuana grow ops",G66,G66
+691,1003,Co-Offenders,marihuana found while driving vehicle,G66,G66
+691,1359,Co-Offenders,same cell,G66,G66
+698,1287,Legitimate,associate,NONE,"G13, G15, G34"
+698,1287,Formal Criminal Organization,,NONE,"G13, G15, G34"
+699,1907,Legitimate,Operated company,NONE,G108
+700,822,Formal Criminal Organization,,"G15, G25, G34, G67",NONE
+700,1205,Formal Criminal Organization,,"G15, G25, G34, G67",NONE
+700,1280,Legitimate,nominee for property purchases,"G15, G25, G34, G67",NONE
+700,1987,Legitimate,associate,"G15, G25, G34, G67",NONE
+700,1987,Formal Criminal Organization,,"G15, G25, G34, G67",NONE
+700,512,Co-Offenders,Same Cell,"G15, G25, G34, G67","G25, G67"
+700,512,Legitimate,btb co-owner,"G15, G25, G34, G67","G25, G67"
+700,1519,Legitimate,Director,"G15, G25, G34, G67","G29, G67"
+700,1874,Legitimate,725s “right hand man”,"G15, G25, G34, G67",G67
+700,11,Co-Offenders,btb money launderer,"G15, G25, G34, G67",G67
+700,854,Co-Offenders,cocaine trafficking & possession,"G15, G25, G34, G67",G67
+700,1874,Co-Offenders,Same Cell,"G15, G25, G34, G67",G67
+700,1874,Formal Criminal Organization,,"G15, G25, G34, G67",G67
+700,11,Legitimate,business links,"G15, G25, G34, G67",G67
+700,2137,Formal Criminal Organization,,"G15, G25, G34, G67","G8, G29, G72"
+700,2137,Legitimate,financial involvement in company,"G15, G25, G34, G67","G8, G29, G72"
+706,1672,Legitimate,associate,G68,"G39, G68"
+706,786,Legitimate,associate,G68,G68
+706,269,Co-Offenders,Same Cell,G68,G68
+706,710,Co-Offenders,Same Cell,G68,G68
+706,786,Co-Offenders,Same Cell,G68,G68
+706,2131,Co-Offenders,Same Cell,G68,G68
+706,269,Legitimate,links in helicopter business,G68,G68
+708,709,Legitimate,Director/ Operator,G3,NONE
+708,1391,Legitimate,Director,G3,G50
+708,2124,Legitimate,associate,G3,G64
+714,712,Co-Offenders,"marihuana/ cocaine, extortions & assaults",G12,G12
+714,1899,Co-Offenders,"marihuana/ cocaine, extortions & assaults",G12,G12
+714,1900,Co-Offenders,"marihuana/ cocaine, extortions & assaults",G12,G12
+714,1286,Co-Offenders,"marihuana/ cocaine, extortions & assaults",G12,G123
+716,201,Co-Offenders,arrested cocaine,G117,NONE
+716,717,Co-Offenders,arrested cocaine,G117,NONE
+716,1044,Co-Offenders,arrested cocaine,G117,NONE
+716,1511,Co-Offenders,cocaine,G117,NONE
+717,201,Co-Offenders,Cocaine,NONE,NONE
+717,1044,Co-Offenders,Cocaine,NONE,NONE
+718,84,Formal Criminal Organization,SOI: murder,"G122, G186",G119
+718,955,Co-Offenders,Same Cell,"G122, G186",G133
+718,955,Formal Criminal Organization,,"G122, G186",G133
+718,1176,Co-Offenders,POI for homicide investigation,"G122, G186","G179, G186"
+718,1176,Formal Criminal Organization,,"G122, G186","G179, G186"
+718,1717,Legitimate,Associates,"G122, G186",G186
+718,307,Co-Offenders,Same Cell,"G122, G186",G186
+718,954,Co-Offenders,Same Cell,"G122, G186",G186
+718,1717,Co-Offenders,Same Cell,"G122, G186",G186
+718,307,Formal Criminal Organization,,"G122, G186",G186
+718,954,Formal Criminal Organization,,"G122, G186",G186
+718,1717,Formal Criminal Organization,,"G122, G186",G186
+725,703,Co-Offenders,cocaine,G85,G85
+725,1247,Co-Offenders,cocaine,G85,G85
+727,1194,Formal Criminal Organization,Ch6,"G23, G39, G41, G66, G89","G10, G26, G90"
+727,1194,Legitimate,bought a company from 1229,"G23, G39, G41, G66, G89","G10, G26, G90"
+727,835,Legitimate,company,"G23, G39, G41, G66, G89",G23
+727,1891,Legitimate,754's long time employee,"G23, G39, G41, G66, G89","G23, G24"
+727,774,Legitimate,associate,"G23, G39, G41, G66, G89","G23, G30, G39"
+727,1746,Co-Offenders,marihuana importation,"G23, G39, G41, G66, G89","G23, G30, G43"
+727,1746,Formal Criminal Organization,Ch6,"G23, G39, G41, G66, G89","G23, G30, G43"
+727,82,Legitimate,associate,"G23, G39, G41, G66, G89","G23, G40, G43"
+727,82,Co-Offenders,btb long-term criminal association,"G23, G39, G41, G66, G89","G23, G40, G43"
+727,81,Legitimate,associate,"G23, G39, G41, G66, G89","G23, G40, G43, G111"
+727,81,Co-Offenders,btb long-term criminal association,"G23, G39, G41, G66, G89","G23, G40, G43, G111"
+727,1512,Legitimate,associate,"G23, G39, G41, G66, G89","G23, G41"
+727,1512,Co-Offenders,btb long-term criminal association,"G23, G39, G41, G66, G89","G23, G41"
+727,1312,Co-Offenders,bt supply drugs,"G23, G39, G41, G66, G89","G23, G41, G66, G89"
+727,1312,Legitimate,,"G23, G39, G41, G66, G89","G23, G41, G66, G89"
+727,1311,Legitimate,btb financial interest in company,"G23, G39, G41, G66, G89","G23, G41, G69"
+727,819,Co-Offenders,btb long-term criminal association,"G23, G39, G41, G66, G89","G23, G69"
+727,819,Formal Criminal Organization,,"G23, G39, G41, G66, G89","G23, G69"
+727,1535,Formal Criminal Organization,Ch6,"G23, G39, G41, G66, G89",G28
+727,1535,Legitimate,director of 2 numbered company,"G23, G39, G41, G66, G89",G28
+727,2137,Formal Criminal Organization,Ch6,"G23, G39, G41, G66, G89","G8, G29, G72"
+727,2137,Legitimate,director of 2 numbered company,"G23, G39, G41, G66, G89","G8, G29, G72"
+727,50,Formal Criminal Organization,,"G23, G39, G41, G66, G89","G8, G9, G10, G24"
+727,50,Legitimate,director of a numbered company,"G23, G39, G41, G66, G89","G8, G9, G10, G24"
+727,1918,Legitimate,associate,"G23, G39, G41, G66, G89",G89
+731,537,Legitimate,associate,G10,G121
+731,727,Co-Offenders,associate,G10,"G23, G39, G41, G66, G89"
+731,727,Formal Criminal Organization,,G10,"G23, G39, G41, G66, G89"
+731,243,Co-Offenders,btb controlling drug trafficking,G10,G97
+731,243,Formal Criminal Organization,Ch2 former,G10,G97
+736,65,Co-Offenders,"Cocaine, marihuana, immigrant smuggling",G176,G176
+736,734,Co-Offenders,"Cocaine, marihuana, immigrant smuggling",G176,G176
+736,737,Co-Offenders,"Cocaine, marihuana, immigrant smuggling",G176,G176
+736,738,Co-Offenders,"Cocaine, marihuana, immigrant smuggling",G176,G176
+736,1265,Co-Offenders,"Cocaine, marihuana, immigrant smuggling",G176,G176
+736,1266,Co-Offenders,"Cocaine, marihuana, immigrant smuggling",G176,G176
+736,1506,Co-Offenders,"Cocaine, marihuana, immigrant smuggling",G176,G176
+736,1782,Co-Offenders,"Cocaine, marihuana, immigrant smuggling",G176,G176
+738,735,Legitimate,Co-workers,G176,NONE
+738,1782,Legitimate,Associates,G176,G176
+742,998,Co-Offenders,guns,NONE,G56
+744,129,Legitimate,,G165,NONE
+744,1289,Legitimate,Associate,G165,NONE
+744,1480,Legitimate,Associate,G165,NONE
+744,445,Co-Offenders,"Prostitution, counterfeiting, homicide, auto-theft, marihuana, etc.",G165,G165
+744,608,Co-Offenders,"Prostitution, counterfeiting, homicide, auto-theft, marihuana, etc.",G165,G165
+744,686,Co-Offenders,"Prostitution, counterfeiting, homicide, auto-theft, marihuana, etc.",G165,G165
+744,864,Co-Offenders,"Prostitution, counterfeiting, homicide, auto-theft, marihuana, etc.",G165,G165
+744,934,Co-Offenders,"Prostitution, counterfeiting, homicide, auto-theft, marihuana, etc.",G165,G165
+744,1864,Co-Offenders,"Prostitution, counterfeiting, homicide, auto-theft, marihuana, etc.",G165,G165
+744,1895,Co-Offenders,"Prostitution, counterfeiting, homicide, auto-theft, marihuana, etc.",G165,G165
+753,1216,Co-Offenders,same cell,G17,G17
+753,1285,Co-Offenders,marihuana,G17,G17
+753,1784,Co-Offenders,same cell,G17,G17
+754,67,Co-Offenders,same cell,G16,"G13, G15, G16"
+754,67,Formal Criminal Organization,member/ hangaround Ch3,G16,"G13, G15, G16"
+754,1663,Co-Offenders,btb formerly linked,G16,G16
+754,1837,Co-Offenders,btb: cocaine & marihuana,G16,G16
+754,476,Co-Offenders,btb formerly linked,G16,"G16, G27, G38, G58"
+755,1748,Legitimate,had meeting,G35,G89
+768,687,Legitimate,driving vehicle,G41,"G50, G110"
+773,655,Formal Criminal Organization,,NONE,NONE
+773,655,Legitimate,director,NONE,NONE
+773,837,Formal Criminal Organization,,NONE,NONE
+773,837,Legitimate,director,NONE,NONE
+773,1287,Formal Criminal Organization,,NONE,"G13, G15, G34"
+773,1287,Legitimate,director,NONE,"G13, G15, G34"
+773,754,Formal Criminal Organization,,NONE,G16
+773,754,Legitimate,director,NONE,G16
+773,787,Legitimate,business,NONE,G24
+773,657,Formal Criminal Organization,,NONE,"G8, G14, G80"
+773,657,Legitimate,director,NONE,"G8, G14, G80"
+774,1762,Legitimate,associate,"G23, G30, G39","G30, G39"
+779,177,Legitimate,associate,G69,G101
+779,1311,Legitimate,business link,G69,"G23, G41, G69"
+779,275,Co-Offenders,bt direct some aspects of drug operations,G69,G69
+779,1455,Co-Offenders,btb  top level cocaine dealer,G69,G69
+779,310,Co-Offenders,btb 806s top level cocaine dealer,G69,G69
+779,1014,Co-Offenders,btb 806s top level cocaine dealer,G69,G69
+779,1075,Co-Offenders,btb 806s top level cocaine dealer,G69,G69
+779,1538,Co-Offenders,btb top level cocaine dealer,G69,G69
+779,2038,Co-Offenders,btb top level cocaine dealer,G69,G69
+779,202,Co-Offenders,cocaine supplier,G69,G69
+779,1119,Co-Offenders,cocaine supplier,G69,G69
+779,2071,Co-Offenders,cocaine supplier,G69,G69
+779,483,Co-Offenders,drug courier,G69,G69
+779,1246,Co-Offenders,drug courier,G69,G69
+779,1807,Co-Offenders,drug courier,G69,G69
+779,1445,Co-Offenders,lower level dealer,G69,G69
+779,1852,Co-Offenders,lower level dealer,G69,G69
+779,1865,Co-Offenders,lower level dealer,G69,G69
+779,2031,Co-Offenders,lower level dealer,G69,G69
+779,1532,Co-Offenders,Same Cell,G69,G69
+779,2072,Co-Offenders,top level cocaine dealer,G69,G69
+779,275,Legitimate,btb business advisor,G69,G69
+779,550,Legitimate,business links,G69,G69
+791,700,Co-Offenders,bt owe 725 money re cocaine,G25,"G15, G25, G34, G67"
+791,840,Legitimate,associate,G25,G25
+791,1090,Co-Offenders,cocaine,G25,G25
+791,1537,Co-Offenders,same cell,G25,G25
+791,1537,Formal Criminal Organization,Ch6,G25,G25
+791,512,Legitimate,associate,G25,"G25, G67"
+791,512,Co-Offenders,same cell,G25,"G25, G67"
+794,194,Legitimate,Third Level Associate,G175,NONE
+794,1551,Legitimate,Fourth Level Associate,G175,NONE
+794,1551,Co-Offenders,"cocaine, opium, crystal methamphetamine, marihuana, Ecstasy, precursor chemicals",G175,NONE
+794,1657,Legitimate,Second Level Associate,G175,NONE
+794,1778,Legitimate,Fourth Level Associate,G175,NONE
+794,1881,Legitimate,Second Level associate,G175,NONE
+794,1881,Co-Offenders,"debt collection, drugs, B&E, extortion & kidnapping",G175,NONE
+794,1936,Legitimate,Second Level Associate,G175,NONE
+794,4,Legitimate,Fourth Level Associate,G175,G175
+794,5,Legitimate,Fourth Level Associate,G175,G175
+794,79,Legitimate,Third Level Associate,G175,G175
+794,80,Legitimate,Third Level Associate,G175,G175
+794,1580,Legitimate,Fourth Level Associate,G175,G175
+794,1687,Legitimate,Fourth Level Associate,G175,G175
+794,1880,Legitimate,Second Level associate,G175,G175
+794,4,Co-Offenders,"debt collection, drugs, B&E, extortion & kidnapping",G175,G175
+794,5,Co-Offenders,"debt collection, drugs, B&E, extortion & kidnapping",G175,G175
+794,7,Co-Offenders,"cocaine, opium, crystal meth, marihuana, Ecstasy, precursor chemicals",G175,G175
+794,18,Co-Offenders,"cocaine, opium, crystal meth, marihuana, Ecstasy, precursor chemicals",G175,G175
+794,79,Co-Offenders,"debt collection, drugs, B&E, extortion & kidnapping",G175,G175
+794,80,Co-Offenders,"debt collection, drugs, B&E, extortion & kidnapping",G175,G175
+794,155,Co-Offenders,"cocaine, opium, crystal methamphetamine, marihuana, Ecstasy, precursor chemicals",G175,G175
+794,568,Co-Offenders,"cocaine, opium, crystal meth, marihuana, Ecstasy, precursor chemicals",G175,G175
+794,793,Co-Offenders,"cocaine, opium, crystal meth, marihuana, Ecstasy, precursor chemicals",G175,G175
+794,832,Co-Offenders,"cocaine, opium, crystal meth, marihuana, Ecstasy, precursor chemicals",G175,G175
+794,1162,Co-Offenders,"cocaine, opium, crystal meth, marihuana, Ecstasy, precursor chemicals",G175,G175
+794,1183,Co-Offenders,"cocaine, opium, crystal meth, marihuana, Ecstasy, precursor chemicals",G175,G175
+794,1580,Co-Offenders,"debt collection, drugs, B&E, extortion & kidnapping",G175,G175
+794,1687,Co-Offenders,"cocaine, opium, crystal methamphetamine, marihuana, Ecstasy, precursor chemicals",G175,G175
+794,1738,Co-Offenders,"cocaine, opium, crystal meth, marihuana, Ecstasy, precursor chemicals",G175,G175
+794,1777,Co-Offenders,"cocaine, opium, crystal meth, marihuana, Ecstasy, precursor chemicals",G175,G175
+794,1880,Co-Offenders,"debt collection, drugs, B&E, extortion & kidnapping",G175,G175
+794,1935,Co-Offenders,"cocaine, opium, crystal meth, marihuana, Ecstasy, precursor chemicals",G175,G175
+794,2122,Co-Offenders,"cocaine, opium, crystal meth, marihuana, Ecstasy, precursor chemicals",G175,G175
+794,1685,Legitimate,Fourth Level Associate,G175,"G175, G179"
+794,1685,Co-Offenders,"cocaine, opium, crystal methamphetamine, marihuana, Ecstasy, precursor chemicals",G175,"G175, G179"
+794,2137,Legitimate,Associate,G175,"G8, G29, G72"
+796,604,Formal Criminal Organization,had a fight,NONE,NONE
+796,67,Co-Offenders,,NONE,"G13, G15, G16"
+796,67,Formal Criminal Organization,823 owed a  drug debt,NONE,"G13, G15, G16"
+797,140,Legitimate,associate,"G11, G19, G21",NONE
+797,570,Legitimate,associate,"G11, G19, G21",NONE
+797,913,Legitimate,associate,"G11, G19, G21",NONE
+797,918,Legitimate,associate,"G11, G19, G21",NONE
+797,1152,Legitimate,associate,"G11, G19, G21",NONE
+797,1353,Legitimate,associate,"G11, G19, G21",NONE
+797,1393,Legitimate,associate,"G11, G19, G21",NONE
+797,1393,Formal Criminal Organization,Ch4 former,"G11, G19, G21",NONE
+797,1842,Co-Offenders,prostitution,"G11, G19, G21",NONE
+797,1842,Legitimate,,"G11, G19, G21",NONE
+797,1769,Co-Offenders,btb trafficking drugs,"G11, G19, G21",G19
+797,594,Co-Offenders,same cell,"G11, G19, G21",G19
+797,770,Co-Offenders,same cell,"G11, G19, G21",G19
+797,1242,Co-Offenders,same cell,"G11, G19, G21",G19
+797,1276,Co-Offenders,same cell,"G11, G19, G21",G19
+797,941,Co-Offenders,same cell,"G11, G19, G21","G19, G21"
+797,862,Co-Offenders,same cell,"G11, G19, G21","G19, G21, G22, G109"
+797,14,Co-Offenders,btb trafficking drugs,"G11, G19, G21","G19, G75"
+797,434,Legitimate,associate,"G11, G19, G21",G21
+797,1772,Co-Offenders,operate closely,"G11, G19, G21",G21
+797,1772,Formal Criminal Organization,,"G11, G19, G21",G21
+797,727,Co-Offenders,btb swapping drug territory,"G11, G19, G21","G23, G39, G41, G66, G89"
+797,727,Formal Criminal Organization,Ch4,"G11, G19, G21","G23, G39, G41, G66, G89"
+797,1312,Co-Offenders,btb swapping drug territory,"G11, G19, G21","G23, G41, G66, G89"
+799,385,Co-Offenders,cocaine distribution,G64,G64
+799,1263,Co-Offenders,cocaine distribution,G64,G64
+799,1679,Co-Offenders,cocaine distribution,G64,G64
+799,125,Co-Offenders,drug transaction(s),G64,G64
+814,62,Legitimate,Associate,G71,NONE
+814,432,Legitimate,Associate,G71,NONE
+814,1334,Legitimate,Associate,G71,NONE
+814,1631,Legitimate,Associate,G71,NONE
+814,1695,Legitimate,Associate,G71,NONE
+814,1696,Legitimate,Associate,G71,NONE
+814,1871,Legitimate,Associate,G71,NONE
+814,2079,Legitimate,Associate,G71,NONE
+814,622,Co-Offenders,cocaine trafficking,G71,G71
+814,817,Co-Offenders,cocaine trafficking,G71,G71
+814,1135,Co-Offenders,cocaine trafficking,G71,G71
+814,1148,Co-Offenders,cocaine trafficking,G71,G71
+814,1262,Co-Offenders,cocaine trafficking,G71,G71
+814,1539,Co-Offenders,cocaine trafficking,G71,G71
+814,1894,Co-Offenders,cocaine trafficking,G71,G71
+814,1903,Co-Offenders,cocaine trafficking,G71,G71
+814,1245,Co-Offenders,distributed drugs to local dealers,G71,G71
+814,1902,Co-Offenders,transported cocaine internationally,G71,G71
+815,782,Legitimate,associate,"G72, G115, G116",G122
+815,551,Legitimate,Associate,"G72, G115, G116",G127
+815,553,Legitimate,Associate,"G72, G115, G116",G127
+815,1839,Legitimate,business relationship,"G72, G115, G116",G55
+815,1342,Co-Offenders,Same Cell,"G72, G115, G116",G72
+815,2049,Co-Offenders,money & drugs,"G72, G115, G116","G72, G115"
+819,779,Co-Offenders,cocaine supplier,"G23, G69",G69
+831,1587,Legitimate,Associate,NONE,NONE
+831,562,Legitimate,Associate,NONE,G172
+832,111,Co-Offenders,Cocaine,G175,NONE
+832,670,Co-Offenders,Cocaine,G175,NONE
+832,1657,Co-Offenders,Cocaine,G175,NONE
+836,1515,Co-Offenders,btb working together in cocaine importation,G47,"G47, G81"
+836,1515,Legitimate,partners,G47,"G47, G81"
+840,786,Legitimate,Director,G25,G68
+844,845,Legitimate,Associate,G136,NONE
+844,846,Legitimate,Associate,G136,NONE
+844,851,Legitimate,Associate,G136,NONE
+844,890,Legitimate,Associate,G136,NONE
+844,1018,Legitimate,Associate,G136,NONE
+844,1080,Legitimate,Associate,G136,NONE
+844,1082,Legitimate,Associate,G136,NONE
+844,1169,Legitimate,Associate,G136,NONE
+844,1886,Legitimate,Associate,G136,NONE
+844,1959,Legitimate,Associate,G136,NONE
+844,2037,Legitimate,Associate,G136,NONE
+844,2093,Legitimate,Associate,G136,NONE
+844,2103,Legitimate,Associate,G136,NONE
+844,2116,Legitimate,investments,G136,NONE
+844,2117,Legitimate,Associate,G136,NONE
+844,1307,Legitimate,btb close associate,G136,G136
+844,371,Co-Offenders,Same Cell,G136,G136
+844,1307,Co-Offenders,Same Cell,G136,G136
+844,1819,Co-Offenders,Same Cell,G136,G136
+844,1046,Co-Offenders,Same Cell,G136,"G136, G139"
+844,2013,Co-Offenders,Ketamine smuggling,G136,"G136, G142"
+844,375,Legitimate,Associate,G136,"G136, G152"
+844,623,Legitimate,Associate,G136,G141
+844,1098,Legitimate,Associate,G136,G148
+858,1970,Legitimate,telemarketers,G87,G87
+861,1148,Legitimate,Associate,NONE,G71
+876,35,Legitimate,Associate,G77,NONE
+876,135,Legitimate,Associate,G77,NONE
+876,160,Legitimate,Associate,G77,NONE
+876,324,Legitimate,Associate,G77,NONE
+876,874,Legitimate,Associate,G77,NONE
+876,875,Legitimate,Associate,G77,NONE
+876,1000,Legitimate,Associate,G77,NONE
+876,1022,Legitimate,Associate,G77,NONE
+876,1136,Legitimate,Associate,G77,NONE
+876,1340,Legitimate,Associate,G77,NONE
+876,1373,Legitimate,Associate,G77,NONE
+876,1374,Legitimate,Associate,G77,NONE
+876,1388,Legitimate,Associate,G77,NONE
+876,1471,Legitimate,Associate,G77,NONE
+876,1586,Legitimate,Associate,G77,NONE
+876,1882,Legitimate,Associate,G77,NONE
+876,1930,Legitimate,Associate,G77,NONE
+876,1001,Co-Offenders,fraudulent property scheme,G77,G77
+876,1283,Co-Offenders,fraudulent property scheme,G77,G77
+882,883,Co-Offenders,Cocaine couriers,G178,G178
+886,294,Formal Criminal Organization,suspect in drive-by shooting,G53,NONE
+889,1574,Legitimate,Associate,NONE,"G49, G99"
+897,105,Legitimate,Associate,G125,NONE
+897,487,Legitimate,Associate,G125,NONE
+897,690,Legitimate,Associate,G125,NONE
+897,443,Legitimate,leasing vehicles,G125,G110
+897,226,Co-Offenders,extortion/ shots fired,G125,G125
+897,327,Co-Offenders,Same Cell,G125,G125
+897,506,Co-Offenders,Same Cell,G125,G125
+897,730,Co-Offenders,Same Cell,G125,G125
+897,896,Co-Offenders,Same Cell,G125,G125
+897,901,Co-Offenders,Same Cell,G125,G125
+897,1796,Co-Offenders,Same Cell,G125,G125
+897,2034,Co-Offenders,extortion/ shots fired,G125,G125
+898,900,Co-Offenders,bt coordinate cross-border marihuana/ cocaine,"G118, G121, G135",G118
+898,959,Co-Offenders,btb coordinator of marihuana & cocaine shipments,"G118, G121, G135",G118
+908,42,Legitimate,associate,NONE,NONE
+909,304,Co-Offenders,Meth,NONE,NONE
+909,332,Legitimate,Boyfriend /Girlfriend,NONE,NONE
+909,332,Co-Offenders,Drugs,NONE,NONE
+915,428,Co-Offenders,btb drug trafficking & money laundering,G33,G33
+915,841,Co-Offenders,btb drug trafficking & money laundering,G33,G33
+915,916,Co-Offenders,btb drug trafficking & money laundering,G33,G33
+915,1993,Co-Offenders,btb drug trafficking & money laundering,G33,G33
+915,841,Formal Criminal Organization,Ch5,G33,G33
+915,1993,Formal Criminal Organization,Ch5 former,G33,G33
+915,428,Formal Criminal Organization,member/ hangaround Ch5,G33,G33
+915,440,Legitimate,,G33,"G33, G34"
+915,440,Co-Offenders,btb drug trafficking & money laundering,G33,"G33, G34"
+915,440,Formal Criminal Organization,Ch5,G33,"G33, G34"
+921,331,Legitimate,Associate,G166,NONE
+921,331,Co-Offenders,Illegal immigration documents,G166,NONE
+921,1061,Formal Criminal Organization,Enemy-grow-rip/attempted murder,G166,NONE
+921,1789,Co-Offenders,Extortion,G166,G166
+921,77,Legitimate,Associate,G166,G167
+925,261,Legitimate,Associate,G120,NONE
+925,261,Co-Offenders,btb heroin courier,G120,NONE
+925,306,Legitimate,Associate,G120,NONE
+925,689,Legitimate,Associate,G120,NONE
+925,729,Legitimate,Associate,G120,NONE
+925,1708,Legitimate,Associate,G120,NONE
+925,1985,Legitimate,Associate,G120,NONE
+925,359,Legitimate,Associate,G120,G120
+925,360,Legitimate,Associate,G120,G120
+925,360,Co-Offenders,heroin,G120,G120
+925,489,Co-Offenders,Same Cell,G120,G120
+925,502,Co-Offenders,Same Cell,G120,G120
+925,503,Co-Offenders,Same Cell,G120,G120
+925,926,Co-Offenders,Same Cell,G120,G120
+925,694,Co-Offenders,bt  import marihuana,G120,G121
+925,1583,Co-Offenders,Same Cell formerly,G120,"G40, G120"
+928,1114,Co-Offenders,Same Cell,G76,G76
+928,1617,Co-Offenders,Same Cell,G76,G76
+928,1655,Co-Offenders,Same Cell,G76,G76
+928,1728,Co-Offenders,Same Cell,G76,G76
+928,1114,Formal Criminal Organization,,G76,G76
+928,1617,Formal Criminal Organization,,G76,G76
+928,1655,Formal Criminal Organization,,G76,G76
+928,1728,Formal Criminal Organization,,G76,G76
+934,1308,Legitimate,,G165,NONE
+935,2110,Legitimate,associate,G48,"G30, G39"
+940,1612,Co-Offenders,provided steroids,G106,G106
+947,326,Co-Offenders,Same Cell,G110,G110
+947,326,Formal Criminal Organization,,G110,G110
+952,1965,Co-Offenders,involved together in drug activities,"G58, G113","G58, G113"
+955,954,Co-Offenders,Same Cell,G133,G186
+955,954,Formal Criminal Organization,,G133,G186
+965,559,Legitimate,btb living at the same res.,G120,G101
+974,532,Legitimate,associate,G114,G114
+974,2054,Legitimate,associate,G114,G114
+977,1016,Legitimate,Associate,NONE,NONE
+982,580,Co-Offenders,Drug runners,NONE,NONE
+987,116,Legitimate,Associate,NONE,G126
+997,1665,Co-Offenders,"marihuana, cocaine,   money laundering,  loan sharking.","G13, G34","G13, G34"
+997,1665,Formal Criminal Organization,,"G13, G34","G13, G34"
+997,1665,Legitimate,,"G13, G34","G13, G34"
+998,966,Co-Offenders,firearms,G56,G56
+1002,1195,Legitimate,associate,G3,G86
+1002,1195,Co-Offenders,btb drug supplier,G3,G86
+1005,128,Legitimate,Associate,NONE,NONE
+1006,577,Legitimate,Associate,G158,NONE
+1006,1005,Co-Offenders,"Theft, Fraud",G158,NONE
+1006,1207,Legitimate,Associate,G158,NONE
+1006,2073,Legitimate,Associate,G158,NONE
+1006,903,Co-Offenders,"Theft, Fraud",G158,G158
+1006,1004,Co-Offenders,"Theft, Fraud",G158,G158
+1006,1007,Co-Offenders,"Theft, Fraud",G158,G158
+1006,1008,Co-Offenders,"Theft, Fraud",G158,G158
+1009,1010,Co-Offenders,Same Cell,G159,G159
+1009,1021,Co-Offenders,Same Cell,G159,G159
+1009,2077,Co-Offenders,Same Cell,G159,G159
+1017,1016,Co-Offenders,btb working together,G140,NONE
+1017,375,Co-Offenders,btb working together,G140,"G136, G152"
+1017,623,Legitimate,Associate,G140,G141
+1017,623,Co-Offenders,btb working together,G140,G141
+1023,121,Co-Offenders,Same Cell,"G78, G116","G15, G78"
+1023,815,Co-Offenders,"btb cocaine, meth, marihuana","G78, G116","G72, G115, G116"
+1023,2050,Co-Offenders,both linked to company used for a marihuana grow op,"G78, G116","G72, G115, G116"
+1023,815,Legitimate,former director,"G78, G116","G72, G115, G116"
+1023,2050,Legitimate,director/ former director,"G78, G116","G72, G115, G116"
+1023,1433,Legitimate,associate,"G78, G116",G78
+1023,1024,Co-Offenders,active drug traffickers,"G78, G116",G78
+1023,1025,Co-Offenders,Same Cell,"G78, G116",G78
+1023,1026,Co-Offenders,active drug traffickers,"G78, G116",G78
+1023,1027,Co-Offenders,Same Cell,"G78, G116",G78
+1023,1433,Co-Offenders,bt obtain cocaine ,"G78, G116",G78
+1023,1554,Co-Offenders,bt supply cocaine & heroin,"G78, G116",G78
+1023,1630,Co-Offenders,Same Cell,"G78, G116",G78
+1023,1752,Co-Offenders,Same Cell,"G78, G116",G78
+1023,1554,Legitimate,same residence,"G78, G116",G78
+1033,1959,Legitimate,Associate,G145,NONE
+1033,626,Co-Offenders,btb inovlved in precursor drug shipment,G145,G145
+1033,1078,Co-Offenders,btb inovlved in precursor drug shipment,G145,G145
+1033,1170,Co-Offenders,btb inovlved in precursor drug shipment,G145,G145
+1033,1182,Co-Offenders,btb inovlved in precursor drug shipment,G145,G145
+1033,626,Legitimate,former director/ president,G145,G145
+1036,567,Formal Criminal Organization,suspect  shooting,NONE,G48
+1037,1642,Legitimate,linked to sale of motor vehicle,G79,NONE
+1037,1105,Co-Offenders,Same Cell,G79,G79
+1037,1106,Co-Offenders,bt direct & finance the marihuana operation,G79,G79
+1037,1108,Co-Offenders,Same Cell,G79,G79
+1037,1113,Co-Offenders,bt direct & finance the marihuana operation,G79,G79
+1037,1473,Co-Offenders,assists in  transporting marihuana,G79,G79
+1037,1508,Co-Offenders,btb involved in marihuana,G79,G79
+1042,1514,Co-Offenders,,NONE,G168
+1044,1043,Legitimate,Director / officer,NONE,NONE
+1046,846,Legitimate,underling,"G136, G139",NONE
+1046,890,Legitimate,underling,"G136, G139",NONE
+1049,825,Co-Offenders,Same Cell,G80,"G24, G80"
+1049,657,Co-Offenders,Same Cell,G80,"G8, G14, G80"
+1049,190,Co-Offenders,cocaine & marihuana importation & trafficking,G80,G80
+1049,235,Co-Offenders,Same Cell,G80,G80
+1049,1151,Co-Offenders,Same Cell,G80,G80
+1049,1213,Co-Offenders,Same Cell,G80,G80
+1052,1141,Co-Offenders,"btb: marihuana, cocaine trafficking, welfare & credit/debit card fraud",G151,G151
+1052,1397,Co-Offenders,"btb: marihuana, cocaine trafficking, welfare & credit/debit card fraud",G151,G151
+1052,1566,Co-Offenders,"btb: marihuana, cocaine trafficking, welfare & credit/debit card fraud",G151,G151
+1054,8,Legitimate,Associate,G179,NONE
+1054,41,Legitimate,Associate,G179,NONE
+1054,60,Legitimate,Associate,G179,NONE
+1054,92,Legitimate,Associate,G179,NONE
+1054,252,Legitimate,Associate,G179,NONE
+1054,270,Legitimate,Associate,G179,NONE
+1054,305,Co-Offenders,Former Cocaine,G179,NONE
+1054,305,Formal Criminal Organization,"Debt, Stolen Cocaine",G179,NONE
+1054,329,Legitimate,Associate,G179,NONE
+1054,348,Legitimate,Associate,G179,NONE
+1054,362,Legitimate,Associate,G179,NONE
+1054,364,Legitimate,Associate,G179,NONE
+1054,376,Legitimate,Associate,G179,NONE
+1054,554,Legitimate,Associate,G179,NONE
+1054,560,Legitimate,Associate,G179,NONE
+1054,576,Legitimate,Associate,G179,NONE
+1054,579,Legitimate,Associate,G179,NONE
+1054,605,Legitimate,Associate,G179,NONE
+1054,673,Legitimate,Associate,G179,NONE
+1054,689,Legitimate,Associate,G179,NONE
+1054,749,Legitimate,Associate,G179,NONE
+1054,777,Legitimate,Associate,G179,NONE
+1054,826,Legitimate,Associate,G179,NONE
+1054,843,Legitimate,Associate,G179,NONE
+1054,902,Legitimate,Associate,G179,NONE
+1054,981,Legitimate,Associate,G179,NONE
+1054,992,Legitimate,Associate,G179,NONE
+1054,1039,Legitimate,Associate,G179,NONE
+1054,1053,Legitimate,Associate,G179,NONE
+1054,1087,Legitimate,Associate,G179,NONE
+1054,1235,Legitimate,Associate,G179,NONE
+1054,1318,Legitimate,Associate,G179,NONE
+1054,1321,Legitimate,Associate,G179,NONE
+1054,1378,Legitimate,Associate,G179,NONE
+1054,1396,Legitimate,Associate,G179,NONE
+1054,1414,Legitimate,Associate,G179,NONE
+1054,1429,Legitimate,Associate,G179,NONE
+1054,1441,Legitimate,Associate,G179,NONE
+1054,1444,Legitimate,Associate,G179,NONE
+1054,1496,Legitimate,Associate,G179,NONE
+1054,1626,Legitimate,Associate,G179,NONE
+1054,1686,Co-Offenders,"Former, Cocaine",G179,NONE
+1054,1686,Formal Criminal Organization,,G179,NONE
+1054,1732,Legitimate,Associate,G179,NONE
+1054,1757,Legitimate,Associate,G179,NONE
+1054,1759,Legitimate,Boyfriend /Girlfriend,G179,NONE
+1054,1766,Legitimate,Associate,G179,NONE
+1054,1785,Legitimate,Associate,G179,NONE
+1054,1855,Legitimate,Associate,G179,NONE
+1054,1872,Legitimate,Associate,G179,NONE
+1054,1939,Legitimate,Associate,G179,NONE
+1054,2022,Legitimate,Associate,G179,NONE
+1054,2035,Legitimate,Associate,G179,NONE
+1054,2041,Legitimate,Associate,G179,NONE
+1054,2091,Legitimate,Associate,G179,NONE
+1054,2105,Legitimate,Associate,G179,NONE
+1054,2136,Legitimate,Associate,G179,NONE
+1054,718,Legitimate,Associate,G179,"G122, G186"
+1054,955,Legitimate,Associate,G179,G133
+1054,333,Legitimate,Associate,G179,G179
+1054,34,Co-Offenders,Cocaine,G179,G179
+1054,97,Co-Offenders,Cocaine,G179,G179
+1054,158,Co-Offenders,Cocaine,G179,G179
+1054,361,Co-Offenders,Cocaine,G179,G179
+1054,372,Co-Offenders,Cocaine,G179,G179
+1054,380,Co-Offenders,Cocaine,G179,G179
+1054,809,Co-Offenders,Cocaine,G179,G179
+1054,869,Co-Offenders,Cocaine,G179,G179
+1054,877,Co-Offenders,Cocaine,G179,G179
+1054,932,Co-Offenders,Cocaine,G179,G179
+1054,1406,Co-Offenders,Cocaine,G179,G179
+1054,1425,Co-Offenders,Cocaine,G179,G179
+1054,1443,Co-Offenders,Cocaine,G179,G179
+1054,1481,Co-Offenders,Cocaine,G179,G179
+1054,1578,Co-Offenders,Cocaine,G179,G179
+1054,1614,Co-Offenders,Cocaine,G179,G179
+1054,1779,Co-Offenders,Cocaine,G179,G179
+1054,1859,Co-Offenders,Cocaine,G179,G179
+1054,1967,Co-Offenders,Cocaine,G179,G179
+1054,2084,Co-Offenders,Cocaine,G179,G179
+1054,2118,Co-Offenders,Cocaine,G179,G179
+1054,34,Formal Criminal Organization,,G179,G179
+1054,97,Formal Criminal Organization,,G179,G179
+1054,158,Formal Criminal Organization,,G179,G179
+1054,361,Formal Criminal Organization,,G179,G179
+1054,372,Formal Criminal Organization,,G179,G179
+1054,380,Formal Criminal Organization,,G179,G179
+1054,809,Formal Criminal Organization,,G179,G179
+1054,869,Formal Criminal Organization,,G179,G179
+1054,877,Formal Criminal Organization,,G179,G179
+1054,932,Formal Criminal Organization,,G179,G179
+1054,1406,Formal Criminal Organization,,G179,G179
+1054,1425,Formal Criminal Organization,,G179,G179
+1054,1443,Formal Criminal Organization,,G179,G179
+1054,1481,Formal Criminal Organization,,G179,G179
+1054,1578,Formal Criminal Organization,,G179,G179
+1054,1614,Formal Criminal Organization,,G179,G179
+1054,1779,Formal Criminal Organization,,G179,G179
+1054,1859,Formal Criminal Organization,,G179,G179
+1054,1967,Formal Criminal Organization,,G179,G179
+1054,2084,Formal Criminal Organization,,G179,G179
+1054,2118,Formal Criminal Organization,,G179,G179
+1054,1176,Co-Offenders,Cocaine,G179,"G179, G186"
+1054,1176,Formal Criminal Organization,,G179,"G179, G186"
+1054,911,Co-Offenders,Cocaine,G179,"G48, G179"
+1054,911,Formal Criminal Organization,,G179,"G48, G179"
+1054,821,Legitimate,Associate,G179,G58
+1055,2075,Co-Offenders,Same Cell,G81,"G47, G58, G81"
+1055,21,Co-Offenders,btb laundering money,G81,"G47, G81"
+1055,1249,Co-Offenders,RO of Blackberries linked to organization,G81,"G47, G81"
+1055,1515,Co-Offenders,btb working together in  marihuana exportation,G81,"G47, G81"
+1055,1178,Legitimate,btb associate,G81,G81
+1055,1698,Legitimate,associate,G81,G81
+1055,9,Co-Offenders,Same Cell,G81,G81
+1055,544,Co-Offenders,Same Cell,G81,G81
+1055,573,Co-Offenders,Same Cell,G81,G81
+1055,654,Co-Offenders,Same Cell,G81,G81
+1055,1178,Co-Offenders,Same Cell,G81,G81
+1055,1238,Co-Offenders,Same Cell,G81,G81
+1055,1350,Co-Offenders,Same Cell,G81,G81
+1055,1697,Co-Offenders,Same Cell,G81,G81
+1055,1698,Co-Offenders,Same Cell,G81,G81
+1055,2060,Co-Offenders,Same Cell,G81,G81
+1055,2064,Co-Offenders,Same Cell,G81,G81
+1055,1697,Legitimate,btb business link,G81,G81
+1057,1067,Co-Offenders,Cocaine,G178,NONE
+1057,330,Legitimate,Associate,G178,G178
+1057,1166,Legitimate,Own property in same building,G178,G178
+1057,2125,Legitimate,Associate,G178,G178
+1057,94,Co-Offenders,Cocaine,G178,G178
+1057,330,Co-Offenders,Cocaine,G178,G178
+1057,474,Co-Offenders,Cocaine,G178,G178
+1057,882,Co-Offenders,"Cocaine, Couriers",G178,G178
+1057,883,Co-Offenders,"Cocaine, Couriers",G178,G178
+1057,1166,Co-Offenders,Cocaine,G178,G178
+1057,1341,Co-Offenders,Cocaine,G178,G178
+1057,2125,Co-Offenders,Cocaine,G178,G178
+1058,1944,Co-Offenders,linked to the AOC ,"G47, G82",NONE
+1058,75,Legitimate,associate,"G47, G82","G47, G82"
+1058,75,Co-Offenders,btb financing cocaine operation,"G47, G82","G47, G82"
+1058,2108,Legitimate,worked P/T for 1092s property mgt't company,"G47, G82","G55, G82"
+1058,1956,Legitimate,associate,"G47, G82",G82
+1058,343,Co-Offenders,Same Cell,"G47, G82",G82
+1058,350,Co-Offenders,Same Cell,"G47, G82",G82
+1058,627,Co-Offenders,Same Cell,"G47, G82",G82
+1058,991,Co-Offenders,Same Cell,"G47, G82",G82
+1058,1011,Co-Offenders,Same Cell,"G47, G82",G82
+1058,1034,Co-Offenders,linked to the AOC,"G47, G82",G82
+1058,1068,Co-Offenders,Same Cell,"G47, G82",G82
+1058,1142,Co-Offenders,Same Cell,"G47, G82",G82
+1058,1440,Co-Offenders,Same Cell,"G47, G82",G82
+1058,1621,Co-Offenders,Same Cell,"G47, G82",G82
+1058,1956,Co-Offenders,arrested for trafficking marihuana,"G47, G82",G82
+1058,627,Legitimate,business link (property),"G47, G82",G82
+1071,1529,Legitimate,boyfriend/ girlfriend,G24,NONE
+1071,1650,Legitimate,,G24,"G8, G14"
+1074,688,Co-Offenders,money laundering,G88,"G1, G3"
+1074,399,Co-Offenders,btb: drug debt & kidnaping,G88,G168
+1077,648,Co-Offenders,btb laundering money,G143,G143
+1077,805,Co-Offenders,btb laundering money,G143,G143
+1077,1076,Co-Offenders,btb laundering money,G143,G143
+1077,1086,Co-Offenders,btb laundering money,G143,G143
+1077,1097,Co-Offenders,btb laundering money,G143,G143
+1077,1565,Co-Offenders,btb laundering money,G143,G143
+1077,1800,Co-Offenders,btb laundering money,G143,G143
+1077,805,Legitimate,nominee 1111,G143,G143
+1077,1800,Legitimate,nominee 1111,G143,G143
+1083,349,Legitimate,Associate,G139,NONE
+1083,609,Legitimate,Associate,G139,NONE
+1083,806,Legitimate,Associate,G139,NONE
+1083,977,Legitimate,Associate,G139,NONE
+1083,1016,Legitimate,Associate,G139,NONE
+1083,1084,Legitimate,Associate,G139,NONE
+1083,1100,Legitimate,Associate,G139,NONE
+1083,1100,Co-Offenders,cocaine &  marihuana,G139,NONE
+1083,2086,Legitimate,Associate,G139,NONE
+1083,2097,Legitimate,Associate,G139,NONE
+1083,2101,Legitimate,Associate,G139,NONE
+1083,2101,Co-Offenders,cocaine &  marihuana,G139,NONE
+1083,1046,Legitimate,close associate,G139,"G136, G139"
+1083,1046,Co-Offenders,btb marihuana/ cocaine smuggling,G139,"G136, G139"
+1083,345,Co-Offenders,Same Cell,G139,G139
+1083,346,Co-Offenders,Same Cell,G139,G139
+1083,585,Co-Offenders,btb marihuana/ cocaine smuggling,G139,G139
+1083,1483,Co-Offenders,Same Cell,G139,G139
+1083,1888,Co-Offenders,Same Cell,G139,G139
+1083,1825,Formal Criminal Organization,charged with kidnapping ,G139,G93
+1095,1502,Formal Criminal Organization,extorted re missing drug shipment(s),NONE,G50
+1098,87,Legitimate,Associate,G148,NONE
+1098,87,Co-Offenders,Heroin,G148,NONE
+1098,322,Legitimate,Associate,G148,NONE
+1098,322,Co-Offenders,bt sell cocaine,G148,NONE
+1098,367,Legitimate,Associate,G148,NONE
+1098,1099,Legitimate,close associate,G148,NONE
+1098,1099,Co-Offenders,drug trafficking,G148,NONE
+1098,318,Legitimate,Associate,G148,G138
+1098,318,Co-Offenders,former association in drug importation,G148,G138
+1098,597,Co-Offenders,cocaine and heroin trafficking,G148,G148
+1098,598,Co-Offenders,Same Cell,G148,G148
+1098,599,Co-Offenders,cocaine & heroin trafficking,G148,G148
+1098,847,Co-Offenders,Same Cell,G148,G148
+1098,1436,Co-Offenders,Same Cell,G148,G148
+1098,1693,Co-Offenders,Same Cell,G148,G148
+1098,2089,Legitimate,Associate,G148,G155
+1098,2089,Co-Offenders,former association in drug importation,G148,G155
+1118,2070,Legitimate,associate,G89,NONE
+1118,871,Co-Offenders,operated crack shacks,G89,G89
+1118,1251,Co-Offenders,operated crack shacks,G89,G89
+1118,871,Formal Criminal Organization,,G89,G89
+1118,1251,Formal Criminal Organization,,G89,G89
+1121,1579,Co-Offenders,Cocaine,G184,NONE
+1121,1726,Legitimate,Associates,G184,NONE
+1121,1726,Co-Offenders,Procceeds of Crime,G184,NONE
+1121,13,Co-Offenders,"street level trafficking, prostitution, extortion",G184,"G155, G184"
+1121,13,Formal Criminal Organization,,G184,"G155, G184"
+1121,1448,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G179
+1121,1448,Formal Criminal Organization,,G184,G179
+1121,120,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,144,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,192,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,193,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,196,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,198,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,199,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,204,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,225,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,241,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,268,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,369,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,430,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,581,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,596,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,625,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,630,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,653,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,656,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,659,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,757,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,769,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,804,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,827,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,881,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,895,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1031,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1124,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1200,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1233,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1237,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1314,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1339,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1375,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1439,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1442,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1459,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1464,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1465,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1491,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1499,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1513,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1516,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1517,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1531,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1637,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1640,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1648,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1661,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1747,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1775,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1776,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1812,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1826,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1860,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1866,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1916,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1929,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1982,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1983,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1984,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,1990,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,2040,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,2059,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,2069,Co-Offenders,"Prostitution, Extortion, Cocaine, Marihuana",G184,G184
+1121,469,Co-Offenders,"street level trafficking, prostitution, extortion",G184,G184
+1121,470,Co-Offenders,"street level trafficking, prostitution, extortion",G184,G184
+1121,471,Co-Offenders,"street level trafficking, prostitution, extortion",G184,G184
+1121,472,Co-Offenders,"street level trafficking, prostitution, extortion",G184,G184
+1121,473,Co-Offenders,"street level trafficking, prostitution, extortion",G184,G184
+1121,962,Co-Offenders,"street level trafficking, prostitution, extortion",G184,G184
+1121,1073,Co-Offenders,"street level trafficking, prostitution, extortion",G184,G184
+1121,120,Formal Criminal Organization,,G184,G184
+1121,144,Formal Criminal Organization,,G184,G184
+1121,192,Formal Criminal Organization,,G184,G184
+1121,193,Formal Criminal Organization,,G184,G184
+1121,196,Formal Criminal Organization,,G184,G184
+1121,198,Formal Criminal Organization,,G184,G184
+1121,199,Formal Criminal Organization,,G184,G184
+1121,204,Formal Criminal Organization,,G184,G184
+1121,225,Formal Criminal Organization,,G184,G184
+1121,241,Formal Criminal Organization,,G184,G184
+1121,268,Formal Criminal Organization,,G184,G184
+1121,369,Formal Criminal Organization,,G184,G184
+1121,430,Formal Criminal Organization,,G184,G184
+1121,469,Formal Criminal Organization,,G184,G184
+1121,470,Formal Criminal Organization,,G184,G184
+1121,471,Formal Criminal Organization,,G184,G184
+1121,472,Formal Criminal Organization,,G184,G184
+1121,473,Formal Criminal Organization,,G184,G184
+1121,581,Formal Criminal Organization,,G184,G184
+1121,596,Formal Criminal Organization,,G184,G184
+1121,625,Formal Criminal Organization,,G184,G184
+1121,630,Formal Criminal Organization,,G184,G184
+1121,653,Formal Criminal Organization,,G184,G184
+1121,656,Formal Criminal Organization,,G184,G184
+1121,659,Formal Criminal Organization,,G184,G184
+1121,757,Formal Criminal Organization,,G184,G184
+1121,769,Formal Criminal Organization,,G184,G184
+1121,804,Formal Criminal Organization,,G184,G184
+1121,827,Formal Criminal Organization,,G184,G184
+1121,881,Formal Criminal Organization,,G184,G184
+1121,895,Formal Criminal Organization,,G184,G184
+1121,962,Formal Criminal Organization,,G184,G184
+1121,1031,Formal Criminal Organization,,G184,G184
+1121,1073,Formal Criminal Organization,,G184,G184
+1121,1124,Formal Criminal Organization,,G184,G184
+1121,1200,Formal Criminal Organization,,G184,G184
+1121,1233,Formal Criminal Organization,,G184,G184
+1121,1237,Formal Criminal Organization,,G184,G184
+1121,1314,Formal Criminal Organization,,G184,G184
+1121,1339,Formal Criminal Organization,,G184,G184
+1121,1375,Formal Criminal Organization,,G184,G184
+1121,1439,Formal Criminal Organization,,G184,G184
+1121,1442,Formal Criminal Organization,,G184,G184
+1121,1459,Formal Criminal Organization,,G184,G184
+1121,1464,Formal Criminal Organization,,G184,G184
+1121,1465,Formal Criminal Organization,,G184,G184
+1121,1491,Formal Criminal Organization,,G184,G184
+1121,1499,Formal Criminal Organization,,G184,G184
+1121,1513,Formal Criminal Organization,,G184,G184
+1121,1516,Formal Criminal Organization,,G184,G184
+1121,1517,Formal Criminal Organization,,G184,G184
+1121,1531,Formal Criminal Organization,,G184,G184
+1121,1637,Formal Criminal Organization,,G184,G184
+1121,1640,Formal Criminal Organization,,G184,G184
+1121,1648,Formal Criminal Organization,,G184,G184
+1121,1661,Formal Criminal Organization,,G184,G184
+1121,1747,Formal Criminal Organization,,G184,G184
+1121,1775,Formal Criminal Organization,,G184,G184
+1121,1776,Formal Criminal Organization,,G184,G184
+1121,1812,Formal Criminal Organization,,G184,G184
+1121,1826,Formal Criminal Organization,,G184,G184
+1121,1860,Formal Criminal Organization,,G184,G184
+1121,1866,Formal Criminal Organization,,G184,G184
+1121,1916,Formal Criminal Organization,,G184,G184
+1121,1929,Formal Criminal Organization,,G184,G184
+1121,1982,Formal Criminal Organization,,G184,G184
+1121,1983,Formal Criminal Organization,,G184,G184
+1121,1984,Formal Criminal Organization,,G184,G184
+1121,1990,Formal Criminal Organization,,G184,G184
+1121,2040,Formal Criminal Organization,,G184,G184
+1121,2059,Formal Criminal Organization,,G184,G184
+1121,2069,Formal Criminal Organization,,G184,G184
+1123,1196,Co-Offenders,Opium,G170,NONE
+1127,1830,Legitimate,president/ employee,G14,NONE
+1133,477,Legitimate,Associate,G83,NONE
+1133,570,Legitimate,Associate,G83,NONE
+1133,1239,Legitimate,Associate,G83,NONE
+1133,1867,Co-Offenders,Same Cell,G83,NONE
+1133,1121,Legitimate,Associate,G83,G184
+1133,727,Legitimate,Associate,G83,"G23, G39, G41, G66, G89"
+1133,405,Legitimate,principal associate,G83,G83
+1133,173,Co-Offenders,Same Cell,G83,G83
+1133,274,Co-Offenders,Same Cell,G83,G83
+1133,405,Co-Offenders,cocaine activities,G83,G83
+1133,406,Co-Offenders,Same Cell,G83,G83
+1133,417,Co-Offenders,Same Cell,G83,G83
+1133,425,Co-Offenders,Same Cell,G83,G83
+1133,433,Co-Offenders,Same Cell,G83,G83
+1133,816,Co-Offenders,Same Cell,G83,G83
+1133,1013,Co-Offenders,Same Cell,G83,G83
+1133,1226,Co-Offenders,Same Cell,G83,G83
+1133,1430,Co-Offenders,Same Cell,G83,G83
+1133,1611,Co-Offenders,Same Cell,G83,G83
+1133,1838,Co-Offenders,Same Cell,G83,G83
+1133,1877,Co-Offenders,Same Cell,G83,G83
+1133,1994,Co-Offenders,Same Cell,G83,G83
+1140,998,Co-Offenders,guns,NONE,G56
+1143,49,Formal Criminal Organization,,G31,NONE
+1143,49,Legitimate,longshoreman,G31,NONE
+1143,464,Formal Criminal Organization,Ch5,G31,NONE
+1143,464,Legitimate,longshoreman,G31,NONE
+1143,705,Legitimate,,G31,NONE
+1143,1154,Legitimate,,G31,NONE
+1143,437,Legitimate,observed together,G31,G31
+1143,1755,Legitimate,,G31,G31
+1143,1835,Legitimate,,G31,G31
+1143,437,Formal Criminal Organization,Ch5,G31,G31
+1143,1682,Formal Criminal Organization,Ch5,G31,G31
+1143,1755,Formal Criminal Organization,Ch5,G31,G31
+1143,1835,Formal Criminal Organization,Ch5,G31,G31
+1143,1682,Legitimate,,G31,G31
+1143,167,Legitimate,associate,G31,G50
+1144,1363,Legitimate,Associate,"G74, G84",NONE
+1144,1794,Legitimate,Associate,"G74, G84",NONE
+1144,2000,Co-Offenders,bt sell cocaine,"G74, G84",NONE
+1144,2000,Formal Criminal Organization,,"G74, G84",NONE
+1144,797,Formal Criminal Organization,btb a shooting between the two,"G74, G84","G11, G19, G21"
+1144,2001,Legitimate,associate,"G74, G84",G3
+1144,75,Co-Offenders,bt have traded a large grow operation,"G74, G84","G47, G82"
+1144,572,Co-Offenders,Same Cell,"G74, G84","G47, G84"
+1144,1060,Co-Offenders,Same Cell,"G74, G84","G47, G84"
+1144,1361,Legitimate,Associate,"G74, G84",G73
+1144,1362,Legitimate,Associate,"G74, G84",G73
+1144,1362,Formal Criminal Organization,,"G74, G84",G73
+1144,163,Co-Offenders,Same Cell,"G74, G84",G74
+1144,163,Formal Criminal Organization,,"G74, G84",G74
+1144,928,Legitimate,Associate,"G74, G84",G76
+1144,928,Formal Criminal Organization,,"G74, G84",G76
+1144,59,Co-Offenders,Same Cell,"G74, G84",G84
+1144,745,Co-Offenders,Same Cell,"G74, G84",G84
+1144,746,Co-Offenders,Same Cell,"G74, G84",G84
+1144,801,Co-Offenders,bt sell cocaine,"G74, G84",G84
+1144,944,Co-Offenders,Same Cell,"G74, G84",G84
+1144,988,Co-Offenders,Same Cell,"G74, G84",G84
+1144,1217,Co-Offenders,Same Cell,"G74, G84",G84
+1144,1619,Co-Offenders,Same Cell,"G74, G84",G84
+1144,1668,Co-Offenders,Same Cell,"G74, G84",G84
+1144,1741,Co-Offenders,Same Cell,"G74, G84",G84
+1144,1741,Legitimate,bt have formerly  financed 1792 company,"G74, G84",G84
+1144,59,Formal Criminal Organization,,"G74, G84",G84
+1144,746,Formal Criminal Organization,bt have beaten,"G74, G84",G84
+1144,1741,Formal Criminal Organization,bt have assualted,"G74, G84",G84
+1153,1098,Legitimate,associate,G1,G148
+1153,1098,Co-Offenders,btb laundering money,G1,G148
+1159,725,Co-Offenders,cocaine,G85,G85
+1159,1158,Co-Offenders,btb involved in cocaine,G85,G85
+1165,1220,Legitimate,associate,G63,NONE
+1165,1220,Co-Offenders,bt have supplied them with cocaine,G63,NONE
+1165,2043,Legitimate,associate,G63,NONE
+1165,1993,Legitimate,btb partnered for an event,G63,G33
+1165,281,Co-Offenders,bt sell drugs,G63,G63
+1165,366,Co-Offenders,bt sell drugs,G63,G63
+1165,638,Co-Offenders,bt sell drugs,G63,G63
+1165,666,Co-Offenders,bt sell drugs,G63,G63
+1165,906,Co-Offenders,bt sell drugs,G63,G63
+1165,507,Co-Offenders,cocaine,G63,G63
+1165,211,Co-Offenders,Same Cell,G63,G63
+1165,353,Co-Offenders,Same Cell,G63,G63
+1165,724,Co-Offenders,Same Cell,G63,G63
+1165,764,Co-Offenders,Same Cell,G63,G63
+1165,939,Co-Offenders,Same Cell,G63,G63
+1165,1284,Co-Offenders,Same Cell,G63,G63
+1165,211,Formal Criminal Organization,,G63,G63
+1165,281,Formal Criminal Organization,,G63,G63
+1165,353,Formal Criminal Organization,,G63,G63
+1165,366,Formal Criminal Organization,,G63,G63
+1165,507,Formal Criminal Organization,,G63,G63
+1165,638,Formal Criminal Organization,,G63,G63
+1165,666,Formal Criminal Organization,,G63,G63
+1165,724,Formal Criminal Organization,,G63,G63
+1165,764,Formal Criminal Organization,,G63,G63
+1165,906,Formal Criminal Organization,,G63,G63
+1165,939,Formal Criminal Organization,,G63,G63
+1165,1284,Formal Criminal Organization,,G63,G63
+1165,180,Co-Offenders,bt sell drugs,G63,"G63, G89"
+1165,180,Formal Criminal Organization,,G63,"G63, G89"
+1166,1341,Legitimate,Lived in apartment,G178,G178
+1166,882,Co-Offenders,Drugs,G178,G178
+1166,1341,Co-Offenders,Cocaine,G178,G178
+1172,540,Co-Offenders,Dial-a-dope operation,NONE,NONE
+1172,1092,Formal Criminal Organization,Suspected murder,NONE,NONE
+1172,1171,Co-Offenders,Dial-a-dope operation,NONE,NONE
+1172,1385,Legitimate,btb associate,NONE,NONE
+1172,1204,Co-Offenders,Dial-a-dope operation,NONE,G40
+1176,500,Legitimate,Associates,"G179, G186",NONE
+1176,84,Formal Criminal Organization,SOI: murder,"G179, G186",G119
+1176,955,Legitimate,Associates,"G179, G186",G133
+1176,307,Legitimate,Associates,"G179, G186",G186
+1176,1717,Legitimate,Associates,"G179, G186",G186
+1180,1179,Co-Offenders,"Drugs, weapons,  frauds, money laundering, attempted murder",G163,G163
+1181,466,Co-Offenders,btb funding telemarketing frauds,G163,NONE
+1181,1770,Co-Offenders,real estate btb bought for grow-ops & money laundering,G163,NONE
+1181,1770,Legitimate,btb purchasing reality,G163,NONE
+1181,958,Co-Offenders,"thefts, drugs, weapons,  frauds, money laundering, attempted murder",G163,G163
+1181,1179,Co-Offenders,"Drugs, weapons,  frauds, money laundering, attempted murder",G163,G163
+1181,1180,Co-Offenders,"Drugs, weapons,  frauds, money laundering, attempted murder",G163,G163
+1181,958,Legitimate,linked to same property in West Vancouver,G163,G163
+1194,591,Legitimate,,"G10, G26, G90",G26
+1194,1192,Co-Offenders,marihuana/ cocaine,"G10, G26, G90","G26, G90"
+1194,1193,Co-Offenders,same cell,"G10, G26, G90","G26, G90"
+1194,1193,Formal Criminal Organization,Ch6,"G10, G26, G90","G26, G90"
+1194,781,Co-Offenders,marihauna,"G10, G26, G90","G60, G90, G107"
+1195,1840,Legitimate,associate & friend,G86,NONE
+1195,242,Legitimate,Associate,G86,G32
+1195,242,Formal Criminal Organization,,G86,G32
+1195,100,Co-Offenders,"cocaine/ marihuana trafficking, etc.",G86,G86
+1195,154,Co-Offenders,"cocaine/ marihuana trafficking, etc.",G86,G86
+1195,421,Co-Offenders,"cocaine/ marihuana trafficking, etc.",G86,G86
+1195,1446,Co-Offenders,murder,G86,G86
+1195,1540,Co-Offenders,murder,G86,G86
+1195,1606,Co-Offenders,murder,G86,G86
+1195,1798,Co-Offenders,murder,G86,G86
+1195,2068,Co-Offenders,"cocaine/ marihuana trafficking, etc.",G86,G86
+1195,100,Formal Criminal Organization,,G86,G86
+1195,154,Formal Criminal Organization,,G86,G86
+1195,421,Formal Criminal Organization,,G86,G86
+1195,1446,Formal Criminal Organization,,G86,G86
+1195,1540,Formal Criminal Organization,,G86,G86
+1195,1606,Formal Criminal Organization,,G86,G86
+1195,1798,Formal Criminal Organization,,G86,G86
+1195,2068,Formal Criminal Organization,,G86,G86
+1201,107,Legitimate,Associate,NONE,NONE
+1203,1198,Co-Offenders,arrested for  possession of stolen property,G55,G55
+1218,1461,Co-Offenders,Cocaine,G177,G177
+1218,1462,Co-Offenders,Cocaine,G177,G177
+1218,1620,Co-Offenders,Cocaine,G177,G177
+1220,563,Legitimate,friend,NONE,"G62, G66"
+1220,563,Co-Offenders,btb former drug supplier,NONE,"G62, G66"
+1221,254,Co-Offenders,bt supply cocaine,G89,G89
+1221,1268,Co-Offenders,selling drugs,G89,G89
+1221,254,Formal Criminal Organization,,G89,G89
+1221,1268,Formal Criminal Organization,,G89,G89
+1221,254,Legitimate,worked for flower shop,G89,G89
+1224,1331,Co-Offenders,Illegal Gaming,NONE,NONE
+1224,1331,Legitimate,Silent Partner,NONE,NONE
+1224,2137,Legitimate,Associate,NONE,"G8, G29, G72"
+1232,907,Legitimate,Associate,G87,NONE
+1232,858,Co-Offenders,Same Cell,G87,G87
+1232,917,Co-Offenders,Same Cell,G87,G87
+1232,1970,Co-Offenders,Same Cell,G87,G87
+1232,1971,Co-Offenders,Same Cell,G87,G87
+1232,2051,Co-Offenders,Same Cell,G87,G87
+1232,1970,Legitimate,btb involved in telemarketing,G87,G87
+1236,215,Legitimate,Associate,G88,NONE
+1236,215,Co-Offenders,marihuana broker,G88,NONE
+1236,1749,Legitimate,Associate,G88,NONE
+1236,1749,Co-Offenders,provided a secure Blackberry network to evade police interception,G88,NONE
+1236,688,Legitimate,Associate,G88,"G1, G3"
+1236,688,Co-Offenders,had marihuana grow op partnership plan,G88,"G1, G3"
+1236,399,Legitimate,Associate,G88,G168
+1236,1144,Legitimate,Associate,G88,"G74, G84"
+1236,1074,Co-Offenders,"brokering marihuana, cocaine and ephedrine",G88,G88
+1236,1797,Co-Offenders,Same Cell,G88,G88
+1241,636,Co-Offenders,ran crack houses,G89,G89
+1241,636,Formal Criminal Organization,,G89,G89
+1244,1851,Co-Offenders,btb conducting drug imports,G42,NONE
+1244,1851,Legitimate,attended school & worked together,G42,NONE
+1244,262,Co-Offenders,btb conducting drug imports,G42,G70
+1244,262,Legitimate,attended school & worked together,G42,G70
+1249,424,Co-Offenders,text messages re drugs,"G47, G81",G47
+1249,424,Legitimate,,"G47, G81",G47
+1249,455,Legitimate,,"G47, G81",G47
+1250,176,Legitimate,employs 1288,NONE,NONE
+1266,738,Co-Offenders,Illegally crossed border,G176,G176
+1267,844,Co-Offenders,works with 871,G137,G136
+1285,1216,Co-Offenders,arrested marihuana,G17,G17
+1287,1258,Co-Offenders,same cell,"G13, G15, G34",G13
+1287,1896,Co-Offenders,btb supplying marihuana,"G13, G15, G34",G13
+1287,1896,Formal Criminal Organization,,"G13, G15, G34",G13
+1287,569,Legitimate,btb owner of helicopter flown 592,"G13, G15, G34",G13
+1287,2011,Co-Offenders,btb marihuana supplier,"G13, G15, G34","G13, G14"
+1287,2011,Formal Criminal Organization,,"G13, G15, G34","G13, G14"
+1287,2011,Legitimate,co-own a house & a helicopter,"G13, G15, G34","G13, G14"
+1287,67,Co-Offenders,btb supplying cocaine,"G13, G15, G34","G13, G15, G16"
+1287,67,Formal Criminal Organization,Ch3,"G13, G15, G34","G13, G15, G16"
+1287,67,Legitimate,co-own a house & a helicopter,"G13, G15, G34","G13, G15, G16"
+1287,1665,Co-Offenders,"marihuana, cocaine,   money laundering,  loan sharking.","G13, G15, G34","G13, G34"
+1287,997,Formal Criminal Organization,Ch3,"G13, G15, G34","G13, G34"
+1287,1665,Formal Criminal Organization,Ch3,"G13, G15, G34","G13, G34"
+1287,997,Legitimate,worked,"G13, G15, G34","G13, G34"
+1287,1665,Legitimate,worked,"G13, G15, G34","G13, G34"
+1287,68,Co-Offenders,btb supplying cocaine,"G13, G15, G34",G15
+1287,68,Formal Criminal Organization,Ch3,"G13, G15, G34",G15
+1302,1290,Co-Offenders,"robbery, kidnapping, assault, attempt murder, theft, drugs & fraud",G171,G171
+1302,1291,Co-Offenders,"robbery, kidnapping, assault, attempt murder, theft, drugs & fraud",G171,G171
+1302,1292,Co-Offenders,"robbery, kidnapping, assault, attempt murder, theft, drugs & fraud",G171,G171
+1302,1293,Co-Offenders,"robbery, kidnapping, assault, attempt murder, theft, drugs & fraud",G171,G171
+1302,1294,Co-Offenders,"robbery, kidnapping, assault, attempt murder, theft, drugs & fraud",G171,G171
+1302,1295,Co-Offenders,"robbery, kidnapping, assault, attempt murder, theft, drugs & fraud",G171,G171
+1302,1296,Co-Offenders,"robbery, kidnapping, assault, attempt murder, theft, drugs & fraud",G171,G171
+1302,1297,Co-Offenders,"robbery, kidnapping, assault, attempt murder, theft, drugs & fraud",G171,G171
+1302,1298,Co-Offenders,"robbery, kidnapping, assault, attempt murder, theft, drugs & fraud",G171,G171
+1302,1299,Co-Offenders,"robbery, kidnapping, assault, attempt murder, theft, drugs & fraud",G171,G171
+1302,1300,Co-Offenders,"robbery, kidnapping, assault, attempt murder, theft, drugs & fraud",G171,G171
+1302,1301,Co-Offenders,"robbery, kidnapping, assault, attempt murder, theft, drugs & fraud",G171,G171
+1302,1303,Co-Offenders,"robbery, kidnapping, assault, attempt murder, theft, drugs & fraud",G171,G171
+1302,1304,Co-Offenders,"robbery, kidnapping, assault, attempt murder, theft, drugs & fraud",G171,G171
+1302,1878,Co-Offenders,"robbery, kidnapping, assault, attempt murder, theft, drugs & fraud",G171,G171
+1307,371,Co-Offenders,btb working for 1348,G136,G136
+1312,1746,Legitimate,bt co-own company,"G23, G41, G66, G89","G23, G30, G43"
+1312,791,Legitimate,drove 818's vehicle,"G23, G41, G66, G89",G25
+1312,507,Co-Offenders,bt have made a deal to allow the group to sell cocaine,"G23, G41, G66, G89",G63
+1312,180,Co-Offenders,poly-drug sales,"G23, G41, G66, G89","G63, G89"
+1312,73,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,133,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,159,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,238,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,395,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,871,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,1059,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,1118,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,1221,Co-Offenders,btb supplying marihuana & cocaine,"G23, G41, G66, G89",G89
+1312,1240,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,1241,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,1251,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,1504,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,1659,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,1677,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,1742,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,1748,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,1813,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,1857,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,1918,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,1920,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,2088,Co-Offenders,poly-drug sales,"G23, G41, G66, G89",G89
+1312,73,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,133,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,159,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,238,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,395,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,871,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,1059,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,1118,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,1221,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,1240,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,1241,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,1251,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,1504,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,1659,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,1677,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,1742,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,1748,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,1813,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,1857,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,1918,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,1920,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,2088,Formal Criminal Organization,,"G23, G41, G66, G89",G89
+1312,1955,Co-Offenders,poly-drug sales,"G23, G41, G66, G89","G89, G111"
+1312,1955,Formal Criminal Organization,,"G23, G41, G66, G89","G89, G111"
+1316,1317,Formal Criminal Organization,,NONE,NONE
+1326,1194,Co-Offenders,btb formerly involved in cocaine trafficking; extortion & drug debt,G90,"G10, G26, G90"
+1326,1192,Co-Offenders,btb formerly involved in cocaine trafficking; extortion & drug debt,G90,"G26, G90"
+1326,1193,Co-Offenders,btb formerly involved in cocaine trafficking,G90,"G26, G90"
+1326,1192,Legitimate,purchased property from 1227,G90,"G26, G90"
+1326,1467,Legitimate,former associate,G90,"G38, G90"
+1326,1898,Legitimate,associate,G90,"G40, G90"
+1326,1898,Co-Offenders,btb involved in extortion & drug debt,G90,"G40, G90"
+1326,781,Co-Offenders,btb cocaine importation & marihuana exportation,G90,"G60, G90, G107"
+1326,234,Legitimate,former associate,G90,G90
+1326,1191,Legitimate,associate,G90,G90
+1326,210,Co-Offenders,btb cocaine importation & marihuana exportation,G90,G90
+1326,578,Co-Offenders,btb cocaine importation & marihuana exportation,G90,G90
+1326,849,Co-Offenders,btb cocaine importation & marihuana exportation,G90,G90
+1326,1088,Co-Offenders,btb formerly involved in cocaine trafficking,G90,G90
+1326,1089,Co-Offenders,btb cocaine importation & marihuana exportation,G90,G90
+1326,1191,Co-Offenders,btb cocaine importation & marihuana exportation,G90,G90
+1326,1234,Co-Offenders,btb cocaine importation & marihuana exportation,G90,G90
+1326,1281,Co-Offenders,btb cocaine importation & marihuana exportation,G90,G90
+1326,1325,Co-Offenders,btb cocaine importation & marihuana exportation,G90,G90
+1326,1656,Co-Offenders,btb cocaine importation & marihuana exportation,G90,G90
+1326,1870,Co-Offenders,btb cocaine importation & marihuana exportation,G90,G90
+1326,210,Legitimate,former co-directors,G90,G90
+1326,849,Legitimate,co-own 2 industrial,G90,G90
+1326,1088,Legitimate,used to purchase property together,G90,G90
+1326,1325,Legitimate,co-own a residential property,G90,G90
+1329,1498,Co-Offenders,btb marihuana,NONE,G58
+1330,230,Legitimate,director,NONE,NONE
+1330,1497,Legitimate,director,NONE,NONE
+1331,230,Legitimate,director,NONE,NONE
+1331,1330,Legitimate,director of 2 companies,NONE,NONE
+1331,1497,Legitimate,director,NONE,NONE
+1333,866,Legitimate,Associate,G91,NONE
+1333,923,Legitimate,Associate,G91,NONE
+1333,1219,Legitimate,Associate,G91,NONE
+1333,1335,Legitimate,Associate,G91,NONE
+1333,1454,Legitimate,Associate,G91,NONE
+1333,1999,Legitimate,Associate,G91,G74
+1333,2098,Co-Offenders,telemarketing schemes.,G91,G91
+1336,1694,Co-Offenders,bt run drug line ,NONE,NONE
+1336,2030,Co-Offenders,bt run drug line,NONE,NONE
+1341,882,Co-Offenders,Drugs,G178,G178
+1344,1345,Legitimate,director/officer,NONE,NONE
+1351,1348,Co-Offenders,Same Cell,G110,G110
+1351,1352,Co-Offenders,Same Cell,G110,G110
+1351,1348,Formal Criminal Organization,,G110,G110
+1351,1352,Formal Criminal Organization,,G110,G110
+1354,1780,Co-Offenders,Bank Fraud,G174,NONE
+1354,562,Co-Offenders,Drugs,G174,G172
+1354,40,Co-Offenders,"Telemarketing fraud, Bank fraud",G174,G174
+1354,794,Co-Offenders,"Drugs, money laundering",G174,G175
+1358,755,Co-Offenders,btb meeting regularly re. drug trade,G66,G35
+1358,493,Co-Offenders,btb cocaine supplier,G66,G66
+1358,1434,Co-Offenders,btb cocaine supplier,G66,G66
+1358,493,Legitimate,used the same address,G66,G66
+1360,2124,Co-Offenders,Drugs,G64,G64
+1362,1991,Co-Offenders,Same Cell,G73,NONE
+1362,1991,Formal Criminal Organization,,G73,NONE
+1362,2070,Formal Criminal Organization,,G73,NONE
+1362,166,Co-Offenders,Same Cell,G73,G73
+1362,539,Co-Offenders,Same Cell,G73,G73
+1362,953,Co-Offenders,Same Cell,G73,G73
+1362,1029,Co-Offenders,Same Cell,G73,G73
+1362,1190,Co-Offenders,Same Cell,G73,G73
+1362,1361,Co-Offenders,Same Cell,G73,G73
+1362,1544,Co-Offenders,Same Cell,G73,G73
+1362,1622,Co-Offenders,Same Cell,G73,G73
+1362,1675,Co-Offenders,Same Cell,G73,G73
+1362,1890,Co-Offenders,Same Cell,G73,G73
+1362,166,Formal Criminal Organization,,G73,G73
+1362,539,Formal Criminal Organization,,G73,G73
+1362,953,Formal Criminal Organization,,G73,G73
+1362,1029,Formal Criminal Organization,,G73,G73
+1362,1190,Formal Criminal Organization,,G73,G73
+1362,1361,Formal Criminal Organization,,G73,G73
+1362,1544,Formal Criminal Organization,,G73,G73
+1362,1622,Formal Criminal Organization,,G73,G73
+1362,1675,Formal Criminal Organization,,G73,G73
+1362,1890,Formal Criminal Organization,,G73,G73
+1362,1381,Co-Offenders,Same Cell,G73,"G73, G119"
+1362,1381,Formal Criminal Organization,,G73,"G73, G119"
+1362,16,Co-Offenders,Same Cell,G73,"G73, G131"
+1362,17,Co-Offenders,Same Cell,G73,"G73, G131"
+1362,16,Formal Criminal Organization,,G73,"G73, G131"
+1362,17,Formal Criminal Organization,,G73,"G73, G131"
+1362,1673,Formal Criminal Organization,,G73,G75
+1365,229,Co-Offenders,btb involved in cocaine trafficking,G111,"G43, G111"
+1366,325,Legitimate,owner/ director,G121,G121
+1366,340,Legitimate,long-time associate,G121,"G121, G122"
+1370,607,Co-Offenders,Same Cell,G181,G181
+1370,1369,Co-Offenders,Same Cell,G181,G181
+1370,1997,Co-Offenders,Same Cell,G181,G181
+1370,607,Formal Criminal Organization,,G181,G181
+1370,1369,Formal Criminal Organization,,G181,G181
+1370,1997,Formal Criminal Organization,,G181,G181
+1379,84,Co-Offenders,Same Cell formerly,G119,G119
+1379,86,Co-Offenders,Same Cell,G119,G119
+1379,182,Co-Offenders,Same Cell,G119,G119
+1379,207,Co-Offenders,Same Cell,G119,G119
+1379,497,Co-Offenders,Same Cell,G119,G119
+1379,1380,Co-Offenders,Same Cell - apparent division,G119,G119
+1379,948,Formal Criminal Organization,suspect in the serious assault,G119,G119
+1379,1380,Formal Criminal Organization,5 reported assaults occurred between the 2,G119,G119
+1379,1381,Co-Offenders,Same Cell,G119,"G73, G119"
+1381,1382,Legitimate,founding director in shell companies,"G73, G119",NONE
+1381,1389,Legitimate,associated to shell companies,"G73, G119",NONE
+1381,1494,Legitimate,associated to shell companies,"G73, G119",NONE
+1381,84,Co-Offenders,involved in kidnapings,"G73, G119",G119
+1381,1380,Co-Offenders,involved in kidnaping,"G73, G119",G119
+1385,1323,Legitimate,Associate,NONE,NONE
+1385,2113,Legitimate,Associate,NONE,NONE
+1391,1002,Co-Offenders,btb involved in marihuana,G50,G3
+1391,1917,Co-Offenders,btb involved in marihuana,G50,"G3, G5"
+1394,2081,Legitimate,Associate,G142,NONE
+1394,2013,Co-Offenders,marihuana export/ cocaine import,G142,"G136, G142"
+1394,824,Co-Offenders,btb laundering  drug proceeds for the group,G142,G142
+1394,1407,Co-Offenders,marihuana export/ cocaine import,G142,G142
+1394,1873,Co-Offenders,marihuana export/ cocaine import,G142,G142
+1396,376,Co-Offenders,Same Cell,NONE,NONE
+1405,1415,Legitimate,partners,G150,G150
+1410,176,Legitimate,Associate,G147,NONE
+1410,176,Co-Offenders,attempted to launder proceeds,G147,NONE
+1410,812,Legitimate,Associate,G147,NONE
+1410,812,Co-Offenders,attempted to launder proceeds,G147,NONE
+1410,1401,Co-Offenders,Same Cell,G147,G147
+1410,1523,Co-Offenders,laundering drug proceeds,G147,G147
+1420,808,Co-Offenders,"marihuana production, money laundering",G153,G153
+1420,1409,Co-Offenders,"marihuana production, money laundering",G153,G153
+1420,1413,Co-Offenders,"marihuana production, money laundering",G153,G153
+1420,1423,Co-Offenders,"marihuana production, money laundering",G153,G153
+1420,1945,Co-Offenders,"marihuana production, money laundering",G153,G153
+1425,1785,Formal Criminal Organization,Assualt,G179,NONE
+1425,97,Co-Offenders,Suspects of Assualt,G179,G179
+1432,1220,Legitimate,associate,NONE,NONE
+1432,563,Legitimate,associate,NONE,"G62, G66"
+1432,563,Co-Offenders,same cell,NONE,"G62, G66"
+1434,963,Legitimate,associate,G66,NONE
+1434,963,Co-Offenders,btb members of a gang,G66,NONE
+1434,727,Co-Offenders,bt pay a “tax” ,G66,"G23, G39, G41, G66, G89"
+1434,1312,Co-Offenders,bt pay a “tax” ,G66,"G23, G41, G66, G89"
+1438,936,Legitimate,former business partner,G52,NONE
+1449,1854,Formal Criminal Organization,subject of shots fired,G93,NONE
+1449,136,Legitimate,associate,G93,G93
+1449,31,Co-Offenders,Same Cell,G93,G93
+1449,39,Co-Offenders,Same Cell,G93,G93
+1449,136,Co-Offenders,Same Cell,G93,G93
+1449,287,Co-Offenders,Same Cell,G93,G93
+1449,319,Co-Offenders,Same Cell,G93,G93
+1449,321,Co-Offenders,Same Cell,G93,G93
+1449,323,Co-Offenders,Same Cell ,G93,G93
+1449,374,Co-Offenders,btb drug supplier,G93,G93
+1449,583,Co-Offenders,Same Cell,G93,G93
+1449,632,Co-Offenders,Same Cell,G93,G93
+1449,644,Co-Offenders,Same Cell,G93,G93
+1449,989,Co-Offenders,Same Cell,G93,G93
+1449,1209,Co-Offenders,Same Cell,G93,G93
+1449,1627,Co-Offenders,Same Cell,G93,G93
+1449,1652,Co-Offenders,btb drug supplier,G93,G93
+1449,1825,Co-Offenders,Same Cell,G93,G93
+1449,1863,Co-Offenders,Same Cell,G93,G93
+1449,39,Legitimate,linked to rental vehicle,G93,G93
+1449,1652,Legitimate,linked to rental vehicle,G93,G93
+1452,29,Co-Offenders,Same Cell,G92,G92
+1452,46,Co-Offenders,Same Cell,G92,G92
+1452,444,Co-Offenders,Same Cell,G92,G92
+1452,467,Co-Offenders,Same Cell,G92,G92
+1456,463,Co-Offenders,firearms supplied,G56,NONE
+1456,492,Co-Offenders,firearms supplied,G56,NONE
+1466,311,Legitimate,Associate,"G59, G94",NONE
+1466,1063,Legitimate,Associate,"G59, G94",NONE
+1466,1063,Co-Offenders,targets,"G59, G94",NONE
+1466,1188,Legitimate,Associate,"G59, G94",NONE
+1466,1624,Legitimate,Associate,"G59, G94",NONE
+1466,1624,Co-Offenders,bt take large “lay-off” bets,"G59, G94",NONE
+1466,1647,Legitimate,Associate,"G59, G94",NONE
+1466,2126,Legitimate,Associate,"G59, G94",NONE
+1466,481,Co-Offenders,involved in bookmaking,"G59, G94","G59, G94"
+1466,984,Co-Offenders,involved in bookmaking,"G59, G94","G59, G94"
+1467,185,Legitimate,associate,"G38, G90",NONE
+1467,185,Co-Offenders,btb the source of drugs,"G38, G90",NONE
+1467,232,Legitimate,associate,"G38, G90",NONE
+1467,618,Legitimate,associate,"G38, G90",NONE
+1467,618,Co-Offenders,btb exporting marihuana.,"G38, G90",NONE
+1467,889,Legitimate,associate,"G38, G90",NONE
+1467,1042,Co-Offenders,drug,"G38, G90",NONE
+1467,1225,Legitimate,associate,"G38, G90",NONE
+1467,1225,Co-Offenders,bt import drugs & stolen property,"G38, G90",NONE
+1467,1320,Legitimate,associate,"G38, G90",NONE
+1467,1867,Co-Offenders,btb trafficking marihuana. & cocaine,"G38, G90",NONE
+1467,248,Co-Offenders,associate,"G38, G90",G1
+1467,248,Formal Criminal Organization,,"G38, G90",G1
+1467,524,Legitimate,associate,"G38, G90",G2
+1467,525,Legitimate,associate,"G38, G90",G2
+1467,524,Formal Criminal Organization,,"G38, G90",G2
+1467,525,Formal Criminal Organization,,"G38, G90",G2
+1467,1746,Legitimate,associate,"G38, G90","G23, G30, G43"
+1467,1746,Co-Offenders,btb trafficking marihuana & cocaine,"G38, G90","G23, G30, G43"
+1467,1746,Formal Criminal Organization,,"G38, G90","G23, G30, G43"
+1467,1210,Legitimate,associate,"G38, G90",G38
+1467,75,Legitimate,associate,"G38, G90","G47, G82"
+1467,75,Co-Offenders,btb money laundering,"G38, G90","G47, G82"
+1467,1574,Legitimate,Associate,"G38, G90","G49, G99"
+1467,233,Legitimate,associate,"G38, G90",G9
+1467,233,Co-Offenders,cocaine network,"G38, G90",G9
+1467,233,Formal Criminal Organization,,"G38, G90",G9
+1467,446,Legitimate,associate/ partner,"G38, G90","G9, G38"
+1467,1723,Legitimate,partner,"G38, G90","G9, G38"
+1467,446,Co-Offenders,drug trafficking & conspiracy charges,"G38, G90","G9, G38"
+1467,1723,Co-Offenders,drug trafficking & conspiracy charges,"G38, G90","G9, G38"
+1467,210,Legitimate,associate,"G38, G90",G90
+1467,1088,Co-Offenders,drug trafficking & conspiracy charges,"G38, G90",G90
+1470,586,Legitimate,,G123,NONE
+1470,162,Co-Offenders,cocaine supplier,G123,G10
+1470,420,Co-Offenders,associate,G123,G10
+1470,601,Co-Offenders,associate,G123,G10
+1470,731,Co-Offenders,drug trafficking,G123,G10
+1470,1347,Co-Offenders,same cell,G123,G10
+1470,731,Formal Criminal Organization,,G123,G10
+1470,1194,Co-Offenders,same cell,G123,"G10, G26, G90"
+1470,1194,Formal Criminal Organization,,G123,"G10, G26, G90"
+1470,727,Co-Offenders,deal re drug terrority,G123,"G23, G39, G41, G66, G89"
+1470,727,Formal Criminal Organization,,G123,"G23, G39, G41, G66, G89"
+1470,50,Co-Offenders,btb supplying marihuana,G123,"G8, G9, G10, G24"
+1470,50,Formal Criminal Organization,Ch2,G123,"G8, G9, G10, G24"
+1474,1472,Co-Offenders,btb dealing cocaine,G1,NONE
+1474,1806,Legitimate,boyfriend/ girlfriend,G1,NONE
+1474,249,Co-Offenders,assault conspiracy,G1,G1
+1474,249,Formal Criminal Organization,Ch1 Hangaround,G1,G1
+1476,1338,Legitimate,Associate,NONE,NONE
+1482,82,Legitimate,associate,G40,"G23, G40, G43"
+1482,82,Co-Offenders,btb drug supplier,G40,"G23, G40, G43"
+1482,81,Legitimate,associate,G40,"G23, G40, G43, G111"
+1482,81,Co-Offenders,btb drug supplier,G40,"G23, G40, G43, G111"
+1482,1546,Co-Offenders,drug supplier,G40,"G30, G39, G40, G115, G116"
+1482,1546,Formal Criminal Organization,,G40,"G30, G39, G40, G115, G116"
+1482,283,Legitimate,associate,G40,G40
+1482,284,Legitimate,associate,G40,G40
+1482,1204,Legitimate,associate,G40,G40
+1482,1349,Legitimate,past associate,G40,G40
+1482,2067,Legitimate,past associate,G40,G40
+1482,1349,Co-Offenders,‘conspiracy to extort’,G40,G40
+1482,452,Co-Offenders,same cell,G40,G40
+1482,1500,Co-Offenders,same cell,G40,G40
+1482,1811,Co-Offenders,same cell,G40,G40
+1482,1868,Legitimate,former owner/ operater,G40,G40
+1482,1583,Legitimate,past associate,G40,"G40, G120"
+1482,1898,Legitimate,past associate,G40,"G40, G90"
+1482,1898,Co-Offenders,‘conspiracy to extort’,G40,"G40, G90"
+1484,1943,Legitimate,close associate,G137,G137
+1484,1943,Co-Offenders,narcotics,G137,G137
+1486,465,Legitimate,Borrowed Money,G169,NONE
+1486,1642,Legitimate,Discussed mining venture,G169,NONE
+1486,1485,Co-Offenders,Stock fraud,G169,G169
+1486,1487,Co-Offenders,Stock fraud,G169,G169
+1486,1636,Co-Offenders,Stock fraud,G169,G169
+1486,1636,Legitimate,director/ officer,G169,G169
+1487,1485,Co-Offenders,Stock fraud,G169,G169
+1488,212,Legitimate,purchased 1536's shares in Totem Ford Leasing,G116,G116
+1490,222,Co-Offenders,supplied 1538 with cocaine,NONE,G50
+1490,222,Formal Criminal Organization,,NONE,G50
+1502,1391,Co-Offenders,"marihuana, money laundering",G50,G50
+1509,1587,Legitimate,Associate,NONE,NONE
+1512,1313,Co-Offenders,same cell,"G23, G41","G23, G41"
+1512,1312,Co-Offenders,btb trafficking drugs,"G23, G41","G23, G41, G66, G89"
+1512,1311,Legitimate,partner,"G23, G41","G23, G41, G69"
+1512,382,Co-Offenders,btb trafficking drugs,"G23, G41",G41
+1512,1924,Co-Offenders,btb trafficking drugs,"G23, G41",G41
+1512,1510,Co-Offenders,Drugs,"G23, G41",G41
+1512,431,Legitimate,partner,"G23, G41",G41
+1512,728,Legitimate,partner,"G23, G41",G41
+1512,768,Legitimate,partner,"G23, G41",G41
+1512,811,Legitimate,partner,"G23, G41",G41
+1512,1332,Legitimate,partner,"G23, G41",G41
+1512,1510,Legitimate,same address,"G23, G41",G41
+1519,880,Legitimate,sales rep/ director,"G29, G67",NONE
+1519,1280,Legitimate,sales rep/ director,"G29, G67",NONE
+1526,835,Legitimate,former business co-directors,"G95, G100",G23
+1526,588,Legitimate,btb living at the 1576 business,"G95, G100",G95
+1528,54,Co-Offenders,btb smuggling  weapons & drugs,G70,G70
+1528,112,Co-Offenders,btb smuggling  weapons & drugs,G70,G70
+1528,396,Co-Offenders,btb smuggling  weapons & drugs,G70,G70
+1528,1915,Co-Offenders,btb smuggling  weapons & drugs,G70,G70
+1528,54,Formal Criminal Organization,,G70,G70
+1528,112,Formal Criminal Organization,,G70,G70
+1528,396,Formal Criminal Organization,,G70,G70
+1528,1915,Formal Criminal Organization,,G70,G70
+1530,140,Co-Offenders,associate,G20,NONE
+1530,918,Co-Offenders,"marihuana, cocaine",G20,NONE
+1530,1653,Co-Offenders,btb working together,G20,G20
+1530,188,Co-Offenders,same cell,G20,G20
+1530,557,Co-Offenders,same cell,G20,G20
+1530,1913,Co-Offenders,same cell,G20,G20
+1535,621,Legitimate,founder/ shareholder,G28,G27
+1535,1231,Legitimate,Director,G28,G28
+1535,224,Legitimate,Director,G28,G28
+1535,189,Legitimate,former links to business,G28,G28
+1536,476,Co-Offenders,btb cocaine importing partners,G27,"G16, G27, G38, G58"
+1536,476,Legitimate,owner,G27,"G16, G27, G38, G58"
+1536,402,Co-Offenders,btb selling large quantities of stolen merchandise,G27,G27
+1536,677,Legitimate,owner,G27,G27
+1541,1896,Legitimate,phones were in contact,G96,G13
+1541,2058,Legitimate,partner/ associate,G96,G96
+1546,741,Legitimate,boyfriend/ girlfriend,"G30, G39, G40, G115, G116",NONE
+1546,1447,Formal Criminal Organization,,"G30, G39, G40, G115, G116",NONE
+1546,774,Co-Offenders,"cocaine,  marihuana, Ecstasy, & extortion","G30, G39, G40, G115, G116","G23, G30, G39"
+1546,203,Co-Offenders,marihuana exportation,"G30, G39, G40, G115, G116",G30
+1546,386,Co-Offenders,marihuana/ cocaine,"G30, G39, G40, G115, G116",G30
+1546,223,Legitimate,gemstone supplier,"G30, G39, G40, G115, G116",G30
+1546,2110,Legitimate,previously very close,"G30, G39, G40, G115, G116","G30, G39"
+1546,1762,Co-Offenders,"cocaine,  marihuana, Ecstasy, & extortion","G30, G39, G40, G115, G116","G30, G39"
+1546,2110,Co-Offenders,"cocaine,  marihuana, Ecstasy, & extortion","G30, G39, G40, G115, G116","G30, G39"
+1546,2110,Formal Criminal Organization,a temporary falling out,"G30, G39, G40, G115, G116","G30, G39"
+1546,1646,Legitimate,associate,"G30, G39, G40, G115, G116",G32
+1546,1646,Co-Offenders,enforcer,"G30, G39, G40, G115, G116",G32
+1546,1646,Formal Criminal Organization,,"G30, G39, G40, G115, G116",G32
+1549,95,Co-Offenders,distributed meth,"G4, G5, G6, G8","G4, G5, G6, G7"
+1549,1615,Co-Offenders,meth producers,"G4, G5, G6, G8","G4, G5, G6, G7"
+1552,75,Co-Offenders,btb laundering money,NONE,"G47, G82"
+1554,1678,Co-Offenders,bt supply heroin for personal use,G78,G102
+1554,139,Co-Offenders,lower level cocaine dealer,G78,G78
+1554,1847,Co-Offenders,lower level cocaine dealer,G78,G78
+1554,1848,Co-Offenders,lower level cocaine dealer,G78,G78
+1558,1762,Co-Offenders,financial arrangements,NONE,"G30, G39"
+1558,2110,Co-Offenders,financial arrangements,NONE,"G30, G39"
+1558,1568,Co-Offenders,financial arrangements,NONE,G39
+1559,219,Co-Offenders,btb engaged in pump-and-dump schemes,NONE,NONE
+1559,296,Co-Offenders,btb engaged in pump-and-dump schemes,NONE,NONE
+1559,1669,Co-Offenders,btb engaged in pump-and-dump schemes,NONE,NONE
+1560,1917,Co-Offenders,"cocaine, meth, & extortions",G5,"G3, G5"
+1560,1917,Formal Criminal Organization,,G5,"G3, G5"
+1560,95,Co-Offenders,drug rip,G5,"G4, G5, G6, G7"
+1560,1615,Co-Offenders,meth producers,G5,"G4, G5, G6, G7"
+1560,407,Co-Offenders,"cocaine, meth, & extortions",G5,G5
+1560,1561,Co-Offenders,"cocaine, meth, & extortions",G5,G5
+1560,407,Formal Criminal Organization,Ch1,G5,G5
+1562,57,Co-Offenders,Same Cell,G97,G97
+1562,126,Co-Offenders,Same Cell,G97,G97
+1562,243,Co-Offenders,Same Cell,G97,G97
+1562,408,Co-Offenders,Same Cell,G97,G97
+1562,571,Co-Offenders,Same Cell,G97,G97
+1562,813,Co-Offenders,Same Cell,G97,G97
+1562,838,Co-Offenders,Same Cell,G97,G97
+1562,1101,Co-Offenders,Same Cell,G97,G97
+1562,1243,Co-Offenders,Same Cell,G97,G97
+1562,1248,Co-Offenders,Same Cell,G97,G97
+1562,1257,Co-Offenders,Same Cell,G97,G97
+1562,1288,Co-Offenders,Same Cell,G97,G97
+1562,1475,Co-Offenders,Same Cell,G97,G97
+1562,1608,Co-Offenders,Same Cell,G97,G97
+1562,1740,Co-Offenders,Same Cell,G97,G97
+1568,55,Legitimate,associate,G39,G39
+1571,276,Co-Offenders,supplies cocaine,G62,G62
+1572,476,Legitimate,associate,G98,"G16, G27, G38, G58"
+1572,476,Co-Offenders,former cocaine supplier,G98,"G16, G27, G38, G58"
+1572,672,Legitimate,associate,G98,G183
+1572,672,Co-Offenders,cocaine distributor,G98,G183
+1572,191,Co-Offenders,cocaine distributor,G98,G98
+1572,415,Co-Offenders,cocaine distributor,G98,G98
+1572,459,Co-Offenders,cocaine distributor,G98,G98
+1572,613,Co-Offenders,cocaine distributor,G98,G98
+1572,614,Co-Offenders,cocaine distributor,G98,G98
+1572,631,Co-Offenders,cocaine distributor,G98,G98
+1572,780,Co-Offenders,cocaine distributor,G98,G98
+1572,842,Co-Offenders,cocaine distributor,G98,G98
+1572,975,Co-Offenders,cocaine distributor,G98,G98
+1572,976,Co-Offenders,cocaine distributor,G98,G98
+1572,1125,Co-Offenders,cocaine distributor,G98,G98
+1572,1309,Co-Offenders,cocaine distributor,G98,G98
+1572,1322,Co-Offenders,btb new cocaine supplier,G98,G98
+1572,1437,Co-Offenders,cocaine distributor,G98,G98
+1572,1658,Co-Offenders,cocaine distributor,G98,G98
+1574,616,Legitimate,Associate,"G49, G99",NONE
+1574,980,Legitimate,Associate,"G49, G99",NONE
+1574,1032,Legitimate,Associate,"G49, G99",NONE
+1574,1573,Legitimate,Associate,"G49, G99",NONE
+1574,533,Co-Offenders,Same Cell,"G49, G99","G18, G99"
+1574,1020,Legitimate,Associate,"G49, G99","G19, G21, G22"
+1574,1772,Legitimate,Associate,"G49, G99",G21
+1574,1244,Legitimate,Associate,"G49, G99",G42
+1574,1795,Legitimate,Associate,"G49, G99",G49
+1574,1707,Legitimate,Associate,"G49, G99",G51
+1574,1781,Legitimate,Associate,"G49, G99",G51
+1574,1783,Co-Offenders,bt launder funds,"G49, G99",G51
+1574,978,Co-Offenders,Same Cell,"G49, G99","G51, G99"
+1574,405,Legitimate,Associate,"G49, G99",G83
+1574,1133,Legitimate,Associate,"G49, G99",G83
+1574,76,Legitimate,Associate,"G49, G99",G99
+1574,1138,Legitimate,,"G49, G99",G99
+1574,1139,Legitimate,,"G49, G99",G99
+1574,1189,Legitimate,Associate,"G49, G99",G99
+1574,1524,Legitimate,associate,"G49, G99",G99
+1574,267,Co-Offenders,Same Cell,"G49, G99",G99
+1574,300,Co-Offenders,Same Cell,"G49, G99",G99
+1574,391,Co-Offenders,laundering  monies thru' mortgages & property,"G49, G99",G99
+1574,413,Co-Offenders,Same Cell,"G49, G99",G99
+1574,504,Co-Offenders,Same Cell,"G49, G99",G99
+1574,587,Co-Offenders,Same Cell,"G49, G99",G99
+1574,593,Co-Offenders,Same Cell,"G49, G99",G99
+1574,639,Co-Offenders,Same Cell,"G49, G99",G99
+1574,665,Co-Offenders,Same Cell,"G49, G99",G99
+1574,789,Co-Offenders,Same Cell,"G49, G99",G99
+1574,798,Co-Offenders,Same Cell,"G49, G99",G99
+1574,802,Co-Offenders,Same Cell,"G49, G99",G99
+1574,912,Co-Offenders,Same Cell,"G49, G99",G99
+1574,946,Co-Offenders,Same Cell,"G49, G99",G99
+1574,1064,Co-Offenders,Same Cell,"G49, G99",G99
+1574,1259,Co-Offenders,Same Cell,"G49, G99",G99
+1574,1269,Co-Offenders,Same Cell,"G49, G99",G99
+1574,1520,Co-Offenders,Same Cell,"G49, G99",G99
+1574,1524,Co-Offenders,btb criminal relationship,"G49, G99",G99
+1574,1827,Co-Offenders,Same Cell,"G49, G99",G99
+1574,2029,Co-Offenders,Same Cell,"G49, G99",G99
+1574,2096,Co-Offenders,Same Cell,"G49, G99",G99
+1574,2119,Co-Offenders,Same Cell,"G49, G99",G99
+1575,720,Co-Offenders,Illegal distribution of firearms,G160,G160
+1575,865,Co-Offenders,Illegal distribution of firearms,G160,G160
+1575,1435,Co-Offenders,Illegal distribution of firearms,G160,G160
+1575,1576,Co-Offenders,Illegal distribution of firearms,G160,G160
+1575,1897,Co-Offenders,Illegal distribution of firearms,G160,G160
+1575,720,Legitimate,Legal firearms importation via 2 companies,G160,G160
+1575,865,Legitimate,Legal firearms importation via 2 companies,G160,G160
+1575,1435,Legitimate,Legal firearms importation via 2 companies,G160,G160
+1575,1576,Legitimate,Legal firearms importation via 2 companies,G160,G160
+1575,1897,Legitimate,Legal firearms importation via 2 companies,G160,G160
+1589,1591,Legitimate,Own property together,NONE,NONE
+1589,1592,Legitimate,Own property together,NONE,NONE
+1589,1593,Legitimate,Own property together,NONE,NONE
+1590,1589,Legitimate,Own property together,NONE,NONE
+1591,1609,Legitimate,Friends,NONE,G86
+1592,1700,Co-Offenders,,NONE,NONE
+1595,1706,Co-Offenders,attempted to run interference during a drug seizure,G128,G128
+1596,695,Legitimate,best friend,G128,G128
+1596,85,Co-Offenders,Same Cell,G128,G128
+1596,695,Co-Offenders,Same Cell,G128,G128
+1596,1567,Co-Offenders,Same Cell,G128,G128
+1596,1595,Co-Offenders,Same Cell,G128,G128
+1596,1597,Co-Offenders,Same Cell,G128,G128
+1596,1706,Co-Offenders,Same Cell,G128,G128
+1596,1709,Co-Offenders,Same Cell,G128,G128
+1596,1932,Co-Offenders,Same Cell,G128,G128
+1596,1595,Legitimate,longshoreman,G128,G128
+1596,476,Legitimate,associate,G128,"G16, G27, G38, G58"
+1596,1543,Legitimate,associate,G128,G58
+1605,237,Co-Offenders,Same Cell,G100,G100
+1605,628,Co-Offenders,Same Cell,G100,G100
+1605,629,Co-Offenders,Same Cell,G100,G100
+1605,1253,Co-Offenders,Same Cell,G100,G100
+1605,1604,Co-Offenders,btb involved in marihuana cultivation,G100,G100
+1605,1735,Co-Offenders,btb marihuana drop,G100,G100
+1605,1736,Co-Offenders,Same Cell,G100,G100
+1605,237,Legitimate,btb assisted re property purchase,G100,G100
+1605,628,Legitimate,btb assisted re property purchase,G100,G100
+1605,629,Legitimate,btb assisted re property purchase,G100,G100
+1605,1604,Legitimate,co-own property,G100,G100
+1605,1526,Co-Offenders,btb involved in drug smuggling,G100,"G95, G100"
+1605,1526,Legitimate,purchased property from 1655's company,G100,"G95, G100"
+1609,89,Co-Offenders,bt launder money,G86,NONE
+1609,89,Legitimate,Co-owned company,G86,NONE
+1609,90,Co-Offenders,bt launder money,G86,NONE
+1609,90,Legitimate,Co-owned company,G86,NONE
+1612,2003,Co-Offenders,crystal meth,G106,G106
+1613,2106,Formal Criminal Organization,,NONE,NONE
+1613,2106,Legitimate,both shot at in other city,NONE,NONE
+1615,2,Co-Offenders,meth production,"G4, G5, G6, G7","G4, G5, G6, G7"
+1615,95,Co-Offenders,meth production,"G4, G5, G6, G7","G4, G5, G6, G7"
+1615,240,Co-Offenders,meth production,"G4, G5, G6, G7","G4, G5, G6, G7"
+1615,1505,Co-Offenders,meth production,"G4, G5, G6, G7","G4, G5, G6, G7"
+1615,96,Co-Offenders,meth production,"G4, G5, G6, G7","G4, G6, G7"
+1615,138,Co-Offenders,meth production,"G4, G5, G6, G7","G4, G6, G7"
+1615,1550,Co-Offenders,meth production,"G4, G5, G6, G7","G4, G6, G7"
+1615,436,Co-Offenders,meth production,"G4, G5, G6, G7",G7
+1615,1739,Co-Offenders,meth production,"G4, G5, G6, G7",G7
+1616,64,Co-Offenders,"Drugs, bookmaking, & other illegal activities",NONE,NONE
+1616,1641,Co-Offenders,"Drugs, bookmaking, & other illegal activities",NONE,NONE
+1629,1143,Legitimate,observed together,G31,G31
+1629,1143,Co-Offenders,"B&E, assault with a weapon",G31,G31
+1629,1143,Formal Criminal Organization,Ch5,G31,G31
+1633,1641,Co-Offenders,Drugs,NONE,NONE
+1635,302,Legitimate,Associate,NONE,NONE
+1635,303,Legitimate,Associate,NONE,NONE
+1638,81,Co-Offenders,plead guilty.to assault causing bodily harm,G111,"G23, G40, G43, G111"
+1638,229,Co-Offenders,assault,G111,"G43, G111"
+1642,64,Legitimate,Associate,NONE,NONE
+1642,64,Co-Offenders,"Drugs, bookmaking, & other illegal activities",NONE,NONE
+1642,70,Co-Offenders,Same Cell,NONE,NONE
+1646,242,Co-Offenders,cocaine/ marihuana,G32,G32
+1646,1644,Co-Offenders,cocaine/ marihuana,G32,G32
+1646,1645,Co-Offenders,cocaine/ marihuana,G32,G32
+1646,1833,Co-Offenders,cocaine/ marihuana,G32,G32
+1646,1270,Co-Offenders,Enforcers / Debt Collection,G32,G32
+1650,23,Co-Offenders,associate,"G8, G14",NONE
+1650,248,Formal Criminal Organization,Ch1,"G8, G14",G1
+1650,1470,Co-Offenders,previous drug distribution,"G8, G14",G123
+1650,1470,Formal Criminal Organization,Ch1,"G8, G14",G123
+1650,700,Co-Offenders,associate,"G8, G14","G15, G25, G34, G67"
+1650,399,Legitimate,Associate,"G8, G14",G168
+1650,399,Co-Offenders,previous drug distribution,"G8, G14",G168
+1650,1549,Co-Offenders,stock manipulations &  money laundering,"G8, G14","G4, G5, G6, G8"
+1650,1549,Formal Criminal Organization,,"G8, G14","G4, G5, G6, G8"
+1650,1660,Co-Offenders,stock manipulations &  money laundering,"G8, G14","G8, G14, G21"
+1650,2137,Co-Offenders,"stock manipulations,  money laundering, & drug distribution","G8, G14","G8, G29, G72"
+1650,2137,Formal Criminal Organization,,"G8, G14","G8, G29, G72"
+1650,50,Co-Offenders,"stock manipulations,  money laundering, & drug distribution","G8, G14","G8, G9, G10, G24"
+1650,50,Formal Criminal Organization,former member/ associate Ch1,"G8, G14","G8, G9, G10, G24"
+1650,1609,Co-Offenders,stock manipulations &  money laundering,"G8, G14",G86
+1650,1609,Formal Criminal Organization,,"G8, G14",G86
+1650,1609,Legitimate,real estate deals,"G8, G14",G86
+1657,111,Co-Offenders,Cocaine,NONE,NONE
+1657,670,Legitimate,Associate,NONE,NONE
+1657,670,Co-Offenders,Cocaine,NONE,NONE
+1662,1954,Legitimate,sold 1 of his helicopters to 2012,NONE,G65
+1662,785,Legitimate,helicopter linked to company,NONE,G68
+1664,1502,Legitimate,bt have protected 1551,G34,G50
+1665,700,Co-Offenders,btb supplying  cocaine,"G13, G34","G15, G25, G34, G67"
+1665,440,Co-Offenders,btb collecting debts,"G13, G34","G33, G34"
+1665,440,Formal Criminal Organization,,"G13, G34","G33, G34"
+1665,440,Legitimate,director,"G13, G34","G33, G34"
+1665,1134,Co-Offenders,bt have worked loan sharking,"G13, G34",G34
+1665,1664,Co-Offenders,"marihuana, cocaine,   money laundering,  loan sharking.","G13, G34",G34
+1665,1664,Formal Criminal Organization,Ch5,"G13, G34",G34
+1666,6,Legitimate,Associate,G110,NONE
+1666,15,Legitimate,Associate,G110,NONE
+1666,156,Legitimate,Associate,G110,NONE
+1666,218,Legitimate,Associate,G110,NONE
+1666,218,Formal Criminal Organization,,G110,NONE
+1666,409,Legitimate,Associate,G110,NONE
+1666,418,Legitimate,Associate,G110,NONE
+1666,418,Formal Criminal Organization,,G110,NONE
+1666,484,Legitimate,Associate,G110,NONE
+1666,535,Legitimate,Associate,G110,NONE
+1666,602,Legitimate,Associate,G110,NONE
+1666,603,Legitimate,Associate,G110,NONE
+1666,615,Legitimate,Associate,G110,NONE
+1666,645,Legitimate,Associate,G110,NONE
+1666,685,Legitimate,Associate,G110,NONE
+1666,733,Legitimate,Associate,G110,NONE
+1666,763,Legitimate,Associate,G110,NONE
+1666,795,Legitimate,Associate,G110,NONE
+1666,810,Legitimate,Associate,G110,NONE
+1666,853,Legitimate,Associate,G110,NONE
+1666,937,Legitimate,Associate,G110,NONE
+1666,967,Legitimate,Associate,G110,NONE
+1666,983,Legitimate,Associate,G110,NONE
+1666,983,Formal Criminal Organization,,G110,NONE
+1666,1036,Co-Offenders,shooting,G110,NONE
+1666,1065,Legitimate,Associate,G110,NONE
+1666,1128,Legitimate,Associate,G110,NONE
+1666,1130,Legitimate,Associate,G110,NONE
+1666,1229,Legitimate,Associate,G110,NONE
+1666,1383,Legitimate,Associate,G110,NONE
+1666,1395,Legitimate,Associate,G110,NONE
+1666,1426,Legitimate,Associate,G110,NONE
+1666,1493,Legitimate,Associate,G110,NONE
+1666,1501,Legitimate,Associate,G110,NONE
+1666,1547,Legitimate,Associate,G110,NONE
+1666,1551,Legitimate,Associate,G110,NONE
+1666,1632,Legitimate,Associate,G110,NONE
+1666,1670,Legitimate,Associate,G110,NONE
+1666,1771,Legitimate,Associate,G110,NONE
+1666,1822,Legitimate,Associate,G110,NONE
+1666,1823,Legitimate,Associate,G110,NONE
+1666,1831,Legitimate,Associate,G110,NONE
+1666,1832,Legitimate,Associate,G110,NONE
+1666,1968,Legitimate,Associate,G110,NONE
+1666,2048,Legitimate,Associate,G110,NONE
+1666,2061,Legitimate,Associate,G110,NONE
+1666,2090,Legitimate,Associate,G110,NONE
+1666,2107,Legitimate,Associate,G110,NONE
+1666,451,Legitimate,Associate,G110,G110
+1666,1671,Legitimate,,G110,G110
+1666,52,Co-Offenders,Same Cell,G110,G110
+1666,56,Co-Offenders,Same Cell,G110,G110
+1666,99,Co-Offenders,Same Cell,G110,G110
+1666,137,Co-Offenders,Same Cell,G110,G110
+1666,161,Co-Offenders,Same Cell,G110,G110
+1666,213,Co-Offenders,Same Cell,G110,G110
+1666,292,Co-Offenders,Same Cell,G110,G110
+1666,315,Co-Offenders,Same Cell,G110,G110
+1666,326,Co-Offenders,Same Cell,G110,G110
+1666,384,Co-Offenders,Same Cell,G110,G110
+1666,439,Co-Offenders,Same Cell,G110,G110
+1666,442,Co-Offenders,Same Cell,G110,G110
+1666,443,Co-Offenders,Same Cell,G110,G110
+1666,450,Co-Offenders,Same Cell,G110,G110
+1666,566,Co-Offenders,Same Cell,G110,G110
+1666,584,Co-Offenders,Same Cell,G110,G110
+1666,765,Co-Offenders,Same Cell,G110,G110
+1666,820,Co-Offenders,Same Cell,G110,G110
+1666,855,Co-Offenders,Same Cell,G110,G110
+1666,893,Co-Offenders,Same Cell,G110,G110
+1666,905,Co-Offenders,Same Cell,G110,G110
+1666,943,Co-Offenders,Same Cell,G110,G110
+1666,947,Co-Offenders,Same Cell,G110,G110
+1666,979,Co-Offenders,Same Cell,G110,G110
+1666,1093,Co-Offenders,Same Cell,G110,G110
+1666,1223,Co-Offenders,Same Cell,G110,G110
+1666,1348,Co-Offenders,Same Cell,G110,G110
+1666,1351,Co-Offenders,Same Cell,G110,G110
+1666,1352,Co-Offenders,Same Cell,G110,G110
+1666,1392,Co-Offenders,Same Cell,G110,G110
+1666,1398,Co-Offenders,Same Cell,G110,G110
+1666,1411,Co-Offenders,Same Cell,G110,G110
+1666,1521,Co-Offenders,Same Cell,G110,G110
+1666,1525,Co-Offenders,Same Cell,G110,G110
+1666,1623,Co-Offenders,Same Cell,G110,G110
+1666,1671,Co-Offenders,Same Cell,G110,G110
+1666,1683,Co-Offenders,Same Cell,G110,G110
+1666,1689,Co-Offenders,Same Cell,G110,G110
+1666,1744,Co-Offenders,Same Cell,G110,G110
+1666,1760,Co-Offenders,Same Cell,G110,G110
+1666,1805,Co-Offenders,Same Cell,G110,G110
+1666,1821,Co-Offenders,Same Cell,G110,G110
+1666,1824,Co-Offenders,Same Cell,G110,G110
+1666,1904,Co-Offenders,Same Cell,G110,G110
+1666,1909,Co-Offenders,Same Cell,G110,G110
+1666,1910,Co-Offenders,Same Cell,G110,G110
+1666,1911,Co-Offenders,Same Cell,G110,G110
+1666,1925,Co-Offenders,Same Cell,G110,G110
+1666,1949,Co-Offenders,Same Cell,G110,G110
+1666,1951,Co-Offenders,Same Cell,G110,G110
+1666,1980,Co-Offenders,Same Cell,G110,G110
+1666,2080,Co-Offenders,Same Cell,G110,G110
+1666,2111,Co-Offenders,Same Cell,G110,G110
+1666,52,Formal Criminal Organization,,G110,G110
+1666,56,Formal Criminal Organization,,G110,G110
+1666,99,Formal Criminal Organization,,G110,G110
+1666,137,Formal Criminal Organization,,G110,G110
+1666,161,Formal Criminal Organization,,G110,G110
+1666,213,Formal Criminal Organization,,G110,G110
+1666,292,Formal Criminal Organization,,G110,G110
+1666,315,Formal Criminal Organization,,G110,G110
+1666,326,Formal Criminal Organization,,G110,G110
+1666,384,Formal Criminal Organization,,G110,G110
+1666,439,Formal Criminal Organization,,G110,G110
+1666,442,Formal Criminal Organization,,G110,G110
+1666,443,Formal Criminal Organization,,G110,G110
+1666,450,Formal Criminal Organization,,G110,G110
+1666,566,Formal Criminal Organization,,G110,G110
+1666,584,Formal Criminal Organization,,G110,G110
+1666,765,Formal Criminal Organization,,G110,G110
+1666,820,Formal Criminal Organization,,G110,G110
+1666,855,Formal Criminal Organization,,G110,G110
+1666,893,Formal Criminal Organization,,G110,G110
+1666,905,Formal Criminal Organization,,G110,G110
+1666,943,Formal Criminal Organization,,G110,G110
+1666,947,Formal Criminal Organization,,G110,G110
+1666,979,Formal Criminal Organization,,G110,G110
+1666,1093,Formal Criminal Organization,,G110,G110
+1666,1223,Formal Criminal Organization,,G110,G110
+1666,1348,Formal Criminal Organization,,G110,G110
+1666,1351,Formal Criminal Organization,,G110,G110
+1666,1352,Formal Criminal Organization,,G110,G110
+1666,1392,Formal Criminal Organization,,G110,G110
+1666,1398,Formal Criminal Organization,,G110,G110
+1666,1411,Formal Criminal Organization,,G110,G110
+1666,1521,Formal Criminal Organization,,G110,G110
+1666,1525,Formal Criminal Organization,,G110,G110
+1666,1623,Formal Criminal Organization,,G110,G110
+1666,1671,Formal Criminal Organization,,G110,G110
+1666,1683,Formal Criminal Organization,,G110,G110
+1666,1689,Formal Criminal Organization,,G110,G110
+1666,1744,Formal Criminal Organization,,G110,G110
+1666,1760,Formal Criminal Organization,,G110,G110
+1666,1805,Formal Criminal Organization,,G110,G110
+1666,1821,Formal Criminal Organization,,G110,G110
+1666,1824,Formal Criminal Organization,,G110,G110
+1666,1904,Formal Criminal Organization,,G110,G110
+1666,1909,Formal Criminal Organization,,G110,G110
+1666,1910,Formal Criminal Organization,,G110,G110
+1666,1911,Formal Criminal Organization,,G110,G110
+1666,1925,Formal Criminal Organization,,G110,G110
+1666,1949,Formal Criminal Organization,,G110,G110
+1666,1951,Formal Criminal Organization,,G110,G110
+1666,1980,Formal Criminal Organization,,G110,G110
+1666,2080,Formal Criminal Organization,,G110,G110
+1666,2111,Formal Criminal Organization,,G110,G110
+1666,455,Legitimate,Associate,G110,G47
+1666,455,Formal Criminal Organization,,G110,G47
+1666,1177,Legitimate,Associate,G110,G48
+1666,687,Co-Offenders,Same Cell,G110,"G50, G110"
+1666,687,Formal Criminal Organization,,G110,"G50, G110"
+1666,169,Legitimate,Associate,G110,G60
+1666,170,Legitimate,Associate,G110,G60
+1666,282,Legitimate,Associate,G110,G60
+1666,541,Legitimate,Associate,G110,G60
+1666,1012,Legitimate,Associate,G110,G60
+1666,1651,Legitimate,Associate,G110,G60
+1666,169,Formal Criminal Organization,,G110,G60
+1666,1012,Formal Criminal Organization,,G110,G60
+1666,482,Legitimate,Associate,G110,"G60, G107"
+1666,482,Formal Criminal Organization,,G110,"G60, G107"
+1666,1271,Co-Offenders,Same Cell,G110,"G60, G110"
+1666,1271,Formal Criminal Organization,,G110,"G60, G110"
+1666,1342,Legitimate,Associate,G110,G72
+1673,427,Legitimate,Associate,G75,NONE
+1673,427,Co-Offenders,threatening with a firearm,G75,NONE
+1673,14,Co-Offenders,Same Cell,G75,"G19, G75"
+1673,14,Formal Criminal Organization,,G75,"G19, G75"
+1673,114,Co-Offenders,Same Cell,G75,G75
+1673,122,Co-Offenders,Same Cell,G75,G75
+1673,208,Co-Offenders,Same Cell,G75,G75
+1673,227,Co-Offenders,Same Cell,G75,G75
+1673,612,Co-Offenders,Same Cell,G75,G75
+1673,762,Co-Offenders,Same Cell,G75,G75
+1673,775,Co-Offenders,Same Cell,G75,G75
+1673,1112,Co-Offenders,Same Cell,G75,G75
+1673,1115,Co-Offenders,Same Cell,G75,G75
+1673,1116,Co-Offenders,Same Cell,G75,G75
+1673,1643,Co-Offenders,Same Cell,G75,G75
+1673,114,Formal Criminal Organization,,G75,G75
+1673,122,Formal Criminal Organization,,G75,G75
+1673,208,Formal Criminal Organization,,G75,G75
+1673,227,Formal Criminal Organization,,G75,G75
+1673,612,Formal Criminal Organization,,G75,G75
+1673,762,Formal Criminal Organization,,G75,G75
+1673,775,Formal Criminal Organization,,G75,G75
+1673,1112,Formal Criminal Organization,,G75,G75
+1673,1115,Formal Criminal Organization,,G75,G75
+1673,1116,Formal Criminal Organization,,G75,G75
+1673,1643,Formal Criminal Organization,,G75,G75
+1674,177,Legitimate,associate,G101,G101
+1674,177,Co-Offenders,btb assisting new dealer to become established,G101,G101
+1674,363,Co-Offenders,btb  drug courier & enforcer,G101,G101
+1674,559,Co-Offenders,bt former lower level cocaine supplier,G101,G101
+1674,1222,Co-Offenders,btb former cocaine supplier,G101,G101
+1674,1977,Co-Offenders,enforcer,G101,G101
+1674,177,Formal Criminal Organization,,G101,G101
+1674,363,Formal Criminal Organization,,G101,G101
+1674,559,Formal Criminal Organization,,G101,G101
+1674,1222,Formal Criminal Organization,,G101,G101
+1674,1977,Formal Criminal Organization,,G101,G101
+1678,58,Legitimate,associate,G102,G102
+1678,1649,Legitimate,associate,G102,G102
+1678,58,Co-Offenders,btb sell cocaine ,G102,G102
+1678,740,Co-Offenders,lower level drug dealer,G102,G102
+1678,1155,Co-Offenders,Same Cell,G102,G102
+1678,1327,Co-Offenders,lower level drug dealer,G102,G102
+1678,1569,Co-Offenders,Same Cell,G102,G102
+1678,1649,Co-Offenders,lower level drug dealer,G102,G102
+1678,1676,Co-Offenders,transported cocaine,G102,G102
+1678,1841,Co-Offenders,lower level drug dealer,G102,G102
+1678,1941,Co-Offenders,btb drug supplier,G102,G102
+1678,1051,Co-Offenders,Same Cell,G102,G89
+1680,1780,Co-Offenders,Money Laundering,G174,NONE
+1680,1780,Legitimate,btb discussing purchasing restaurant together,G174,NONE
+1680,1763,Legitimate,First level associate,G174,G160
+1680,1763,Co-Offenders,"telemarketing, money laundering, drug trafficking, fraud",G174,G160
+1680,1,Legitimate,First Level Associate,G174,G174
+1680,40,Legitimate,First Level Associate,G174,G174
+1680,752,Legitimate,Associate,G174,G174
+1680,1354,Legitimate,First level associate,G174,G174
+1680,2114,Legitimate,Associate,G174,G174
+1680,1,Co-Offenders,"telemarketing, money laundering, drug trafficking, fraud",G174,G174
+1680,40,Co-Offenders,"telemarketing, money laundering, drug trafficking, fraud",G174,G174
+1680,134,Co-Offenders,"telemarketing, money laundering, drug trafficking, fraud",G174,G174
+1680,674,Co-Offenders,Drugs,G174,G174
+1680,752,Co-Offenders,"telemarketing, money laundering, drug trafficking, fraud",G174,G174
+1680,867,Co-Offenders,"telemarketing, money laundering, drug trafficking, fraud",G174,G174
+1680,870,Co-Offenders,"telemarketing, money laundering, drug trafficking, fraud",G174,G174
+1680,949,Co-Offenders,"telemarketing, money laundering, drug trafficking, fraud",G174,G174
+1680,1173,Co-Offenders,"telemarketing, money laundering, drug trafficking, fraud",G174,G174
+1680,1306,Co-Offenders,"telemarketing, money laundering, drug trafficking, fraud",G174,G174
+1680,1354,Co-Offenders,Telemarketing fraud,G174,G174
+1680,1384,Co-Offenders,"telemarketing, money laundering, drug trafficking, fraud",G174,G174
+1680,1688,Co-Offenders,"telemarketing, money laundering, drug trafficking, fraud",G174,G174
+1680,2114,Co-Offenders,Money Laundering,G174,G174
+1688,134,Co-Offenders,Credit Card Fraud,G174,G174
+1692,1164,Co-Offenders,recipient of altered reefer doors,G126,"G121, G126"
+1700,699,Legitimate,,NONE,NONE
+1700,399,Co-Offenders,,NONE,G168
+1701,1624,Legitimate,Business Associates,NONE,NONE
+1701,1699,Legitimate,,NONE,NONE
+1701,1702,Legitimate,directors,NONE,NONE
+1701,1252,Legitimate,Associates,NONE,G108
+1703,149,Legitimate,business partner,G62,G62
+1715,1790,Legitimate,Associate,G132,NONE
+1715,1720,Legitimate,btb business associate,G132,G124
+1715,339,Legitimate,close associate,G132,G132
+1715,339,Co-Offenders,btb  involved in the transportation of drugs nationally & internationally,G132,G132
+1718,1719,Legitimate,same residence,G124,G124
+1719,894,Co-Offenders,shots fired,G124,G124
+1719,1371,Co-Offenders,shots fired,G124,G124
+1719,1601,Co-Offenders,shots fired,G124,G124
+1720,289,Legitimate,Associate,G124,NONE
+1720,899,Legitimate,Associate,G124,NONE
+1720,1028,Legitimate,Associate,G124,NONE
+1720,1931,Legitimate,Associate,G124,NONE
+1720,1933,Legitimate,Associate,G124,NONE
+1720,93,Legitimate,close associate,G124,G124
+1720,93,Co-Offenders,marihuana grow op,G124,G124
+1720,117,Co-Offenders,Same Cell,G124,G124
+1720,206,Co-Offenders,Same Cell,G124,G124
+1720,490,Co-Offenders,Same Cell,G124,G124
+1720,859,Co-Offenders,Same Cell,G124,G124
+1720,879,Co-Offenders,Same Cell,G124,G124
+1720,894,Co-Offenders,Same Cell,G124,G124
+1720,927,Co-Offenders,Same Cell,G124,G124
+1720,929,Co-Offenders,Same Cell,G124,G124
+1720,1371,Co-Offenders,Same Cell,G124,G124
+1720,1564,Co-Offenders,Same Cell,G124,G124
+1720,1601,Co-Offenders,Same Cell,G124,G124
+1720,1714,Co-Offenders,Same Cell,G124,G124
+1720,1716,Co-Offenders,Same Cell,G124,G124
+1720,1718,Co-Offenders,Same Cell,G124,G124
+1720,1719,Co-Offenders,Same Cell,G124,G124
+1720,2028,Co-Offenders,Same Cell,G124,G124
+1720,1714,Legitimate,same residence,G124,G124
+1720,1716,Legitimate,same residence,G124,G124
+1722,741,Legitimate,new owner,G9,NONE
+1722,1721,Legitimate,new co-owners,G9,NONE
+1722,222,Legitimate,associate,G9,G50
+1722,222,Co-Offenders,marihuana grow ops,G9,G50
+1722,222,Formal Criminal Organization,member/ associate Ch2,G9,G50
+1724,231,Legitimate,Past Associate,G164,NONE
+1724,530,Legitimate,Past Associate,G164,NONE
+1724,1211,Legitimate,Past Associate,G164,NONE
+1724,1212,Legitimate,Past Associate,G164,NONE
+1724,1364,Legitimate,Past Associate,G164,NONE
+1724,1390,Legitimate,Past Associate,G164,NONE
+1724,1799,Legitimate,Past Associate,G164,NONE
+1724,1817,Legitimate,Past Associate,G164,NONE
+1724,1618,Co-Offenders,"Cocaine, marihuana, money laundering",G164,G164
+1731,522,Legitimate,,G180,NONE
+1731,309,Co-Offenders,"btb: Marihuana, cocaine, home invasions, extortion, prostitution, B&E, etc.",G180,G180
+1731,904,Co-Offenders,"btb: Marihuana, cocaine, home invasions, extortion, prostitution, B&E, etc.",G180,G180
+1731,1730,Co-Offenders,"Marihuana, cocaine, home invasions, extortion, prostitution, B&E, etc.",G180,G180
+1731,309,Formal Criminal Organization,,G180,G180
+1731,904,Formal Criminal Organization,,G180,G180
+1731,1730,Formal Criminal Organization,,G180,G180
+1734,294,Legitimate,same residence,NONE,NONE
+1734,1976,Co-Offenders,btb selling cocaine,NONE,NONE
+1742,1964,Legitimate,associate,G89,NONE
+1746,715,Legitimate,associate,"G23, G30, G43",NONE
+1746,938,Legitimate,associate,"G23, G30, G43",NONE
+1746,1070,Legitimate,associate,"G23, G30, G43",NONE
+1746,1310,Legitimate,associate,"G23, G30, G43",NONE
+1746,1729,Legitimate,associate,"G23, G30, G43",NONE
+1746,1867,Legitimate,associate,"G23, G30, G43",NONE
+1746,1194,Legitimate,associate,"G23, G30, G43","G10, G26, G90"
+1746,1194,Formal Criminal Organization,,"G23, G30, G43","G10, G26, G90"
+1746,81,Co-Offenders,cocaine network:,"G23, G30, G43","G23, G40, G43, G111"
+1746,791,Legitimate,associate,"G23, G30, G43",G25
+1746,791,Formal Criminal Organization,,"G23, G30, G43",G25
+1746,223,Legitimate,associate,"G23, G30, G43",G30
+1746,1745,Legitimate,associate,"G23, G30, G43",G30
+1746,1546,Legitimate,associate,"G23, G30, G43","G30, G39, G40, G115, G116"
+1746,1546,Formal Criminal Organization,,"G23, G30, G43","G30, G39, G40, G115, G116"
+1746,582,Co-Offenders,cocaine network:,"G23, G30, G43",G43
+1746,788,Co-Offenders,cocaine network:,"G23, G30, G43",G43
+1746,848,Co-Offenders,cocaine network:,"G23, G30, G43",G43
+1746,229,Co-Offenders,cocaine network:,"G23, G30, G43","G43, G111"
+1746,1256,Co-Offenders,cocaine network:,"G23, G30, G43","G43, G111"
+1746,1981,Co-Offenders,cocaine network:,"G23, G30, G43","G43, G111"
+1746,1133,Legitimate,Associate,"G23, G30, G43",G83
+1746,1133,Co-Offenders,provides cocaine,"G23, G30, G43",G83
+1748,1118,Co-Offenders,bt have directed take over other districts drug business,G89,G89
+1748,1742,Co-Offenders,arrested for trafficking cocaine,G89,G89
+1748,1118,Formal Criminal Organization,,G89,G89
+1748,1742,Formal Criminal Organization,,G89,G89
+1751,1750,Formal Criminal Organization,bitter divorce,"G22, G103",NONE
+1751,390,Co-Offenders,btb laundering money,"G22, G103",G103
+1751,426,Co-Offenders,btb laundering money,"G22, G103",G103
+1751,922,Co-Offenders,btb laundering money,"G22, G103",G103
+1751,1681,Co-Offenders,btb laundering money,"G22, G103",G103
+1751,390,Legitimate,financial associations,"G22, G103",G103
+1751,426,Legitimate,financial associations,"G22, G103",G103
+1751,922,Legitimate,financial associations,"G22, G103",G103
+1751,1681,Legitimate,financial associations,"G22, G103",G103
+1751,830,Legitimate,Associate,"G22, G103",G22
+1751,830,Co-Offenders,btb stock market crime,"G22, G103",G22
+1755,1987,Co-Offenders,btb trafficking cocaine,G31,NONE
+1755,1987,Formal Criminal Organization,Ch5,G31,NONE
+1758,181,Legitimate,Associate,G104,NONE
+1758,1355,Legitimate,Associate,G104,NONE
+1758,1356,Legitimate,Associate,G104,NONE
+1758,1337,Co-Offenders,Telemarketing / Lottery Scam,G104,G104
+1758,1450,Co-Offenders,Telemarketing / Lottery Scam,G104,G104
+1758,1972,Co-Offenders,Telemarketing / Lottery Scam,G104,G104
+1763,870,Legitimate,Associates,G160,G174
+1763,1688,Co-Offenders,Counterfeit Passports for human smuggling,G160,G174
+1764,1765,Co-Offenders,telemarketing scam,G105,G105
+1768,187,Co-Offenders,trafficking &  importing/ exporting of drugs,G106,G106
+1768,739,Co-Offenders,trafficking &  importing/ exporting of drugs,G106,G106
+1768,940,Co-Offenders,steroids,G106,G106
+1768,964,Co-Offenders,trafficking &  importing/ exporting of drugs,G106,G106
+1768,1612,Co-Offenders,trafficking &  importing/ exporting of drugs,G106,G106
+1768,2003,Co-Offenders,2062 supplied  1819 with crystal meth,G106,G106
+1768,964,Legitimate,owns the condo 1819 lived in,G106,G106
+1768,1783,Legitimate,btb associate,G106,G51
+1768,529,Co-Offenders,trafficking &  importing/ exporting of drugs,G106,"G83, G106"
+1772,1393,Legitimate,close associate,G21,NONE
+1772,1393,Formal Criminal Organization,,G21,NONE
+1772,688,Co-Offenders,offloaded cocaine for 712,G21,"G1, G3"
+1772,688,Formal Criminal Organization,,G21,"G1, G3"
+1772,1020,Legitimate,close associate,G21,"G19, G21, G22"
+1772,1020,Co-Offenders,arrested,G21,"G19, G21, G22"
+1772,1634,Co-Offenders,same cell,G21,G21
+1772,1883,Co-Offenders,same cell,G21,G21
+1778,1551,Legitimate,Associate,NONE,NONE
+1780,40,Co-Offenders,Bank Fraud,NONE,G174
+1786,354,Legitimate,Associate,G157,G157
+1788,229,Co-Offenders,btb involved in cocaine trafficking,G111,"G43, G111"
+1789,331,Legitimate,Associate,G166,NONE
+1789,331,Co-Offenders,Illegal immigration documents,G166,NONE
+1789,1061,Formal Criminal Organization,Enemy-grow-rip/attempted murder,G166,NONE
+1789,77,Legitimate,Associate,G166,G167
+1797,1749,Legitimate,btb pilot working for 1850,G88,NONE
+1808,381,Formal Criminal Organization,hated,NONE,NONE
+1810,1264,Co-Offenders,btb marihuana drop,G47,G47
+1810,1060,Co-Offenders,btb marihuana drop,G47,"G47, G84"
+1810,1060,Legitimate,owns helicopter operated by 1863,G47,"G47, G84"
+1814,142,Co-Offenders,Same Cell,G129,G129
+1814,337,Co-Offenders,Same Cell,G129,G129
+1814,920,Co-Offenders,Same Cell,G129,G129
+1814,1157,Co-Offenders,Same Cell,G129,G129
+1814,1387,Co-Offenders,Same Cell,G129,G129
+1814,1598,Co-Offenders,Same Cell,G129,G129
+1814,1599,Co-Offenders,Same Cell,G129,G129
+1815,1476,Legitimate,Associate,G156,NONE
+1815,1476,Co-Offenders,btb hired for human smuggling,G156,NONE
+1815,373,Co-Offenders,btb human smuggling,G156,G156
+1815,931,Co-Offenders,btb human smuggling,G156,G156
+1815,1492,Co-Offenders,btb human smuggling,G156,G156
+1815,2120,Co-Offenders,btb human smuggling,G156,G156
+1816,1357,Co-Offenders,local drug dealers,G54,G54
+1816,1357,Legitimate,same residence,G54,G54
+1821,1824,Co-Offenders,Same Cell,G110,G110
+1821,1824,Formal Criminal Organization,,G110,G110
+1839,1199,Co-Offenders,"Theft, Fraud",G55,NONE
+1839,1203,Co-Offenders,"Theft, Fraud",G55,G55
+1845,758,Co-Offenders,crack cocaine,G62,G62
+1845,159,Co-Offenders,crack cocaine,G62,G89
+1850,776,Co-Offenders,marine cocaine importation,G42,NONE
+1850,970,Legitimate,associate,G42,NONE
+1850,1393,Co-Offenders,marine cocaine importation,G42,NONE
+1850,1802,Legitimate,associate,G42,NONE
+1850,1829,Legitimate,associate,G42,NONE
+1850,1836,Co-Offenders,marine cocaine importation,G42,NONE
+1850,688,Co-Offenders,marine cocaine importation,G42,"G1, G3"
+1850,1772,Co-Offenders,marine cocaine importation,G42,G21
+1850,1244,Legitimate,associate,G42,G42
+1850,1460,Legitimate,associate,G42,G42
+1850,392,Co-Offenders,same cell,G42,G42
+1850,262,Legitimate,associate,G42,G70
+1854,323,Formal Criminal Organization,one of the subjects of 335's murder,NONE,G93
+1856,394,Co-Offenders,Same Cell,G107,G107
+1856,398,Co-Offenders,Same Cell,G107,G107
+1856,711,Co-Offenders,Same Cell,G107,G107
+1856,800,Co-Offenders,Same Cell,G107,G107
+1856,996,Co-Offenders,Same Cell,G107,G107
+1856,1156,Co-Offenders,Same Cell,G107,G107
+1856,398,Legitimate,purchased a helicopter from 411,G107,G107
+1856,800,Legitimate,co-owners of company,G107,G107
+1856,104,Legitimate,associate,G107,"G48, G107"
+1856,2109,Co-Offenders,Same Cell,G107,"G48, G107"
+1856,2109,Legitimate,co-owners of company,G107,"G48, G107"
+1856,37,Legitimate,close associate,G107,"G55, G60, G107"
+1856,482,Co-Offenders,Same Cell,G107,"G60, G107"
+1856,781,Co-Offenders,Same Cell,G107,"G60, G90, G107"
+1859,60,Legitimate,,G179,NONE
+1859,2022,Co-Offenders,meth,G179,NONE
+1864,1480,Co-Offenders,"Insurance fraud, vehicle re-VINing",G165,NONE
+1869,1772,Legitimate,former long standing friendship,NONE,G21
+1869,1772,Formal Criminal Organization,former associate/ member Ch4,NONE,G21
+1869,830,Legitimate,bt have involved briefly,NONE,G22
+1869,2065,Legitimate,bt have involved briefly,NONE,G22
+1869,2065,Formal Criminal Organization,former associate/ member Ch4,NONE,G22
+1875,12,Legitimate,Associate,G167,NONE
+1876,106,Legitimate,Managing business,G173,NONE
+1876,1184,Legitimate,btb attempting to buy 1/2 business,G173,NONE
+1876,209,Legitimate,Close Friends,G173,G173
+1876,83,Co-Offenders,"cocaine, opium, crystal meth, Ecstacy, hash, marihuana",G173,G173
+1876,209,Co-Offenders,"cocaine, opium, crystal meth, Ecstacy, hash, marihuana",G173,G173
+1876,1477,Co-Offenders,"cocaine, opium, crystal meth, Ecstacy, hash, marihuana",G173,G173
+1876,1478,Co-Offenders,"cocaine, opium, crystal meth, Ecstacy, hash, marihuana",G173,G173
+1876,1479,Co-Offenders,"cocaine, opium, crystal meth, Ecstacy, hash, marihuana",G173,G173
+1876,1761,Co-Offenders,"cocaine, opium, crystal meth, Ecstacy, hash, marihuana",G173,G173
+1876,40,Co-Offenders,btb invovled in telemarketing fraud,G173,G174
+1876,1354,Co-Offenders,"cocaine, opium, crystal meth, Ecstacy, hash, marihuana",G173,G174
+1876,1680,Co-Offenders,btb invovled in telemarketing fraud,G173,G174
+1879,271,Legitimate,Associate,G175,NONE
+1879,1691,Formal Criminal Organization,Feud,G175,NONE
+1879,551,Formal Criminal Organization,Feud,G175,G127
+1880,271,Legitimate,Associate,G175,NONE
+1880,1691,Formal Criminal Organization,Feud,G175,NONE
+1880,551,Formal Criminal Organization,Feud,G175,G127
+1880,1162,Legitimate,Associate,G175,G175
+1884,1957,Co-Offenders,btb hired by 1942 re grow op,G146,NONE
+1884,2102,Co-Offenders,grow op,G146,G146
+1884,1081,Legitimate,renter of 1942 property,G146,G146
+1884,2102,Legitimate,renter of 1942 property,G146,G146
+1885,977,Legitimate,Associate,G146,NONE
+1885,2013,Legitimate,Associate,G146,"G136, G142"
+1885,891,Co-Offenders,"production/ distribution of marihuana, meth & ketamine",G146,G146
+1885,1079,Co-Offenders,"production/ distribution of marihuana, meth & ketamine",G146,G146
+1885,1081,Co-Offenders,"production/ distribution of marihuana, meth & ketamine",G146,G146
+1885,1884,Co-Offenders,"production/ distribution of marihuana, meth & ketamine",G146,G146
+1885,2102,Co-Offenders,"production/ distribution of marihuana, meth & ketamine",G146,G146
+1885,2102,Legitimate,sold property to 1943,G146,G146
+1889,1144,Legitimate,associate,NONE,"G74, G84"
+1892,885,Co-Offenders,btb: home invasions & grow “rips”,G65,G65
+1892,387,Co-Offenders,truck btb used by 1950 re grow ops,G65,G65
+1893,972,Co-Offenders,"Extortion, theft, break & enter, VIN switching",G162,G162
+1893,1275,Co-Offenders,"Extortion, theft, break & enter, VIN switching, buy & sell equipment",G162,G162
+1893,972,Legitimate,director,G162,G162
+1897,720,Co-Offenders,bt Import ephedrine ,G160,G160
+1905,1906,Co-Offenders,Cocaine,NONE,NONE
+1907,164,Co-Offenders,Same Cell,G108,G108
+1907,257,Co-Offenders,Same Cell,G108,G108
+1907,468,Co-Offenders,Same Cell,G108,G108
+1907,1252,Co-Offenders,Same Cell,G108,G108
+1907,1254,Co-Offenders,Same Cell,G108,G108
+1907,1377,Co-Offenders,Same Cell,G108,G108
+1907,2044,Co-Offenders,Same Cell,G108,G108
+1907,1252,Legitimate,directors in three companies,G108,G108
+1907,575,Co-Offenders,Same Cell,G108,G185
+1907,1650,Legitimate,,G108,"G8, G14"
+1910,1909,Co-Offenders,Same Cell,G110,G110
+1910,1911,Co-Offenders,Same Cell,G110,G110
+1910,1909,Formal Criminal Organization,,G110,G110
+1910,1911,Formal Criminal Organization,,G110,G110
+1915,263,Co-Offenders,btb smuggling  weapons & drugs,G70,NONE
+1915,263,Formal Criminal Organization,,G70,NONE
+1918,81,Legitimate,associate,G89,"G23, G40, G43, G111"
+1918,81,Formal Criminal Organization,,G89,"G23, G40, G43, G111"
+1922,216,Co-Offenders,Same Cell,G109,G109
+1922,438,Co-Offenders,Same Cell,G109,G109
+1922,534,Co-Offenders,Same Cell,G109,G109
+1922,1208,Co-Offenders,Same Cell,G109,G109
+1922,1020,Co-Offenders,bt collect & broker smuggled marihuana,G109,"G19, G21, G22"
+1922,862,Co-Offenders,bt collect & broker smuggled marihuana,G109,"G19, G21, G22, G109"
+1927,365,Legitimate,Associate,G137,NONE
+1927,2134,Legitimate,Associate,G137,NONE
+1927,371,Legitimate,Associate,G137,G136
+1927,2013,Legitimate,Associate,G137,"G136, G142"
+1927,1267,Legitimate,Associate,G137,G137
+1927,610,Co-Offenders,Same Cell,G137,G137
+1927,1484,Co-Offenders,loan-sharking,G137,G137
+1927,1943,Co-Offenders,Same Cell,G137,G137
+1932,695,Co-Offenders,drugs,G128,G128
+1933,1931,Co-Offenders,suspects in two drive-by shootings,NONE,NONE
+1933,1601,Co-Offenders,cocaine,NONE,G124
+1933,1714,Co-Offenders,cocaine,NONE,G124
+1933,1718,Co-Offenders,cocaine,NONE,G124
+1938,1918,Legitimate,had meeting,G35,G89
+1942,253,Legitimate,associate,G150,G150
+1942,1405,Legitimate,associate,G150,G150
+1942,1137,Co-Offenders,marihuana cultivation &  brokerage,G150,G150
+1942,1403,Co-Offenders,marihuana cultivation &  brokerage,G150,G150
+1942,1408,Co-Offenders,marihuana cultivation &  brokerage,G150,G150
+1942,1415,Co-Offenders,arrested for PPT,G150,G150
+1942,1416,Co-Offenders,marihuana cultivation &  brokerage,G150,G150
+1942,1419,Co-Offenders,marihuana cultivation &  brokerage,G150,G150
+1942,1427,Co-Offenders,marihuana cultivation &  brokerage,G150,G150
+1942,1953,Co-Offenders,marihuana cultivation &  brokerage,G150,G150
+1942,2018,Co-Offenders,marihuana cultivation &  brokerage,G150,G150
+1955,81,Legitimate,associate,"G89, G111","G23, G40, G43, G111"
+1955,81,Formal Criminal Organization,,"G89, G111","G23, G40, G43, G111"
+1972,1337,Legitimate,associate,G104,G104
+1975,839,Co-Offenders,Stolen Persian rug trade,NONE,NONE
+1981,272,Co-Offenders,Same Cell,"G43, G111",G111
+1981,1072,Co-Offenders,Same Cell,"G43, G111",G111
+1981,1365,Co-Offenders,Same Cell,"G43, G111",G111
+1981,1638,Co-Offenders,Same Cell,"G43, G111",G111
+1981,1788,Co-Offenders,Same Cell,"G43, G111",G111
+1981,81,Co-Offenders,Same Cell,"G43, G111","G23, G40, G43, G111"
+1981,229,Co-Offenders,Same Cell,"G43, G111","G43, G111"
+1981,1256,Co-Offenders,Same Cell,"G43, G111","G43, G111"
+1981,1955,Co-Offenders,Same Cell,"G43, G111","G89, G111"
+1998,336,Legitimate,associate,G112,G112
+1998,595,Legitimate,long-time associate,G112,G112
+1998,108,Co-Offenders,Same Cell,G112,G112
+1998,178,Co-Offenders,Same Cell,G112,G112
+1998,336,Co-Offenders,Same Cell,G112,G112
+1998,595,Co-Offenders,Same Cell,G112,G112
+1998,652,Co-Offenders,Same Cell,G112,G112
+1998,784,Co-Offenders,Same Cell,G112,G112
+1998,1278,Co-Offenders,Same Cell,G112,G112
+1998,1787,Co-Offenders,Same Cell,G112,G112
+2006,1095,Co-Offenders,assault of police agent,"G1, G6",NONE
+2006,1095,Formal Criminal Organization,member/ hangaround Ch1,"G1, G6",NONE
+2006,249,Co-Offenders,assault conspiracy,"G1, G6",G1
+2006,1474,Co-Offenders,assault conspiracy,"G1, G6",G1
+2006,249,Formal Criminal Organization,member/ hangaround Ch1,"G1, G6",G1
+2006,1474,Formal Criminal Organization,Ch1,"G1, G6",G1
+2006,2,Co-Offenders,assault of police agent,"G1, G6","G4, G5, G6, G7"
+2006,1615,Co-Offenders,meth,"G1, G6","G4, G5, G6, G7"
+2006,1549,Co-Offenders,"drug trafficking, extortions, assault","G1, G6","G4, G5, G6, G8"
+2006,1549,Formal Criminal Organization,Ch1,"G1, G6","G4, G5, G6, G8"
+2006,1560,Co-Offenders,assault of police agent,"G1, G6",G5
+2006,1560,Formal Criminal Organization,,"G1, G6",G5
+2007,336,Co-Offenders,in same vehicle with hidden cash,NONE,G112
+2007,336,Legitimate,,NONE,G112
+2008,494,Co-Offenders,"drug importation/ trafficking, and retaliatory violence","G118, G135",G118
+2008,872,Co-Offenders,"drug importation/ trafficking, &retaliatory violence","G118, G135",G118
+2008,900,Co-Offenders,"drug importation/ trafficking, and retaliatory violence","G118, G135",G118
+2008,959,Co-Offenders,"drug importation/ trafficking, and retaliatory violence","G118, G135",G118
+2008,898,Co-Offenders,"drug importation/ trafficking, and retaliatory violence","G118, G135","G118, G121, G135"
+2008,491,Co-Offenders,"drug importation/ trafficking, and retaliatory violence","G118, G135","G118, G135"
+2008,637,Co-Offenders,"drug importation/ trafficking, and retaliatory violence","G118, G135","G118, G135"
+2010,647,Co-Offenders,Same Cell,G113,G113
+2010,1966,Co-Offenders,Same Cell,G113,G113
+2010,647,Legitimate,directors of business,G113,G113
+2010,952,Co-Offenders,met re money exchange,G113,"G58, G113"
+2010,1965,Co-Offenders,met re money exchange,G113,"G58, G113"
+2010,952,Legitimate,directors of business,G113,"G58, G113"
+2010,1965,Legitimate,directors of business,G113,"G58, G113"
+2010,1055,Legitimate,Associate,G113,G81
+2013,2081,Legitimate,associate,"G136, G142",NONE
+2014,1417,Co-Offenders,"poly-drug, shoplifting, money laundering, & frauds",G149,G149
+2014,1424,Co-Offenders,"poly-drug, shoplifting, money laundering, & frauds",G149,G149
+2014,2015,Co-Offenders,"poly-drug, shoplifting, money laundering, & frauds",G149,G149
+2014,2016,Co-Offenders,"poly-drug, shoplifting, money laundering, & frauds",G149,G149
+2014,2017,Co-Offenders,"poly-drug, shoplifting, money laundering, & frauds",G149,G149
+2014,2019,Co-Offenders,"poly-drug, shoplifting, money laundering, & frauds",G149,G149
+2014,2021,Co-Offenders,"poly-drug, shoplifting, money laundering, & frauds",G149,G149
+2014,2023,Co-Offenders,"poly-drug, shoplifting, money laundering, & frauds",G149,G149
+2014,2024,Co-Offenders,"poly-drug, shoplifting, money laundering, & frauds",G149,G149
+2014,2025,Co-Offenders,"poly-drug, shoplifting, money laundering, & frauds",G149,G149
+2014,2027,Co-Offenders,"poly-drug, shoplifting, money laundering, & frauds",G149,G149
+2014,2026,Co-Offenders,"poly-drug, shoplifting, money laundering, & frauds",G149,"G149, G154"
+2014,519,Legitimate,Associate,G149,G154
+2032,30,Legitimate,Associate,G114,NONE
+2032,172,Legitimate,Associate,G114,NONE
+2032,220,Legitimate,Associate,G114,NONE
+2032,260,Legitimate,Associate,G114,NONE
+2032,357,Legitimate,Associate,G114,NONE
+2032,478,Legitimate,Associate,G114,NONE
+2032,511,Legitimate,Associate,G114,NONE
+2032,556,Legitimate,Associate,G114,NONE
+2032,624,Legitimate,Associate,G114,NONE
+2032,678,Legitimate,Associate,G114,NONE
+2032,704,Legitimate,Associate,G114,NONE
+2032,707,Legitimate,Associate,G114,NONE
+2032,719,Legitimate,Associate,G114,NONE
+2032,790,Legitimate,Associate,G114,NONE
+2032,1094,Legitimate,Associate,G114,NONE
+2032,1146,Legitimate,Associate,G114,NONE
+2032,1174,Legitimate,Associate,G114,NONE
+2032,1175,Legitimate,Associate,G114,NONE
+2032,1185,Legitimate,Associate,G114,NONE
+2032,1227,Legitimate,Associate,G114,NONE
+2032,1277,Legitimate,Associate,G114,NONE
+2032,1277,Co-Offenders,btb involved in drugs,G114,NONE
+2032,1367,Legitimate,Associate,G114,NONE
+2032,1376,Legitimate,Associate,G114,NONE
+2032,1386,Legitimate,Associate,G114,NONE
+2032,1495,Legitimate,Associate,G114,NONE
+2032,1518,Legitimate,Associate,G114,NONE
+2032,1527,Legitimate,Associate,G114,NONE
+2032,1792,Legitimate,Associate,G114,NONE
+2032,1828,Legitimate,Associate,G114,NONE
+2032,1843,Legitimate,Associate,G114,NONE
+2032,1846,Legitimate,Associate,G114,NONE
+2032,1901,Legitimate,Associate,G114,NONE
+2032,1919,Legitimate,Associate,G114,NONE
+2032,1923,Legitimate,Associate,G114,NONE
+2032,2033,Legitimate,Associate,G114,NONE
+2032,2045,Legitimate,Associate,G114,NONE
+2032,2046,Legitimate,Associate,G114,NONE
+2032,2063,Legitimate,Associate,G114,NONE
+2032,150,Legitimate,Associate,G114,G114
+2032,454,Legitimate,Associate,G114,G114
+2032,1168,Legitimate,Associate,G114,G114
+2032,1319,Legitimate,Associate,G114,G114
+2032,531,Co-Offenders,btb cocaine & marihuana trafficking,G114,G114
+2032,532,Co-Offenders,btb cocaine & marihuana trafficking,G114,G114
+2032,974,Co-Offenders,"btb a dealer, receives drugs from 2092",G114,G114
+2032,1091,Co-Offenders,"btb cocaine/ marihuana trafficking, and theft",G114,G114
+2032,1412,Co-Offenders,btb cocaine & marihuana trafficking,G114,G114
+2032,829,Legitimate,Associate,G114,G3
+2036,280,Co-Offenders,same cell,G36,G36
+2036,600,Co-Offenders,same cell,G36,G36
+2036,1862,Co-Offenders,same cell,G36,G36
+2036,1988,Co-Offenders,same cell,G36,G36
+2036,280,Formal Criminal Organization,,G36,G36
+2036,600,Formal Criminal Organization,,G36,G36
+2036,1862,Formal Criminal Organization,,G36,G36
+2036,1988,Formal Criminal Organization,,G36,G36
+2039,294,Formal Criminal Organization,suspect in drive-by shooting,NONE,NONE
+2039,886,Co-Offenders,suspects in drive-by shooting,NONE,G53
+2050,205,Legitimate,business partner,"G72, G115, G116",NONE
+2050,148,Co-Offenders,Same Cell,"G72, G115, G116",G116
+2050,212,Co-Offenders,Same Cell,"G72, G115, G116",G116
+2050,1488,Co-Offenders,Same Cell,"G72, G115, G116",G116
+2050,148,Legitimate,directors of businesses,"G72, G115, G116",G116
+2050,212,Legitimate,business partnerships,"G72, G115, G116",G116
+2050,1488,Legitimate,parnters,"G72, G115, G116",G116
+2050,1546,Co-Offenders,Same Cell,"G72, G115, G116","G30, G39, G40, G115, G116"
+2050,1546,Legitimate,office/ director,"G72, G115, G116","G30, G39, G40, G115, G116"
+2050,2049,Co-Offenders,Same Cell,"G72, G115, G116","G72, G115"
+2050,815,Co-Offenders,bt have financed drug purchases,"G72, G115, G116","G72, G115, G116"
+2050,815,Legitimate,nominee owner/ director,"G72, G115, G116","G72, G115, G116"
+2054,1412,Co-Offenders,bt supply cocaine,G114,G114
+2057,127,Legitimate,Close Associate,G180,G180
+2057,251,Legitimate,Close Associate,G180,G180
+2057,1489,Legitimate,Close Associate,G180,G180
+2057,1791,Legitimate,Close Associate,G180,G180
+2057,127,Co-Offenders,"Marihuana, cocaine, home invasions, extortion, prostitution, B&E",G180,G180
+2057,251,Co-Offenders,"Marihuana, cocaine, home invasions, extortion, prostitution, B&E",G180,G180
+2057,288,Co-Offenders,"Marihuana, cocaine, home invasions, extortion, prostitution, B&E",G180,G180
+2057,309,Co-Offenders,"Marihuana, cocaine, home invasions, extortion, prostitution, B&E",G180,G180
+2057,904,Co-Offenders,"Marihuana, cocaine, home invasions, extortion, prostitution, B&E",G180,G180
+2057,1050,Co-Offenders,"Marihuana, cocaine, home invasions, extortion, prostitution, B&E",G180,G180
+2057,1489,Co-Offenders,"Marihuana, cocaine, home invasions, extortion, prostitution, B&E",G180,G180
+2057,1730,Co-Offenders,"Marihuana, cocaine, home invasions, extortion, prostitution, B&E",G180,G180
+2057,1731,Co-Offenders,"Marihuana, cocaine, home invasions, extortion, prostitution, B&E",G180,G180
+2057,1791,Co-Offenders,"Marihuana, cocaine, home invasions, extortion, prostitution, B&E",G180,G180
+2057,127,Formal Criminal Organization,,G180,G180
+2057,251,Formal Criminal Organization,,G180,G180
+2057,288,Formal Criminal Organization,,G180,G180
+2057,309,Formal Criminal Organization,,G180,G180
+2057,904,Formal Criminal Organization,,G180,G180
+2057,1050,Formal Criminal Organization,,G180,G180
+2057,1489,Formal Criminal Organization,,G180,G180
+2057,1730,Formal Criminal Organization,,G180,G180
+2057,1731,Formal Criminal Organization,,G180,G180
+2057,1791,Formal Criminal Organization,,G180,G180
+2058,2129,Co-Offenders,btb involved in marihuana seized,G96,G96
+2058,2129,Formal Criminal Organization,suspect in the kidnapping of 2189,G96,G96
+2064,1515,Legitimate,associate,G81,"G47, G81"
+2065,1152,Co-Offenders,btb bringing in kilos of cocaine,G22,NONE
+2065,797,Formal Criminal Organization,Ch4,G22,"G11, G19, G21"
+2065,797,Legitimate,developed equipment,G22,"G11, G19, G21"
+2065,179,Legitimate,associate,G22,G22
+2065,830,Co-Offenders,btb bringing in kilos of cocaine,G22,G22
+2065,830,Legitimate,developed equipment,G22,G22
+2065,1751,Legitimate,associate,G22,"G22, G103"
+2065,1751,Co-Offenders,btb stock market crime,G22,"G22, G103"
+2073,1207,Legitimate,Associate,NONE,NONE
+2074,176,Legitimate,website link,G37,NONE
+2075,1215,Co-Offenders,,"G47, G58, G81",G47
+2075,1264,Co-Offenders,,"G47, G58, G81",G47
+2075,1249,Legitimate,,"G47, G58, G81","G47, G81"
+2075,217,Legitimate,,"G47, G58, G81",G81
+2089,87,Legitimate,Associate,G155,NONE
+2089,367,Legitimate,Associate,G155,NONE
+2089,1103,Co-Offenders,Same Cell,G155,NONE
+2089,1107,Co-Offenders,Same Cell,G155,NONE
+2089,1941,Legitimate,Associate,G155,G102
+2089,844,Legitimate,Associate,G155,G136
+2089,318,Legitimate,Associate,G155,G138
+2089,318,Co-Offenders,heroin & cocaine importation,G155,G138
+2089,623,Legitimate,Associate,G155,G141
+2089,258,Co-Offenders,Same Cell,G155,G155
+2089,760,Co-Offenders,Same Cell,G155,G155
+2089,13,Co-Offenders,Same Cell,G155,"G155, G184"
+2093,375,Co-Offenders,ephedrine/ cocaine smuggling,NONE,"G136, G152"
+2094,2110,Legitimate,associate,G48,"G30, G39"
+2099,611,Legitimate,Associate,G144,NONE
+2099,1801,Legitimate,Associate,G144,NONE
+2099,320,Co-Offenders,loan-sharking & extortion,G144,G144
+2099,999,Co-Offenders,loan-sharking & extortion,G144,G144
+2102,1081,Co-Offenders,mahihuana grow op,G146,G146
+2104,318,Co-Offenders,btb involved in arranging  ephedrine shipment,G138,G138
+2104,995,Co-Offenders,Same Cell,G138,G138
+2104,1035,Co-Offenders,Same Cell,G138,G138
+2104,1160,Co-Offenders,bt import heroin,G138,G138
+2104,318,Formal Criminal Organization,,G138,G138
+2104,1035,Formal Criminal Organization,,G138,G138
+2104,318,Legitimate,btb silent owners company,G138,G138
+2104,2115,Co-Offenders,Same Cell,G138,"G138, G140"
+2104,2115,Formal Criminal Organization,,G138,"G138, G140"
+2106,284,Co-Offenders,btb controlling some drug dealing,NONE,G40
+2108,1839,Co-Offenders,counterfeit credit cards,"G55, G82",G55
+2108,1839,Legitimate,,"G55, G82",G55
+2108,815,Legitimate,holds the mortgage of company,"G55, G82","G72, G115, G116"
+2108,2137,Legitimate,hods the mortgage of  company,"G55, G82","G8, G29, G72"
+2110,774,Legitimate,associate,"G30, G39","G23, G30, G39"
+2110,774,Co-Offenders,drug trafficking,"G30, G39","G23, G30, G39"
+2110,774,Formal Criminal Organization,,"G30, G39","G23, G30, G39"
+2110,727,Legitimate,associate,"G30, G39","G23, G39, G41, G66, G89"
+2110,727,Formal Criminal Organization,,"G30, G39","G23, G39, G41, G66, G89"
+2110,1762,Legitimate,associate,"G30, G39","G30, G39"
+2110,1762,Co-Offenders,btb marihuana & cocaine across the border,"G30, G39","G30, G39"
+2110,1568,Legitimate,associate,"G30, G39",G39
+2110,1568,Co-Offenders,btb marihuana & cocaine across the border,"G30, G39",G39
+2110,55,Legitimate,President/ Secretary,"G30, G39",G39
+2110,1672,Legitimate,associate,"G30, G39","G39, G68"
+2110,1672,Formal Criminal Organization,,"G30, G39","G39, G68"
+2112,863,Legitimate,Associate,G117,NONE
+2112,945,Legitimate,Associate,G117,NONE
+2112,1743,Legitimate,Associate,G117,NONE
+2112,1969,Legitimate,Associate,G117,NONE
+2112,389,Co-Offenders,Same Cell - btb dissolved,G117,G117
+2112,716,Co-Offenders,imported cocaine,G117,G117
+2112,924,Co-Offenders,Same Cell - btb dissolved,G117,G117
+2112,1809,Co-Offenders,bt have been involved in marhihuana & cocaine,G117,G117
+2115,341,Legitimate,Associate,"G138, G140",NONE
+2115,1016,Legitimate,Associate,"G138, G140",NONE
+2115,1062,Legitimate,Associate,"G138, G140",NONE
+2115,1129,Legitimate,Associate,"G138, G140",NONE
+2115,2093,Legitimate,Associate,"G138, G140",NONE
+2115,371,Legitimate,Associate,"G138, G140",G136
+2115,1307,Legitimate,Associate,"G138, G140",G136
+2115,375,Legitimate,Associate,"G138, G140","G136, G152"
+2115,313,Legitimate,Associate,"G138, G140",G140
+2115,352,Co-Offenders,btb clandestine lab,"G138, G140",G140
+2115,1017,Co-Offenders,Same Cell,"G138, G140",G140
+2115,623,Legitimate,Associate,"G138, G140",G141
+2125,330,Legitimate,Associate,G178,G178
+2130,1360,Co-Offenders,btb kilo level cocaine traffickers,NONE,G64
+2130,1360,Legitimate,Director,NONE,G64
+2131,710,Legitimate,,G68,G68
+2132,792,Formal Criminal Organization,Criminal Rivals,NONE,NONE
+2132,2133,Co-Offenders,Cocaine,NONE,NONE
+2132,214,Co-Offenders,"Drugs, Cocaine",NONE,G9
+2135,308,Legitimate,Associate,G152,NONE
+2135,1109,Co-Offenders,partners in the drug trade.,G152,NONE
+2135,1129,Legitimate,Associate,G152,NONE
+2135,2093,Legitimate,Associate,G152,NONE
+2135,375,Co-Offenders,Same Cell,G152,"G136, G152"
+2135,313,Legitimate,Associate,G152,G140
+2137,2138,Legitimate,Director of 4 businesses,"G8, G29, G72",G29
+2137,1519,Co-Offenders,bt  have questionable business deals,"G8, G29, G72","G29, G67"
+2137,1519,Legitimate,primary stockholder/ director,"G8, G29, G72","G29, G67"
+2137,1839,Legitimate,business relationship,"G8, G29, G72",G55
+2137,815,Formal Criminal Organization,,"G8, G29, G72","G72, G115, G116"
+2137,815,Legitimate,directors,"G8, G29, G72","G72, G115, G116"

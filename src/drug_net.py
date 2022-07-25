@@ -40,7 +40,7 @@ class DrugNet():
         self.select_layers()
         self.correct_node_id()
         self.rename_col()
-        self.select_attri()
+        self.select_attr()
         
         if self.is_get_net_charac:
             self.gen_net()
@@ -56,7 +56,7 @@ class DrugNet():
     
     def load_data(self):
         self.link_df_orig = pd.read_excel(self.path, sheet_name='LINKS IND AND GROUP')
-        self.attri_df_orig = pd.read_excel(self.path, sheet_name='ACTOR ATTRIBUTES')
+        self.attr_df_orig = pd.read_excel(self.path, sheet_name='ACTOR ATTRIBUTES')
         
     def merge_layer(self):
         '''merge 'Associate/Friendship' into 'Legitimate'
@@ -104,40 +104,40 @@ class DrugNet():
         self.n_node = len(node_id_new)
         self.link_df = link_df_temp_new
         
-        self.attri_df = self.attri_df_orig[~self.attri_df_orig['Actor_ID'].isin(node_id_missed)].reset_index() 
-        self.attri_df['Actor_ID'] = pd.Series(list(range(len(self.attri_df. index))), index=self.attri_df.index)     
+        self.attr_df = self.attr_df_orig[~self.attr_df_orig['Actor_ID'].isin(node_id_missed)].reset_index() 
+        self.attr_df['Actor_ID'] = pd.Series(list(range(len(self.attr_df. index))), index=self.attr_df.index)     
         
     def rename_col(self):
         self.link_df.rename(columns={'Actor_A': 'From', 'Actor_B': 'To', 'Type_relation': 'Relation'} , 
                             inplace=True)
-        self.attri_df.rename(columns={'Actor_ID': 'Node_ID'}, inplace=True)
+        self.attr_df.rename(columns={'Actor_ID': 'Node_ID'}, inplace=True)
         
-    def select_attri(self):
-        self.attri_df = self.attri_df[['Node_ID', 'Gender', 'DOB_Year', 'Age_First_Analysis',
+    def select_attr(self):
+        self.attr_df = self.attr_df[['Node_ID', 'Gender', 'DOB_Year', 'Age_First_Analysis',
                                        'Drug_Activity', 'Recode_Level', 'Drug_Type',
                                        'Group_Membership_Type', 'Group_Membership_Code']]
         
     def impute_miss_data(self):
         # if an actor is not involved in drug activity
-        self.attri_df.loc[self.attri_df['Drug_Activity']==0, ['Recode_Level', 'Drug_Type']] = 'NONE'
+        self.attr_df.loc[self.attr_df['Drug_Activity']==0, ['Recode_Level', 'Drug_Type']] = 'NONE'
         for col in ['Gender', 'DOB_Year', 'Age_First_Analysis']:
-            self.attri_df.loc[self.attri_df[col]=='.', col] = np.nan
+            self.attr_df.loc[self.attr_df[col]=='.', col] = np.nan
         
-        self.attri_df.loc[self.attri_df['Gender']=='Body', 'Gender'] = np.nan
-        self.attri_df.loc[self.attri_df['Gender']=='Male', 'Gender'] = 1
-        self.attri_df.loc[self.attri_df['Gender']=='Female', 'Gender'] = 0
+        self.attr_df.loc[self.attr_df['Gender']=='Body', 'Gender'] = np.nan
+        self.attr_df.loc[self.attr_df['Gender']=='Male', 'Gender'] = 1
+        self.attr_df.loc[self.attr_df['Gender']=='Female', 'Gender'] = 0
         
         cols_to_factor = ['Recode_Level', 'Drug_Type', 'Group_Membership_Type', 'Drug_Activity']
-        self.attri_df[cols_to_factor] = self.attri_df[cols_to_factor].apply(lambda x: pd.factorize(x)[0])
+        self.attr_df[cols_to_factor] = self.attr_df[cols_to_factor].apply(lambda x: pd.factorize(x)[0])
         
-        self.attri_df['Group_Membership_Code'] = self.attri_df['Group_Membership_Code'].astype('float')
+        self.attr_df['Group_Membership_Code'] = self.attr_df['Group_Membership_Code'].astype('float')
         
         cols_with_NA = ['Gender', 'DOB_Year', 'Age_First_Analysis'] #[['Gender', 'DOB_Year', 'Age_First_Analysis'], ['DOB_Year', 'Age_First_Analysis']]
-        id_col = self.attri_df.loc[:, 'Node_ID']
-        self.attri_df = self.attri_df.drop(['Node_ID'], axis=1)
-        df_without_NA = self.attri_df.dropna()
-        is_NA_idx = self.attri_df[cols_with_NA].isna().any(axis=1)
-        df_with_NA_only = self.attri_df[is_NA_idx]
+        id_col = self.attr_df.loc[:, 'Node_ID']
+        self.attr_df = self.attr_df.drop(['Node_ID'], axis=1)
+        df_without_NA = self.attr_df.dropna()
+        is_NA_idx = self.attr_df[cols_with_NA].isna().any(axis=1)
+        df_with_NA_only = self.attr_df[is_NA_idx]
        
         # transform to float
         df_without_NA[cols_with_NA] = df_without_NA[cols_with_NA].astype('float')
@@ -156,25 +156,25 @@ class DrugNet():
             
             # make predictions for test data
             y_pred = model.predict(X_test)
-            self.attri_df.loc[is_NA_idx, cols_with_NA_new[idx]] = y_pred
+            self.attr_df.loc[is_NA_idx, cols_with_NA_new[idx]] = y_pred
         
         for idx, col in enumerate(cols_with_NA):
-            is_na_idx = self.attri_df[col].isna()
-            self.attri_df.loc[is_na_idx, col] = self.attri_df.loc[is_na_idx, cols_with_NA_new[idx]].round(0)
+            is_na_idx = self.attr_df[col].isna()
+            self.attr_df.loc[is_na_idx, col] = self.attr_df.loc[is_na_idx, cols_with_NA_new[idx]].round(0)
            
         # remove cols_with_NA_new
-        self.attri_df = self.attri_df.drop(cols_with_NA_new, axis=1)
+        self.attr_df = self.attr_df.drop(cols_with_NA_new, axis=1)
         # add node id back
-        self.attri_df['Node_ID'] = id_col
-        cols = list(self.attri_df.columns)
+        self.attr_df['Node_ID'] = id_col
+        cols = list(self.attr_df.columns)
         cols = [cols[-1]] + cols[:-1]
-        self.attri_df = self.attri_df[cols]
+        self.attr_df = self.attr_df[cols]
         
     def save_df(self):
-        self.link_df.to_excel('../data/drug_net_{}layers_{}nodes.xlsx'. \
+        self.link_df.to_csv('../data/drug_net_{}layers_{}nodes.csv'. \
                               format(self.n_layer, self.n_node), index=False)                 
         self.impute_miss_data()
-        self.attri_df.to_excel('../data/drug_net_attri_{}layers_{}nodes.xlsx'. \
+        self.attr_df.to_csv('../data/drug_net_attr_{}layers_{}nodes.csv'. \
                                format(self.n_layer, self.n_node), index=False)
             
     def gen_net(self):        

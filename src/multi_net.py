@@ -6,6 +6,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from random import sample
 # import matplotlib.transforms as mtransforms
 # from matplotlib import cm
 import networkx as nx
@@ -55,7 +56,7 @@ TODO: reduce false negative based on EM:
 '''        
 
 class Reconstruct:
-    def __init__(self, layer_link_list, node_attri_df=None, real_virt_node_obs=None, #net_layer_list=None, #layer_link_unobs_list=None,
+    def __init__(self, layer_link_list, node_attr_df=None, real_virt_node_obs=None, #net_layer_list=None, #layer_link_unobs_list=None,
                  real_node_obs=None, layer_real_node=None, n_node_total=None, itermax=100, eps=1e-6, 
                  simil_index_list=['jaccard_coefficient', 'preferential_attachment',
                                    'common_neighbor_centrality', 'adamic_adar_index'],
@@ -285,11 +286,6 @@ class Reconstruct:
     def cal_link_prob_PON(self):
         '''update link probability using partial observed nodes in each layer
         '''
-        # links among observed nodes are observed
-        # for i_lyr in range(self.n_layer):
-        #     mask = self.obs_node_mask_list[i_lyr]
-        #     if mask:  # not empty
-        #         self.adj_pred_arr[i_lyr][mask] = self.adj_true_arr[i_lyr][mask]
         self.adj_pred_arr = self.get_adj_obs(self.adj_pred_arr)        
         # ttt0 = time()
         agg_link_prob_list = []
@@ -308,16 +304,17 @@ class Reconstruct:
             
                 # if link is not present in current layer and link is not between observed nodes                               
             agg_link_prob = agg_link_prob_list[i_curr]
-            # agg_link_prob[i,j] = 0 means that sgl_link_prob_3d[i_othr, i, j] over other lyrs are all zeros
+            # agg_link_prob[i,j] = 0 means: sgl_link_prob_3d[i_othr, i, j] over other lyrs are all zeros
             mask_0 = self.adj_pred_arr[i_curr, :, :] == 0 & \
                      np.logical_not(np.isin(self.adj_pred_arr[i_othr, :, :], [0, 1])) 
             self.adj_pred_arr[i_othr, mask_0] = self.agg_adj[mask_0] * self.sgl_link_prob_3d[i_othr, mask_0]/ \
                                                 agg_link_prob[mask_0]
-            self.adj_pred_arr [i_othr, mask_0] = np.nan_to_num(self.adj_pred_arr[i_othr, mask_0])
-        # print('--- Time on updating adj_pred_arr [i_othr]: {} s'.format(time()-ttt0))
+            self.adj_pred_arr[i_othr, mask_0] = np.nan_to_num(self.adj_pred_arr[i_othr, mask_0])
         self.adj_pred_arr[self.adj_pred_arr<0] = 0 
         self.adj_pred_arr[self.adj_pred_arr>1] = 1
-    
+                        
+            # mask_1 = self.agg_adj_3d == 1 & self.adj_pred_arr[self.adj_pred_arr>1] = 1
+            
     # def cal_link_prob_MAA(self):
     #     # get average degree in each layer: <k>_alpha
     #         # self.degree_mean_arr  = 2*n_link / self.n_node_total
@@ -353,37 +350,37 @@ class Reconstruct:
     #     else:
     #         return len(list(nx.common_neighbors(G, u, v))) / union_size  
          
-    def cal_link_prob_jc(self):
-        ''' adamic_adar_index, preferential_attachment, common_neighbor_centrality
-            ref.: https://networkx.org/documentation/stable/reference/algorithms/link_prediction.html
-        '''
-        # JC_mask_list = []
-        for i_lyr in range(self.n_layer):
-            G_temp = nx.from_numpy_matrix(np.ceil(self.adj_pred_arr[i_lyr]))
-            # TODO: use link probability as weight
-            # link_unobs = self.layer_possible_link_unobs[i_lyr] 
-            link_unobs_left = np.array( np.where( (self.adj_pred_arr[i_lyr] >0) & (self.adj_pred_arr[i_lyr] <1) ) )
-            # n_link_unobs_left = link_unobs_left.shape[1]
-            link_unobs_left_half_arr = link_unobs_left[:, link_unobs_left[0,:] < link_unobs_left[1,:]]
-            link_unobs_left_half_list = list(zip(link_unobs_left_half_arr[0], link_unobs_left_half_arr[1]))
+    # def cal_link_prob_jc(self):
+    #     ''' adamic_adar_index, preferential_attachment, common_neighbor_centrality
+    #         ref.: https://networkx.org/documentation/stable/reference/algorithms/link_prediction.html
+    #     '''
+    #     # JC_mask_list = []
+    #     for i_lyr in range(self.n_layer):
+    #         G_temp = nx.from_numpy_matrix(np.ceil(self.adj_pred_arr[i_lyr]))
+    #         # TODO: use link probability as weight
+    #         # link_unobs = self.layer_possible_link_unobs[i_lyr] 
+    #         link_unobs_left = np.array( np.where( (self.adj_pred_arr[i_lyr] >0) & (self.adj_pred_arr[i_lyr] <1) ) )
+    #         # n_link_unobs_left = link_unobs_left.shape[1]
+    #         link_unobs_left_half_arr = link_unobs_left[:, link_unobs_left[0,:] < link_unobs_left[1,:]]
+    #         link_unobs_left_half_list = list(zip(link_unobs_left_half_arr[0], link_unobs_left_half_arr[1]))
             
-            # list(G_temp.edges) only contain edges in the upper half
-            # jc_score = [(u, v, self.get_jc_score(G_temp, u, v)) for [u,v] in link_unobs_left_half_list]
-            jc_score = list(nx.jaccard_coefficient(G_temp, link_unobs_left_half_list))
-            # jc_score_sort = sorted(jc_score, key = lambda x: x[2], reverse=True)
-            # jc_score_select = [ele for ele in jc_score if ele[2] >= 0.25]
+    #         # list(G_temp.edges) only contain edges in the upper half
+    #         # jc_score = [(u, v, self.get_jc_score(G_temp, u, v)) for [u,v] in link_unobs_left_half_list]
+    #         jc_score = list(nx.jaccard_coefficient(G_temp, link_unobs_left_half_list))
+    #         # jc_score_sort = sorted(jc_score, key = lambda x: x[2], reverse=True)
+    #         # jc_score_select = [ele for ele in jc_score if ele[2] >= 0.25]
             
-            # link_unobs = self.layer_possible_link_unobs[i_lyr] 
-            # n_link_unobs_left = int(np.sum( (self.adj_pred_arr[i_lyr] >0) & (self.adj_pred_arr[i_lyr] <1) ) / 2)
-            # mask_1 = np.isin(np.triu(adj_pred_temp, k=1), [0, 1])           
-            link_select = [(ele[0], ele[1]) for ele in jc_score if ele[2] >= 0.333]
-            if len(link_select) >=1:
-                link_select = np.array(link_select).T
-                try:
-                    self.adj_pred_arr[i_lyr, (link_select[0], link_select[1])] = 1
-                except:
-                    print('------ link_select', link_select)
-                    raise ValueError('no predicted links selected')
+    #         # link_unobs = self.layer_possible_link_unobs[i_lyr] 
+    #         # n_link_unobs_left = int(np.sum( (self.adj_pred_arr[i_lyr] >0) & (self.adj_pred_arr[i_lyr] <1) ) / 2)
+    #         # mask_1 = np.isin(np.triu(adj_pred_temp, k=1), [0, 1])           
+    #         link_select = [(ele[0], ele[1]) for ele in jc_score if ele[2] >= 0.333]
+    #         if len(link_select) >=1:
+    #             link_select = np.array(link_select).T
+    #             try:
+    #                 self.adj_pred_arr[i_lyr, (link_select[0], link_select[1])] = 1
+    #             except:
+    #                 print('------ link_select', link_select)
+    #                 raise ValueError('no predicted links selected')
                         
             # JC_mask_list.append(mask)
             # self.adj_pred_arr[i_lyr, self.JC_mask_list[i_lyr]] = 1
@@ -404,7 +401,7 @@ class Reconstruct:
 
             # update link prob using partial node sets and all links among observed nodes
             # tt0 = time()
-            # self.cal_link_prob_PON()  
+            self.cal_link_prob_PON()  
             # print('--- Time on cal_link_prob_PON: {} seconds'.format(round(time() - tt0, 2) ))  
             
             # self.cal_link_prob_jc()
@@ -431,6 +428,17 @@ class Reconstruct:
             # self.deg_seq_last_arr_round = np.round(self.deg_seq_last_arr)   
         return self.adj_pred_arr_last
 
+
+    def update_EM_add(self):
+        self.adj_pred_arr_add = deepcopy(self.adj_pred_arr_last)
+        for i_lyr in range(self.n_layer):
+            for i in range(self.n_node_total):
+                for j in range(i+1, self.n_node_total):
+                    if self.agg_adj_3d[i_lyr, i, j] == 1 and (self.adj_pred_arr[:, i, j] < 0.5).all():
+                        print('------ agg=1 while no links in the associate position in each layer')
+                        self.adj_pred_arr_add[:, i, j] = self.adj_pred_arr[:, i, j]/max(self.adj_pred_arr[:, i, j])
+        return self.adj_pred_arr_add
+
     # similarity measure for categorical data
         # ref.: https://epubs.siam.org/doi/epdf/10.1137/1.9781611972788.22
     def _apply_prediction(self, func, ebunch):
@@ -440,9 +448,9 @@ class Reconstruct:
     
     # def jaccard(self, ebunch):
     #     def predict(u, v):
-    #         u_attri, v_attri = node_attri_df.iloc[u, 1:], node_attri_df.iloc[v, 1:]
-    #         intersec_size = sum(u_attri==v_attri)
-    #         union_size = 2 * u_attri.size - intersec_size
+    #         u_attr, v_attr = node_attr_df.iloc[u, 1:], node_attr_df.iloc[v, 1:]
+    #         intersec_size = sum(u_attr==v_attr)
+    #         union_size = 2 * u_attr.size - intersec_size
     #         if union_size == 0:
     #             return 0
     #         else:
@@ -451,60 +459,60 @@ class Reconstruct:
 
     def overlap(self, ebunch):
         def predict(u, v):
-            u_attri, v_attri = self.node_attri_df.iloc[u, 1:], self.node_attri_df.iloc[v, 1:]
-            intersec_size = sum(u_attri==v_attri)
-            return  intersec_size / u_attri.size
+            u_attr, v_attr = self.node_attr_df.iloc[u, 1:], self.node_attr_df.iloc[v, 1:]
+            intersec_size = sum(u_attr==v_attr)
+            return  intersec_size / u_attr.size
         return self._apply_prediction(predict, ebunch)
 
     def eskin(self, ebunch):
-        n_unique = self.node_attri_df.nunique()[1:].to_numpy()
+        n_unique = self.node_attr_df.nunique()[1:].to_numpy()
         sim_score = n_unique**2 / (n_unique**2 + 2)
         def predict(u, v):
-            sim_score[self.node_attri_df.iloc[u, 1:]==self.node_attri_df.iloc[v, 1:]] = 1
-            return  np.sum(sim_score) / (self.node_attri_df.shape[1]-1)
+            sim_score[self.node_attr_df.iloc[u, 1:]==self.node_attr_df.iloc[v, 1:]] = 1
+            return  np.sum(sim_score) / (self.node_attr_df.shape[1])
         return self._apply_prediction(predict, ebunch)
 
     def IOF(self, ebunch):
         freq_list = []
-        for col in self.node_attri_df.columns[1:]:
-            freq_list.append(self.node_attri_df[col].value_counts().to_dict())              
+        for col in self.node_attr_df.columns[1:]:
+            freq_list.append(self.node_attr_df[col].value_counts().to_dict())              
         def predict(u, v):
-            u_attri, v_attri = self.node_attri_df.iloc[u, 1:], self.node_attri_df.iloc[v, 1:]
-            n_attri = self.node_attri_df.shape[1]-1
-            sim_score = np.zeros(n_attri)
-            for k in range(n_attri):
-                sim_score[k] = 1 / (1 + np.log(freq_list[k][u_attri[k]]) * \
-                                    np.log(freq_list[k][v_attri[k]]) )
-            sim_score[u_attri==v_attri] = 1
-            return  np.sum(sim_score) / n_attri
+            u_attr, v_attr = self.node_attr_df.iloc[u, 1:], self.node_attr_df.iloc[v, 1:]
+            n_attr = self.node_attr_df.shape[1]
+            sim_score = np.zeros(n_attr)
+            for k in range(n_attr):
+                sim_score[k] = 1 / (1 + np.log(freq_list[k][u_attr[k]]) * \
+                                    np.log(freq_list[k][v_attr[k]]) )
+            sim_score[u_attr==v_attr] = 1
+            return  np.sum(sim_score) / n_attr
         return self._apply_prediction(predict, ebunch)
 
     def OF(self, ebunch):
         freq_list = []
-        for col in self.node_attri_df.columns[1:]:
-            freq_list.append(self.node_attri_df[col].value_counts().to_dict())              
+        for col in self.node_attr_df.columns[1:]:
+            freq_list.append(self.node_attr_df[col].value_counts().to_dict())              
         def predict(u, v):
-            u_attri, v_attri = self.node_attri_df.iloc[u, 1:], self.node_attri_df.iloc[v, 1:]
-            n_attri = self.node_attri_df.shape[1]-1
-            n_data = self.node_attri_df.shape[0]
-            sim_score = [1 / ( 1 + np.log(n_data/freq_list[k][u_attri[k]])* \
-                               np.log(n_data/freq_list[k][v_attri[k]]) ) 
-                         for k in range(n_attri)]
-            sim_score[u_attri==v_attri] = 1
-            return  np.sum(sim_score) / n_attri
+            u_attr, v_attr = self.node_attr_df.iloc[u, 1:], self.node_attr_df.iloc[v, 1:]
+            n_attr = self.node_attr_df.shape[1]
+            n_data = self.node_attr_df.shape[0]
+            sim_score = [1 / ( 1 + np.log(n_data/freq_list[k][u_attr[k]])* \
+                               np.log(n_data/freq_list[k][v_attr[k]]) ) 
+                         for k in range(n_attr)]
+            sim_score[u_attr==v_attr] = 1
+            return  np.sum(sim_score) / n_attr
         return self._apply_prediction(predict, ebunch)
 
     def Goodall4(self, ebunch): 
         freq_list = []
-        for col in self.node_attri_df.columns[1:]:
-            freq_list.append(self.node_attri_df[col].value_counts().to_dict())          
+        for col in self.node_attr_df.columns[1:]:
+            freq_list.append(self.node_attr_df[col].value_counts().to_dict())          
         def predict(u, v):
-            u_attri, v_attri = self.node_attri_df.iloc[u, 1:], self.node_attri_df.iloc[v, 1:]
-            n_attri = self.node_attri_df.shape[1]-1
-            n_data = self.node_attri_df.shape[0]
-            sim_score = [freq_list[k][u_attri[k]]*(freq_list[k][u_attri[k]] -1)/ \
-                         (n_data*(n_data-1)) if u_attri[k] == v_attri[k] else 0 for k in range(n_attri)]
-            return  np.sum(sim_score) / n_attri
+            u_attr, v_attr = self.node_attr_df.iloc[u, 1:], self.node_attr_df.iloc[v, 1:]
+            n_attr = self.node_attr_df.shape[1]
+            n_data = self.node_attr_df.shape[0]
+            sim_score = [freq_list[k][u_attr[k]]*(freq_list[k][u_attr[k]] -1)/ \
+                         (n_data*(n_data-1)) if u_attr[k] == v_attr[k] else 0 for k in range(n_attr)]
+            return  np.sum(sim_score) / n_attr
         return self._apply_prediction(predict, ebunch)
     
     def pred_adj_simil(self):
@@ -583,10 +591,14 @@ class Reconstruct:
         for i_lyr in range(self.n_layer):
             if self.n_link_left[i_lyr] > 0:
                 n_link_left = self.n_link_left[i_lyr]        
-                score = list(self.eskin(self.layer_possible_link_unobs[i_lyr]))
-                score_select = sorted(score, key = lambda x: x[2], reverse=True)[:n_link_left]         
-                idx_link_select = [(ele[0], ele[1]) for ele in score_select]
+                # score = list(self.eskin(self.layer_possible_link_unobs[i_lyr]))
+                # score_select = sorted(score, key = lambda x: x[2], reverse=True)[:n_link_left]         
+                # idx_link_select = [(ele[0], ele[1]) for ele in score_select]
                 # idx_link_select = []
+                # food
+                # print('------ layer_possible_link_unobs[i_lyr]: ', type(self.layer_possible_link_unobs[i_lyr]))
+                idx_link_select = sample(self.layer_possible_link_unobs[i_lyr].tolist(), n_link_left)
+                idx_link_select = [(ele[0], ele[1]) for ele in idx_link_select]
                 if len(idx_link_select) >= 1:
                     # print('---Using eskin: ', len(idx_link_select))
                     idx_link_select = np.array(idx_link_select).T
@@ -619,11 +631,12 @@ class Reconstruct:
             print('------ # of predicted links in {} layer: {}'.\
                   format(i_lyr, (adj_pred_arr_EM[i_lyr]==1).sum())) 
 
-
+        adj_pred_arr_EM_add = self.update_EM_add()
+        
         print('\n--- Estimation based on similarity done\n')
         adj_pred_arr_simil = self.pred_adj_simil()
 
-        self.adj_pred_arr_list = [adj_pred_arr_EM] + adj_pred_arr_simil       
+        self.adj_pred_arr_list = [adj_pred_arr_EM] + [adj_pred_arr_EM_add] + adj_pred_arr_simil       
         # self.adj_pred_arr_list = adj_pred_arr_simil + [adj_pred_arr_EM]
 
                 
@@ -820,9 +833,8 @@ class Plots:
         plt.savefig('../output/imbl_metrics_{}layers_{}nodes.pdf'.format(n_layer, n_node_total))
         plt.show()                  
     
-
 def load_data(path):
-    link_df = pd.read_excel(path)
+    link_df = pd.read_csv(path)
     relation_list = link_df['Relation'].unique().tolist()
     layer_link_list = []
     for idx, ele in enumerate(relation_list):
@@ -838,7 +850,6 @@ def get_layer_node_list(layer_link_list, n_layer, n_node_total):
     # node in the aggregate net but not a layer
     layer_virt_node = [list(node_set_agg.difference(ele)) for ele in layer_node]
     return layer_real_node, layer_virt_node
-
 
 @numba.njit
 def get_permuts_half_numba(vec: np.ndarray):
@@ -888,7 +899,7 @@ def single_run(i_frac):  #, layer_link_list, n_node_total):
         real_virt_node_obs = [real_node_obs[i_lyr] + layer_virt_node[i_lyr] \
                         for i_lyr in range(n_layer)]
         [ele.sort() for ele in real_virt_node_obs] 
-        reconst = Reconstruct(layer_link_list=layer_link_list, node_attri_df=node_attri_df,
+        reconst = Reconstruct(layer_link_list=layer_link_list, node_attr_df=node_attr_df,
                               real_virt_node_obs=real_virt_node_obs, real_node_obs=real_node_obs,
                               layer_real_node=layer_real_node,
                               # net_layer_list=net_layer_list,
@@ -976,42 +987,45 @@ def run_plot():
 # n_node_total, n_layer = 30, 2
 
 net_type = 'drug'
-# n_node_total, n_layer = 2114, 2
-n_node_total, n_layer = 2196, 4
+n_node_total, n_layer = 2114, 2
+# n_node_total, n_layer = 2196, 4
 # n_node_total, n_layer = 2139, 3
 # load each layer (a nx class object)
 # with open('../data/drug_net_layer_list.pkl', 'rb') as f:
 #     net_layer_list = load(f)
     
 net_name = '{}_net_{}layers_{}nodes'.format(net_type, n_layer, n_node_total)
-layer_link_list = load_data('../data/{}.xlsx'.format(net_name))
+layer_link_list = load_data('../data/{}.csv'.format(net_name))
 
 if net_type == 'drug':
-    node_attri_df = pd.read_excel('../data/drug_net_attri_{}layers_{}nodes.xlsx'. \
+    node_attr_df = pd.read_csv('../data/drug_net_attr_{}layers_{}nodes.csv'. \
                                   format(n_layer, n_node_total))
-    node_attr_dict = node_attri_df.set_index('Node_ID').to_dict('index')
+    node_attr_df = node_attr_df[['Node_ID', 'Gender', 'Drug_Activity', 'Recode_Level', 'Drug_Type',
+                                   'Group_Membership_Type', 'Group_Membership_Code']]    
+    node_attr_dict = node_attr_df.set_index('Node_ID').to_dict('index')
+    node_attr_df.drop(['Node_ID'], axis=1)
 else:
-    node_attri_df, node_attr_dict = None, None
+    node_attr_df, node_attr_dict = None, None
 layer_real_node, layer_virt_node = get_layer_node_list(layer_link_list, n_layer, n_node_total)
 
 # layer_list_name = '{}_net_layer_list_{}layers_{}nodes'.format(net_type, n_layer, n_node_total)
 
-# frac_list = [0, 0.9, 0.95] 
+# frac_list = [0.9] 
 # frac_list = [round(0.1*i, 2) for i in range(0, 10)] + [0.95]
-# frac_list = [0, 0.1] + [round(0.2*i,1) for i in range(1, 5)] + [0.9] # [0.9, 0.95]
+frac_list = [0, 0.1] + [round(0.2*i,1) for i in range(1, 5)] + [0.9] # [0.9, 0.95]
 # frac_list = [round(0.2*i,1) for i in range(5)] + [0.9]
-frac_list = [0.2, 0.4, 0.6, 0.8]
+# frac_list = [0.4]
 n_real_node = [len(layer_real_node[i]) for i in range(n_layer)]
 n_real_node_obs = [[int(frac*n_real_node[i]) for i in range(n_layer)] for frac in frac_list]     
 
 # metric_list: ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
 metric_list = ['Recall', 'Precision', 'AUC-PR', 'G-mean', 'MCC', 'Recall', 'Precision',
                'TN', 'FP', 'FN', 'TP']
-model_list = ['EM'] + ['JC', 'Eskin', 'RM']  #, 'PA', 'CN', 'AA']
+model_list = ['EM', 'EM+'] + ['JC', 'Eskin', 'RM']  #, 'PA', 'CN', 'AA']
 n_metric = len(metric_list)
 n_model = len(model_list)
 n_frac = len(frac_list)
-n_rep = 5
+n_rep = 1
 
 # foo
 # cd c:\code\illicit_net_resil\src
@@ -1106,8 +1120,8 @@ if __name__ == '__main__':
 # def main_toy(): 
     
     # # import data
-    # path = '../data/toy_net/layer_links_3_layer.xlsx'
-    # layer_df_list = [pd.read_excel(path, sheet_name='layer_{}'.format(i)) for i in [1,2,3]]
+    # path = '../data/toy_net/layer_links_3_layer.csv'
+    # layer_df_list = [pd.read_csv(path, sheet_name='layer_{}'.format(i)) for i in [1,2,3]]
     # layer_link_list = [ele.to_numpy() for ele in layer_df_list]
     
     # # initilize
@@ -1152,8 +1166,8 @@ if __name__ == '__main__':
 
 
 
-# path = '../data/toy_net/layer_links_3_layer.xlsx'
-# layer_df_list = [pd.read_excel(path, sheet_name='layer_{}'.format(i)) for i in [1,2,3]]
+# path = '../data/toy_net/layer_links_3_layer.csv'
+# layer_df_list = [pd.read_csv(path, sheet_name='layer_{}'.format(i)) for i in [1,2,3]]
 # layer_link_list = [ele.to_numpy() for ele in layer_df_list]
 
 # # initilize
