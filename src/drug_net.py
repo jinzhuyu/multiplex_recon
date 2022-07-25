@@ -39,6 +39,7 @@ class DrugNet():
         self.merge_layer()
         self.select_layers()
         self.correct_node_id()
+        self.put_small_id_to_start()
         self.rename_col()
         self.select_attr()
         
@@ -79,6 +80,8 @@ class DrugNet():
         self.link_df_select = self.link_df.loc[self.link_df['Type_relation'].isin(self.layer_selected_list)]
     
     def correct_node_id(self):
+        '''correct node id because some ids are skipped 
+        '''
         link_df_temp = deepcopy(self.link_df_select)
         # let id start from 0
         node_id_min = min(list(link_df_temp.loc[:,['Actor_A', 'Actor_B']].min()))
@@ -105,7 +108,13 @@ class DrugNet():
         self.link_df = link_df_temp_new
         
         self.attr_df = self.attr_df_orig[~self.attr_df_orig['Actor_ID'].isin(node_id_missed)].reset_index() 
-        self.attr_df['Actor_ID'] = pd.Series(list(range(len(self.attr_df. index))), index=self.attr_df.index)     
+        self.attr_df['Actor_ID'] = pd.Series(list(range(len(self.attr_df. index))), index=self.attr_df.index)
+        
+    def put_small_id_to_start(self):
+        small_ids = self.link_df[['Actor_A', 'Actor_B']].min(axis=1) 
+        large_ids = self.link_df[['Actor_A', 'Actor_B']].max(axis=1) 
+        self.link_df['Actor_A'] = small_ids
+        self.link_df['Actor_B'] = large_ids
         
     def rename_col(self):
         self.link_df.rename(columns={'Actor_A': 'From', 'Actor_B': 'To', 'Type_relation': 'Relation'} , 
