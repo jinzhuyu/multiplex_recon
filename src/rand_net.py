@@ -4,6 +4,7 @@ import networkx as nx
 from itertools import combinations, groupby
 import random
 import pandas as pd
+import pickle
 
 def gen_single_rand_net(n, p):
     """
@@ -37,18 +38,30 @@ def gen_multiplex(n_layer, n_node, p_list):
     layer_link_list = [x for sub in layer_link_list for x in sub]    
     return layer_link_list
 
+def get_layer(n_layer, n_node, layer_link_list):
+    G_layer_list = []
+    for i in range(n_layer):
+        G_sub = nx.Graph()
+        lyr_id = 'L{}'.format(i+1)
+        selected_edges = [(ele[0], ele[1]) for ele in layer_link_list if ele[2]==lyr_id ]
+        G_sub.add_edges_from(selected_edges)
+        G_layer_list.append(G_sub)
+
+    with open('../data/rand_net_layer_list_{}layers_{}nodes.pkl'.format(n_layer, n_node), 'wb') as f:
+        pickle.dump(G_layer_list, f) 
 # TODO: remove nodes and associated links in some layers to model real dark networks
 
 def main():
-    n_node_list = [30, 50, 100]
+    n_node_list = [50, 100]
     n_layer_list = [2, 3, 4]        
-    link_prob = [0.15, 0.1, 0.08, 0.05, 0.05]
+    link_prob = [0.05, 0.03, 0.02, 0.02, 0.02]
     for n_node in n_node_list:
         for n_layer in n_layer_list:
             layer_link_list = gen_multiplex(n_layer, n_node, link_prob[:n_layer])
+            get_layer(n_layer, n_node, layer_link_list)
             link_df = pd.DataFrame(layer_link_list, columns=['From', 'To', 'Relation'])
             link_df.to_excel("../data/rand_net_{}layers_{}nodes.xlsx".format(n_layer, n_node),
-                             index=False) 
+                              index=False) 
 
 if __name__ == '__main__':
     main()

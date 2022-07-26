@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from itertools import permutations
-# import numba
+import networkx as nx
 
 class plotfuncs:
     def format_fig(size_scale=1):
@@ -28,7 +28,7 @@ class plotfuncs:
         plt.rcParams['axes.labelpad'] = 3.5 # x y labels to figure
         plt.rc('axes', titlesize=MEDIUM, labelsize=MEDIUM, linewidth=lw_small)    # fontsize of the axes title, the x and y labels
         plt.rcParams['xtick.major.width'] = lw_small
-        plt.rcParams['xtick.minor.width'] = lw_small       
+        plt.rcParams['ytick.minor.width'] = lw_small       
         
         plt.rcParams['ytick.right'] = False
         plt.rcParams['xtick.top'] = False
@@ -189,7 +189,7 @@ def sample_snow_ball(G,nodes,f=0.1):
 
     while True:
         seed_node = np.random.choice(nodes,size=1)[0]
-        G_observed=nx.create_empty_copy(G)
+        G_observed = nx.create_empty_copy(G)
         visited=set()
 
         members = [seed_node]
@@ -215,11 +215,8 @@ def sample_snow_ball(G,nodes,f=0.1):
                     return G_observed
     return G_observed
 
-def main():
-    pass
-
 if __name__ == '__main__':
-    main() 
+    pass 
 else:             
     plotfuncs.format_fig()
     linestyles = plotfuncs.get_linestyles()
