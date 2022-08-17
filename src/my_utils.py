@@ -102,6 +102,13 @@ def get_permuts_half(a_list):
     
     return permuts_half
 
+def get_largest_idx(array, n):
+    """Returns the n largest indices from a numpy array."""
+    flat = array.flatten()
+    indices = np.argpartition(flat, -n)[-n:]
+    indices = indices[np.argsort(-flat[indices])]
+    return np.unravel_index(indices, array.shape)
+
 # @numba.njit
 # def get_permuts_half_numba(vec: np.ndarray):
 #     k, size = 0, vec.size
