@@ -22,8 +22,9 @@ import numba
 
 # metrics
 from sklearn.metrics import auc, confusion_matrix
-from sklearn.metrics import precision_score, recall_score, precision_recall_curve, matthews_corrcoef
-from sklearn.metrics import f1_score #balanced_accuracy_score, accuracy_score
+from sklearn.metrics import precision_score, recall_score, precision_recall_curve 
+from sklearn.metrics import matthews_corrcoef, accuracy_score
+# from sklearn.metrics import f1_score #balanced_accuracy_score 
 # from sklearn.metrics.cluster import fowlkes_mallows_score # geometric mean (G-mean)
 from imblearn.metrics import geometric_mean_score
 # conda install -c conda-forge imbalanced-learn
@@ -34,7 +35,7 @@ from imblearn.metrics import geometric_mean_score
 # conda install -c conda-forge cvxpy
 # pip install matrix-completion
 
-from my_utils import plotfuncs, npprint, get_largest_idx
+from my_utils import plotfuncs, npprint 
 
 # from stellargraph import StellarGraph
 # from stellargraph.data import UnsupervisedSampler
@@ -46,12 +47,14 @@ from my_utils import plotfuncs, npprint, get_largest_idx
 
 
 
-
-
 '''
-# TODO: how many iterations are required?
-# TODO: impact of link density and other structural features over different synthetic and real networks
-    Numerical analysis and empirical formula
+# TODO: provide the complte algorithm
+        prove and showconvergence
+        time complexity
+# TODO: what kind of observed part of networks gives the best reconstruction accuracy?
+        theoretical analysis using entropy
+        numerical analysis and empirical formula
+            the impact of link density and other structural features over different synthetic and real networks
 # predictive accuracy measured by higher-order effects / dynamical processes on networks
 
 # import sys
@@ -66,13 +69,7 @@ from my_utils import plotfuncs, npprint, get_largest_idx
     #: use other metric for tolorance
     #: use numpy array instead of nested list in cal_link_prob deg and PON_list
 
-TODO: 1. learn the aggregate topology between every two layers first?
-       2. given aggregate topology, find a way to update probability of a link when the prob of link in a layer is below 0.5 
-           as number of layers increases using other link prediciton method?
-           (Adamic adar and preferential attachment(but covert net's hubs are small)?)
-TODO: 1. why is recall declining. tp / (tp + fn)
-      2. PR curve similairty-based models should not have 0.5 AUC-PR. 
-                                                    
+TODO: why is recall declining. tp / (tp + fn)                                                   
 TODO: reduce false negative based on EM: 
     when agg=1, (1) no other layers link prob > 0.5, p_link_other = p_link_other / sum(p_link_other)
                 (2) some layer link prob > 0.5,
@@ -190,6 +187,7 @@ class Reconstruct:
     def get_adj_obs(self, adj_pred_arr):
         '''get the observed adj mat from observed links
         '''
+        tri_up_idx = np.triu_indices(self.n_node_total, k=1)
         for i_lyr in range(self.n_layer):
             mask = self.obs_link_mask_list[i_lyr]
             if mask:  # not empty
@@ -197,12 +195,10 @@ class Reconstruct:
                 # print('------ # of actual links observed in {} layer: {}'.\
                 #       format(i_lyr, (adj_pred_arr[i_lyr]==1).sum()))
                 # print('--------- # of possible links among observed nodes by len(mask[0]): ', len(mask[0]))
-                tri_up_idx = np.triu_indices(self.n_node_total, k=1)
                 adj_pred_arr[i_lyr][tri_up_idx[::-1]] = adj_pred_arr[i_lyr][tri_up_idx]
         return adj_pred_arr
     
-    # foobar
-    #  should the initial adj_pred_arr = np.ones??? The FPs are very high
+    #TODO: should the initial adj_pred_arr = np.ones??? The FPs are very high
 
     def get_agg_adj_obs(self):
         '''get the aggregate adj mat using the OR agggregation
@@ -320,17 +316,20 @@ class Reconstruct:
         self.agg_adj[self.agg_adj>1] = 1
         
         # update the degree sequence of aggregate adj
-        # self.agg_deg_seq = np.sum(self.agg_adj, axis=1)
+        # this can be skipped
+        self.agg_deg_seq = np.sum(self.agg_adj, axis=1)
         # update aggregate adj using the degree sequence
-        # self.agg_adj = self.agg_deg_seq[:, None]*self.agg_deg_seq[:].T / (sum(self.agg_deg_seq) - 1)          
-        # rectify agg adj entries where associated links are observed in any layer       
+        self.agg_adj = self.agg_deg_seq[:, None]*self.agg_deg_seq[:].T / (sum(self.agg_deg_seq) - 1)          
         
-        # this seems to be the reason why the performance improves
+        # rectify agg adj entries where associated links are observed in any layer       
+        # this seems to be the major reason behind performance improvement
         for i_lyr in range(self.n_layer):
             mask = self.obs_link_mask_list[i_lyr]
             self.agg_adj[mask] = 1 - np.prod(1 - self.adj_true_arr, axis=0)[mask]     
         self.agg_adj[self.agg_adj<0] = 0 
         self.agg_adj[self.agg_adj>1] = 1
+        
+        # print('\n------ self.agg_adj: ', self.agg_adj)
     
     def cal_link_prob_deg(self):
         ''' calculate link probability between two nodes using their degrees (configuration model)
@@ -347,12 +346,17 @@ class Reconstruct:
         
         agg_link_prob_3d[agg_link_prob_3d==0] = np.nan  # avoid "Runtime error: divided by 0"
         self.adj_pred_arr = self.agg_adj_3d * self.sgl_link_prob_3d / agg_link_prob_3d
+        # self.adj_pred_arr = self.sgl_link_prob_3d
         self.adj_pred_arr = np.nan_to_num(self.adj_pred_arr) 
+        
+        ratio = np.nan_to_num(self.agg_adj_3d * self.sgl_link_prob_3d / agg_link_prob_3d)
+        print('\n------\nagg_adj_3d / agg_link_prob_3d ', ratio[ratio >0] )
         
         self.adj_pred_arr[self.adj_pred_arr<0] = 0 
         self.adj_pred_arr[self.adj_pred_arr>1] = 1
     
     def cal_link_prob_PON(self):
+        
         '''update link probability using the set of observed nodes in each layer
         '''
         self.adj_pred_arr = self.get_adj_obs(self.adj_pred_arr)        
@@ -364,7 +368,7 @@ class Reconstruct:
             
         for lyr_pair in self.lyr_pair_list:
             i_curr, i_othr = lyr_pair[0], lyr_pair[1]
-            # if link is present in the aggregate network
+            # if a link is present in the aggregate network
                 # if link is present in current layer and link is not between observed nodes
             mask_1 = self.adj_pred_arr[i_curr, :, :] == 1 & \
                      np.logical_not(np.isin(self.adj_pred_arr[i_othr, :, :], [0, 1]))
@@ -377,10 +381,22 @@ class Reconstruct:
                      np.logical_not(np.isin(self.adj_pred_arr[i_othr, :, :], [0, 1])) 
             self.adj_pred_arr[i_othr, mask_0] = self.agg_adj[mask_0] * self.sgl_link_prob_3d[i_othr, mask_0]/ \
                                                 agg_link_prob[mask_0]
+            # self.adj_pred_arr[i_othr, mask_0] = self.sgl_link_prob_3d[i_othr, mask_0]
             self.adj_pred_arr[i_othr, mask_0] = np.nan_to_num(self.adj_pred_arr[i_othr, mask_0])
+            
+            ratio = np.nan_to_num(self.agg_adj[mask_0] / agg_link_prob[mask_0])
+            print('\n------\nagg_adj_3d[mask_0] / agg_link_prob_3d[mask_0] ', ratio[ratio>0])
+                  
+                  
         self.adj_pred_arr[self.adj_pred_arr<0] = 0 
         self.adj_pred_arr[self.adj_pred_arr>1] = 1
-                        
+
+        
+    # def cal_cond_entropy(self):
+    #     joint_post =     # p(Z, X|Theta)
+    #     margin_post =     # p(X|Theta)
+    #     self.cond_entropy = - joint_post * np.log2(joint_post / margin_post)
+                 
             # mask_1 = self.agg_adj_3d == 1 & self.adj_pred_arr[self.adj_pred_arr>1] = 1
             
     # def cal_link_prob_MAA(self):
@@ -440,17 +456,22 @@ class Reconstruct:
         self.deg_seq_last_arr = np.zeros((self.n_layer, self.n_node_total))
         self.adj_pred_arr_last = np.zeros((self.n_layer, self.n_node_total, self.n_node_total))
         self.mae_link_prob = []
-        for iter in range(self.itermax):                                       
+        for iter in range(self.itermax):
+                                               
             self.deg_sum_arr = np.sum(self.deg_seq_arr, axis=1) #[np.sum(ele) for ele in self.deg_seq_list]    
+            
             #calculate link prob by configuration model
             self.cal_link_prob_deg()
             # update link prob using partial node sets and all links among observed nodes
             self.cal_link_prob_PON()  
-            #update network model parameters
+            
+            #update network model parameter: degree sequence
             self.deg_seq_arr = np.sum(self.adj_pred_arr, axis=1)
+            
             # update aggregate adj
             if is_update_agg_topol:
                 self.update_agg_adj()
+
             # check convergence of degree sequence
             mae_link_prob = np.abs(self.adj_pred_arr_last - self.adj_pred_arr)
             self.mae_link_prob.append(np.mean(mae_link_prob))
@@ -543,281 +564,6 @@ class Reconstruct:
             adj_pred_nm_nb.append(adj_pred_temp)
             print('------ count of 1 in the predicted mat: ', np.count_nonzero(adj_pred_temp == 1))
         return adj_pred_nm_nb
-    # similarity measure for categorical data
-        # ref.: https://epubs.siam.org/doi/epdf/10.1137/1.9781611972788.22
-    def _apply_prediction(self, func, ebunch):
-        '''ebunch: list of tuple containing a pair of nodes. E.g., ebunch = [(1,2), (2,3)] 
-        '''
-        return ((u, v, func(u, v)) for [u, v] in ebunch)
-    
-    # def jaccard(self, ebunch):
-    #     def predict(u, v):
-    #         u_attr, v_attr = node_attr_df.iloc[u, 1:], node_attr_df.iloc[v, 1:]
-    #         intersec_size = sum(u_attr==v_attr)
-    #         union_size = 2 * u_attr.size - intersec_size
-    #         if union_size == 0:
-    #             return 0
-    #         else:
-    #             return  intersec_size / union_size
-    #     return self._apply_prediction(predict, ebunch)
-
-    def overlap(self, ebunch):
-        def predict(u, v):
-            u_attr, v_attr = self.node_attr_df.iloc[u, 1:], self.node_attr_df.iloc[v, 1:]
-            intersec_size = sum(u_attr==v_attr)
-            return  intersec_size / u_attr.size
-        return self._apply_prediction(predict, ebunch)
-
-    def eskin(self, ebunch):
-        n_unique = self.node_attr_df.nunique()[1:].to_numpy()
-        sim_score = n_unique**2 / (n_unique**2 + 2)
-        def predict(u, v):
-            sim_score[self.node_attr_df.iloc[u, 1:]==self.node_attr_df.iloc[v, 1:]] = 1
-            return  np.sum(sim_score) / (self.node_attr_df.shape[1])
-        return self._apply_prediction(predict, ebunch)
-
-    def IOF(self, ebunch):
-        freq_list = []
-        for col in self.node_attr_df.columns[1:]:
-            freq_list.append(self.node_attr_df[col].value_counts().to_dict())              
-        def predict(u, v):
-            u_attr, v_attr = self.node_attr_df.iloc[u, 1:], self.node_attr_df.iloc[v, 1:]
-            n_attr = self.node_attr_df.shape[1]
-            sim_score = np.zeros(n_attr)
-            for k in range(n_attr):
-                sim_score[k] = 1 / (1 + np.log(freq_list[k][u_attr[k]]) * \
-                                    np.log(freq_list[k][v_attr[k]]) )
-            sim_score[u_attr==v_attr] = 1
-            return  np.sum(sim_score) / n_attr
-        return self._apply_prediction(predict, ebunch)
-
-    def OF(self, ebunch):
-        freq_list = []
-        for col in self.node_attr_df.columns[1:]:
-            freq_list.append(self.node_attr_df[col].value_counts().to_dict())              
-        def predict(u, v):
-            u_attr, v_attr = self.node_attr_df.iloc[u, 1:], self.node_attr_df.iloc[v, 1:]
-            n_attr = self.node_attr_df.shape[1]
-            n_data = self.node_attr_df.shape[0]
-            sim_score = [1 / ( 1 + np.log(n_data/freq_list[k][u_attr[k]])* \
-                               np.log(n_data/freq_list[k][v_attr[k]]) ) 
-                         for k in range(n_attr)]
-            sim_score[u_attr==v_attr] = 1
-            return  np.sum(sim_score) / n_attr
-        return self._apply_prediction(predict, ebunch)
-
-    def Goodall4(self, ebunch): 
-        freq_list = []
-        for col in self.node_attr_df.columns[1:]:
-            freq_list.append(self.node_attr_df[col].value_counts().to_dict())          
-        def predict(u, v):
-            u_attr, v_attr = self.node_attr_df.iloc[u, 1:], self.node_attr_df.iloc[v, 1:]
-            n_attr = self.node_attr_df.shape[1]
-            n_data = self.node_attr_df.shape[0]
-            sim_score = [freq_list[k][u_attr[k]]*(freq_list[k][u_attr[k]] -1)/ \
-                         (n_data*(n_data-1)) if u_attr[k] == v_attr[k] else 0 for k in range(n_attr)]
-            return  np.sum(sim_score) / n_attr
-        return self._apply_prediction(predict, ebunch)
-    
-    def pred_adj_simil(self):
-        '''predict links using similarity index 
-        '''
-        # layer_link_unobs_list = self.layer_possib_link_unobs
-        # for i_lyr in range(self.n_layer):
-        #     # Convert it into a 1D array and find the indices in the 1D array
-        #     index_value = self.layer_adj_arr[i_lyr, :,:]
-        #     idx_1d = index_value.flatten().argsort()[-n_link_unobs:]   
-        #     # convert the idx_1d back into indices arrays for each dimension
-        #     x_idx, y_idx = np.unravel_index(idx_1d, index_value.shape)      
-        #     # change the value of adj matrix accordingly
-        #     self.layer_adj_arr[i_lyr, (x_idx, y_idx)] = 1
-        print('\n--- Estimation based on similarity')
-        # get partially observed adj
-        # links among observed nodes are observed
-        adj_pred_arr = np.zeros((self.n_layer, self.n_node_total, self.n_node_total))
-        adj_pred_arr = self.get_adj_obs(adj_pred_arr)
-        adj_pred_arr_simil = []
-        # self.simil_index_list = ['jaccard_coefficient', 'preferential_attachment',
-                                 # 'common_neighbor_centrality', 'adamic_adar_index']
-        # for simil_index in self.simil_index_list:
-        #     adj_pred_arr_temp = adj_pred_arr
-        #     for i_lyr in range(self.n_layer):
-        #         G_temp = nx.from_numpy_matrix(np.ceil(adj_pred_arr[i_lyr]))
-        #         # TODO: use link probability as weight
-        #         # link_unobs = self.layer_possib_link_unobs[i_lyr] 
-        #         n_link_left = int(np.sum(self.agg_adj==1) / 2) - self.n_link_obs[i_lyr]   # obtain from aggregate network topology: where aggregate adj ==1 - observed links among nodes 
-                
-        #         exec('score = list(nx.{}(G_temp, self.layer_possib_link_unobs[i_lyr]))'.format(simil_index), globals() )
-        #         # score = list(nx.adamic_adar_index(G_temp, self.layer_possib_link_unobs[i_lyr]))
-        #         # print(score)
-        #         score_select = sorted(score, key = lambda x: x[2], reverse=True)[:n_link_left]         
-        #         idx_link_select = [(ele[0], ele[1]) for ele in score_select]
-        #         if len(idx_link_select) >= 1:
-        #             idx_link_select = np.array(idx_link_select).T
-        #             adj_pred_arr_temp[i_lyr, (idx_link_select[0], idx_link_select[1])] = 1
-        #     adj_pred_arr_simil.append(adj_pred_arr_temp)
-        
-        # TODO: relax the assumption on the aggregate network
-        # 
-        G_temp_list = []
-        for i_lyr in range(self.n_layer):
-            G_temp = nx.from_numpy_matrix(np.ceil(adj_pred_arr[i_lyr]))
-            G_temp_list.append(G_temp)
-            
-        print('\n------ Jaccard')
-        adj_pred_arr_temp = deepcopy(adj_pred_arr)
-        for i_lyr in range(self.n_layer):
-            G_temp = G_temp_list[i_lyr]
-            
-            if self.n_link_left[i_lyr] > 0:
-                n_link_left = self.n_link_left[i_lyr]
-    
-                print('------ layer', i_lyr)
-                print('--------- total # of links (halved)', self.n_link_total_by_layer[i_lyr])
-                # print('--------- total # of links obs (halved)', self.n_link_obs[i_lyr])
-                print('--------- n_link_left (halved)', n_link_left)
-                
-                score = list(nx.jaccard_coefficient(G_temp, self.layer_possib_link_unobs[i_lyr]))
-                score_select = sorted(score, key = lambda x: x[2], reverse=True)[:n_link_left]         
-                idx_link_select = [(ele[0], ele[1]) for ele in score_select]
-                if len(idx_link_select) >= 1:
-                    # print('-------- Using jaccard. links selected count ', len(idx_link_select))
-                    # print('------ Using jaccard. links selected: ', idx_link_select)
-                    idx_link_select = np.array(idx_link_select).T
-                    adj_pred_arr_temp[i_lyr][(idx_link_select[0], idx_link_select[1])] = 1
-                    # print('------ len(idx_link_select[0])',
-                    #       adj_pred_arr_temp[i_lyr][(idx_link_select[0], idx_link_select[1])].shape)
-                    print('--------- # of predicted links after Jaccard: ',
-                          (adj_pred_arr_temp[i_lyr][(idx_link_select[0], idx_link_select[1])]==1).sum())
-                    print('--------- # of predicted links before Jaccard by adj_pred_arr[i_lyr]==1: ', (adj_pred_arr[i_lyr]==1).sum())
-                else:
-                    print('---------- No new links generated using jaccard')
-        adj_pred_arr_simil.append(adj_pred_arr_temp)
-        # ['JC', 'CN', 'AA', 'RM']
-
-        # print('\n--- resource_allocation_index')
-        # adj_pred_arr_temp = deepcopy(adj_pred_arr)
-        # for i_lyr in range(self.n_layer):
-        #     G_temp = G_temp_list[i_lyr]
-            
-        #     if self.n_link_left[i_lyr] > 0:
-        #         n_link_left = self.n_link_left[i_lyr]
-    
-        #         print('------ layer', i_lyr)
-        #         print('--------- total # of links (halved)', self.n_link_total_by_layer[i_lyr])
-        #         # print('--------- total # of links obs (halved)', self.n_link_obs[i_lyr])
-        #         print('--------- n_link_left (halved)', n_link_left)
-                
-        #         score = list(nx.resource_allocation_index(G_temp, self.layer_possib_link_unobs[i_lyr]))
-        #         score_select = sorted(score, key = lambda x: x[2], reverse=True)[:n_link_left]         
-        #         idx_link_select = [(ele[0], ele[1]) for ele in score_select]
-        #         if len(idx_link_select) >= 1:
-        #             # print('-------- Using jaccard. links selected count ', len(idx_link_select))
-        #             # print('------ Using jaccard. links selected: ', idx_link_select)
-        #             idx_link_select = np.array(idx_link_select).T
-        #             adj_pred_arr_temp[i_lyr][(idx_link_select[0], idx_link_select[1])] = 1
-        #             # print('------ len(idx_link_select[0])',
-        #             #       adj_pred_arr_temp[i_lyr][(idx_link_select[0], idx_link_select[1])].shape)
-        #             print('--------- # of predicted links after resource_allocation_index: ',
-        #                   (adj_pred_arr_temp[i_lyr][(idx_link_select[0], idx_link_select[1])]==1).sum())
-        #             print('--------- # of predicted links before Jaccard by adj_pred_arr[i_lyr]==1: ',
-        #                   (adj_pred_arr[i_lyr]==1).sum())
-        #         else:
-        #             print('---------- No new links generated using jaccard')
-        # adj_pred_arr_simil.append(adj_pred_arr_temp)
-
-        print('\n------ adamic_adar_index')
-        adj_pred_arr_temp = deepcopy(adj_pred_arr)
-        for i_lyr in range(self.n_layer):
-            G_temp = G_temp_list[i_lyr]
-            
-            if self.n_link_left[i_lyr] > 0:
-                n_link_left = self.n_link_left[i_lyr]
-    
-                print('------ layer', i_lyr)
-                print('--------- total # of links (halved)', self.n_link_total_by_layer[i_lyr])
-                # print('--------- total # of links obs (halved)', self.n_link_obs[i_lyr])
-                print('--------- n_link_left (halved)', n_link_left)
-                
-                score = list(nx.adamic_adar_index(G_temp, self.layer_possib_link_unobs[i_lyr]))
-                score_select = sorted(score, key = lambda x: x[2], reverse=True)[:n_link_left]         
-                idx_link_select = [(ele[0], ele[1]) for ele in score_select]
-                if len(idx_link_select) >= 1:
-                    # print('-------- Using jaccard. links selected count ', len(idx_link_select))
-                    # print('------ Using jaccard. links selected: ', idx_link_select)
-                    idx_link_select = np.array(idx_link_select).T
-                    adj_pred_arr_temp[i_lyr][(idx_link_select[0], idx_link_select[1])] = 1
-                    # print('------ len(idx_link_select[0])',
-                    #       adj_pred_arr_temp[i_lyr][(idx_link_select[0], idx_link_select[1])].shape)
-                    print('--------- # of predicted links after adamic_adar_index: ',
-                          (adj_pred_arr_temp[i_lyr][(idx_link_select[0], idx_link_select[1])]==1).sum())
-                    print('--------- # of predicted links before Jaccard by adj_pred_arr[i_lyr]==1: ', (adj_pred_arr[i_lyr]==1).sum())
-                else:
-                    print('---------- No new links generated using jaccard')
-        adj_pred_arr_simil.append(adj_pred_arr_temp)
-
-        # print('\n--- preferential_attachment')
-        # adj_pred_arr_temp = deepcopy(adj_pred_arr)
-        # for i_lyr in range(self.n_layer):
-        #     G_temp = G_temp_list[i_lyr]
-            
-        #     if self.n_link_left[i_lyr] > 0:
-        #         n_link_left = self.n_link_left[i_lyr]
-    
-        #         print('------ layer', i_lyr)
-        #         print('--------- total # of links (halved)', self.n_link_total_by_layer[i_lyr])
-        #         # print('--------- total # of links obs (halved)', self.n_link_obs[i_lyr])
-        #         print('--------- n_link_left (halved)', n_link_left)
-                
-        #         score = list(nx.preferential_attachment(G_temp, self.layer_possib_link_unobs[i_lyr]))
-        #         score_select = sorted(score, key = lambda x: x[2], reverse=True)[:n_link_left]         
-        #         idx_link_select = [(ele[0], ele[1]) for ele in score_select]
-        #         if len(idx_link_select) >= 1:
-        #             # print('-------- Using jaccard. links selected count ', len(idx_link_select))
-        #             # print('------ Using jaccard. links selected: ', idx_link_select)
-        #             idx_link_select = np.array(idx_link_select).T
-        #             adj_pred_arr_temp[i_lyr][(idx_link_select[0], idx_link_select[1])] = 1
-        #             # print('------ len(idx_link_select[0])',
-        #             #       adj_pred_arr_temp[i_lyr][(idx_link_select[0], idx_link_select[1])].shape)
-        #             print('--------- # of predicted links after preferential_attachment: ',
-        #                   (adj_pred_arr_temp[i_lyr][(idx_link_select[0], idx_link_select[1])]==1).sum())
-        #             print('--------- # of predicted links before Jaccard by adj_pred_arr[i_lyr]==1: ', (adj_pred_arr[i_lyr]==1).sum())
-        #         else:
-        #             print('---------- No new links generated using jaccard')
-        # adj_pred_arr_simil.append(adj_pred_arr_temp) 
-        
-        
-        # print('--- Include node attributes')
-        # print('\n--- Eskin')
-        # adj_pred_arr_temp = deepcopy(adj_pred_arr)
-        # for i_lyr in range(self.n_layer):
-        #     if self.n_link_left[i_lyr] > 0:
-        #         n_link_left = self.n_link_left[i_lyr]        
-        #         score = list(self.eskin(self.layer_possib_link_unobs[i_lyr]))
-        #         score_select = sorted(score, key = lambda x: x[2], reverse=True)[:n_link_left]         
-        #         idx_link_select = [(ele[0], ele[1]) for ele in score_select]
-        #         # idx_link_select = sample(self.layer_possib_link_unobs[i_lyr].tolist(), n_link_left)
-        #         idx_link_select = [(ele[0], ele[1]) for ele in idx_link_select]
-        #         if len(idx_link_select) >= 1:
-        #             # print('---Using eskin: ', len(idx_link_select))
-        #             idx_link_select = np.array(idx_link_select).T
-        #             adj_pred_arr_temp[i_lyr][(idx_link_select[0], idx_link_select[1])] = 1
-        #             print('------ len(idx_link_select[0])', adj_pred_arr_temp[i_lyr][(idx_link_select[0], idx_link_select[1])].shape)
-        #             print('------ # of predicted links after Eskin: ',
-        #                   (adj_pred_arr_temp[i_lyr][(idx_link_select[0], idx_link_select[1])]==1).sum())
-        #             print('------ # of predicted links before Eskin by adj_pred_arr[i_lyr]==1: ',
-        #                   (adj_pred_arr[i_lyr]==1).sum())
-        #         else:
-        #             print('------- No new links generated using eskin')
-        # adj_pred_arr_simil.append(adj_pred_arr_temp)
-              
-        # # null model
-        # print('\n--- Random model')
-        # adj_pred_arr_temp = np.random.randint(0, 2, (self.n_layer, self.n_node_total, self.n_node_total))
-        # adj_pred_arr_temp = self.get_adj_obs(adj_pred_arr_temp)
-        # adj_pred_arr_simil.append(adj_pred_arr_temp)        
-        
-        return adj_pred_arr_simil
 
     def random_model(self):
         '''randomly select no of links left among the unobserved links
@@ -960,25 +706,26 @@ class Reconstruct:
         # print('\n--- Estimation based on similarity done\n')
         # adj_pred_arr_simil = self.pred_adj_simil()
         print('\n--- EM without updating aggregate adj at every iteration')
-        adj_pred_arr_EM_not_update_agg_adj = self.predict_adj_EM(
+        adj_pred_arr_EM_wo_agg_adj = self.predict_adj_EM(
             is_agg_topol_known=False, is_update_agg_topol=False)
+        mae_list_no_agg_adj = self.mae_link_prob
         # for i_lyr in range(self.n_layer):
         #     print('------ # of predicted links in {} layer: {}'.\
         #           format(i_lyr, (adj_pred_arr_EM[i_lyr]>0.5).sum())) 
 
         # adj_pred_arr_EM_add = self.update_EM_add()
         print('\n--- EM with updated aggregate adj at every iteration')
-        adj_pred_arr_EM_update_agg_adj = self.predict_adj_EM(
-            is_agg_topol_known=False, is_update_agg_topol=True) 
-        # print('\n\n------mae_link_prob: ', self.mae_link_prob)
+        adj_pred_arr_EM_wt_agg_adj = self.predict_adj_EM(
+            is_agg_topol_known=False, is_update_agg_topol=True)
+        # mae_list_with_agg_adj = self.mae_link_prob
         import matplotlib
         matplotlib.use('Agg')
-        plot_link_mae(self.mae_link_prob)
+        Plots.plot_link_mae(mae_list_no_agg_adj, self.mae_link_prob)
         # for i_lyr in range(self.n_layer):
         #     print('\n------ # of predicted links in {} layer: {}'.\
         #           format(i_lyr, (adj_pred_arr_EM_no_agg_adj[i_lyr]>0.5).sum()))         
                 
-        adj_pred_arr_simil = self.pred_adj_simil()
+        # adj_pred_arr_simil = self.pred_adj_simil()
         # print('\n--- Estimation based on neural networks\n')
         # adj_pred_arr_nn = self.rw_nn()
     
@@ -987,8 +734,7 @@ class Reconstruct:
         print('\n--- Done running all models')
 
         # self.adj_pred_arr_list = [adj_pred_arr_EM_add] + adj_pred_arr_simil + [adj_pred_arr_nn]   
-        self.adj_pred_arr_list = [adj_pred_arr_EM_update_agg_adj] + [adj_pred_arr_EM_not_update_agg_adj] + \
-            adj_pred_arr_simil + [adj_pred_arr_rm]               
+        self.adj_pred_arr_list = [adj_pred_arr_EM_wt_agg_adj] + [adj_pred_arr_EM_wo_agg_adj] + [adj_pred_arr_rm]               
                 
     def get_adj_true_unobs(self):
         adj_true_unobs_list = [[] for _ in range(self.n_layer)]
@@ -1022,13 +768,14 @@ class Reconstruct:
         # f1 = f1_score(self.adj_true_unobs, adj_pred_unobs)
         recall_val = recall_score(self.adj_true_unobs, adj_pred_unobs)
         precision_val = precision_score(self.adj_true_unobs, adj_pred_unobs)
+        accuracy_val = accuracy_score(self.adj_true_unobs, adj_pred_unobs)
         # b_acc = balanced_accuracy_score(self.adj_true_unobs, adj_pred_unobs)  #balanced_accuracy_score
         # metric_value = [recall, precision, auc_pr, gmean, mcc] #, f1] 
         tn, fp, fn, tp = confusion_matrix(self.adj_true_unobs, adj_pred_unobs, labels=[0, 1]).ravel()
         
         # print('\n------ auc_pr, gmean, mcc, recall_val, precision_val: ', auc_pr, gmean, mcc, recall_val, precision_val)
         
-        return [recall, precision, auc_pr, gmean, mcc, recall_val, precision_val, tn, fp, fn, tp]
+        return [recall, precision, auc_pr, gmean, mcc, recall_val, precision_val, accuracy_val, tn, fp, fn, tp]
     
     def get_metric_value(self):
         self.get_adj_true_unobs()
@@ -1073,15 +820,6 @@ class Reconstruct:
     #     '''
     #     pass                        
 
-def plot_link_mae(mae_list):
-    plt.figure(figsize=(5, 4), dpi=400)
-    plt.plot(range(len(mae_list)), mae_list)
-    plt.xlabel("Iteration")
-    plt.ylabel("Mean MAE")
-    plt.savefig('../output/link_prob_mae_{}layers_{}nodes.pdf'.format(n_layer, n_node_total))
-    plt.show()  
-
-
 class Plots:
     # class variables
     colors = ['tab:{}'.format(x) for x in ['red', 'blue', 'green', 'orange', 'purple', 'pink', 'brown','cyan','olive']]
@@ -1089,7 +827,17 @@ class Plots:
     lw = .9
     med_size = 7
     linestyles = plotfuncs.get_linestyles()          
- 
+    
+    def plot_link_mae(mae_list_no_agg_adj, mae_list_with_agg_adj):
+        plt.figure(figsize=(5, 4), dpi=400)
+        plt.plot(range(len(mae_list_no_agg_adj)), mae_list_no_agg_adj, label='Without agg. adj')
+        plt.plot(range(len(mae_list_with_agg_adj)), mae_list_with_agg_adj, label='With agg. adj')
+        plt.xlabel("Iteration")
+        plt.ylabel("Mean MAE")
+        plt.legend(loc='best')
+        plt.savefig('../output/{}_link_prob_mae_{}layers_{}nodes.pdf'.format(net_name, n_layer, n_node_total))
+        plt.show()  
+
     def get_mean_prc(x_mean, x_list, y_list):
         '''get the mean of precision (y) values at mean of recall (x)
            when # of x and y points are unequal over different repetitions
@@ -1125,13 +873,13 @@ class Plots:
         plt.ylabel(metric)
         plt.legend(loc="best", fontsize=11)
         # plt.xticks([0.2*i for i in range(5+1)])
-        plt.savefig('../output/{}layers_{}nodes_{}.pdf'.format(n_layer, n_node_total, metric))
+        plt.savefig('../output/{}_{}layers_{}nodes_{}.pdf'.format(net_name, n_layer, n_node_total, metric))
         plt.show() 
         
 
     def plot_each_metric(frac_list, metric_mean_by_frac, n_layer, n_node_total, metric_list, model_list):        
         first_metric_select = 2
-        last_metric_to_plot = 6
+        last_metric_to_plot = 7
         for i_mtc in range(first_metric_select, len(metric_list)):
             # print('\n------ metric_mean_by_model_frac[i_mtc]', np.array(metric_mean_by_model_frac[i_mtc-2]))
             print('\n')
@@ -1173,15 +921,17 @@ class Plots:
             # ax = plt.gca()
             # handles, labels = ax.get_legend_handles_labels()
             # ax.legend(reversed(handles), reversed(labels), title=r'$c$', loc='lower left', fontsize=14.5,)        
-            plt.savefig('../output/prc_frac{}_{}layers_{}nodes.pdf'.format(
-                frac_list[i_frac],n_layer, n_node_total))
+            plt.savefig('../output/{}_prc_frac{}_{}layers_{}nodes.pdf'.format(
+                net_name, frac_list[i_frac],n_layer, n_node_total))
             plt.show()
 
     def plot_other(frac_list, metric_mean_by_frac, n_layer, n_node_total):
         # metric_value_by_frac = metric_mean_by_frac[2:]
         first_score_metric = 2
         metric_mean_by_frac_select = metric_mean_by_frac[first_score_metric:]
-        metric_select = ['Recall', 'Precision', 'AUC-PR', 'G-mean', 'MCC', 'Recall', 'Precision']
+        metric_select = ['Recall', 'Precision',
+                         'AUC-PR', 'G-mean', 'MCC',
+                         'Recall', 'Precision', 'Accuracy']
         metric_select= metric_select[first_score_metric:]
         plotfuncs.format_fig(1.1)
         plt.figure(figsize=(5, 4), dpi=400)
@@ -1198,7 +948,7 @@ class Plots:
         plt.ylabel("Value of metric")
         plt.legend(loc="lower right", fontsize=13)
         # plt.xticks([0.2*i for i in range(5+1)])
-        plt.savefig('../output/imbl_metrics_{}layers_{}nodes.pdf'.format(n_layer, n_node_total))
+        plt.savefig('../output/{}_imbl_metrics_{}layers_{}nodes.pdf'.format(net_name, n_layer, n_node_total))
         plt.show()                  
     
 def load_data(path):
@@ -1272,7 +1022,7 @@ def single_run(i_frac):  #, layer_link_list, n_node_total):
                               layer_real_node=layer_real_node,
                               # net_layer_list=net_layer_list,
                               # layer_link_unobs_list=layer_link_unobs_list,
-                              n_node_total=n_node_total, itermax=itermax, err_tol=1e-3)    
+                              n_node_total=n_node_total, itermax=itermax, err_tol=1e-2)    
         reconst.main() 
         # t100 = time()
         # print('=== {} mins on this rep in total'.format( round( (t100-t000)/60, 3) ) ) 
@@ -1285,13 +1035,12 @@ def single_run(i_frac):  #, layer_link_list, n_node_total):
 
 def paral_run():
     n_cpu = mp.cpu_count()
-    if n_cpu == 8:
-        n_cpu -= 3
+    if n_cpu <= 8:
+        n_cpu -= int(n_cpu*0.5)
     else:
-        n_cpu = int(n_cpu*0.7)
+        n_cpu = int(n_cpu*0.6)
     
     # print('=== # of CPUs used: ', n_cpu)
-    # n_core = 1
     with mp.Pool(n_cpu) as pool:
         results = pool.map(single_run, range(n_frac))
     return results
@@ -1348,24 +1097,41 @@ def run_plot():
     Plots.plot_prc(frac_list, metric_mean_by_frac, n_layer, n_node_total, model_list)
 
 # import data
-# net_type = 'toy'
+# net_name = 'toy'
 # n_node_total, n_layer = 6, 2
 
-# net_type = 'rand'
+# net_name = 'rand'
 # n_node_total, n_layer = 30, 2
 
-net_type = 'drug'
-# n_node_total, n_layer = 2114, 2
-n_node_total, n_layer = 2196, 4
+net_name = 'drug'
+n_node_total, n_layer = 2114, 2
+# n_node_total, n_layer = 2196, 4
 # n_node_total, n_layer = 2139, 3
 # load each layer (a nx class object)
 # with open('../data/drug_net_layer_list.pkl', 'rb') as f:
 #     net_layer_list = load(f)
-    
-net_name = '{}_net_{}layers_{}nodes'.format(net_type, n_layer, n_node_total)
-layer_link_list = load_data('../data/{}.csv'.format(net_name))
 
-if net_type == 'drug':
+# net_name = 'mafia'
+# n_node_total, n_layer = 143, 2
+
+# net_name = 'london_transport'
+# n_node_total = 356
+# n_layer = 3
+# n_node_total = 318
+# n_layer = 2
+
+# net_name = 'embassybomb1'
+# n_node_total, n_layer = 22, 2
+
+# net_name = 'elegan'
+# n_node_total = 279
+# n_layer = 3
+
+   
+file_name = '{}_net_{}layers_{}nodes'.format(net_name, n_layer, n_node_total)
+layer_link_list = load_data('../data/{}.csv'.format(file_name))
+
+if net_name == 'drug':
     node_attr_df = pd.read_csv('../data/drug_net_attr_{}layers_{}nodes.csv'. \
                                   format(n_layer, n_node_total))
     node_attr_df = node_attr_df[['Node_ID', 'Gender', 'Drug_Activity', 'Recode_Level', 'Drug_Type',
@@ -1376,25 +1142,25 @@ else:
     node_attr_df, node_attr_dict = None, None
 layer_real_node, layer_virt_node = get_layer_node_list(layer_link_list, n_layer, n_node_total)
 
-# layer_list_name = '{}_net_layer_list_{}layers_{}nodes'.format(net_type, n_layer, n_node_total)
+# layer_list_name = '{}_net_layer_list_{}layers_{}nodes'.format(net_name, n_layer, n_node_total)
 
-frac_list = [0.1, 0.2, 0.4, 0.6, 0.8, 0.9] #[0.1, 0.4, 0.7, 0.95] 
-# frac_list = [0.05] + [round(0.1*i,1) for i in range(1, 10)] + [0.95]
-# frac_list = [0.1, 0.2, 0.4]
+# frac_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9] 
+frac_list = [0.1, 0.4, 0.7, 0.9] 
+# frac_list = [0.4, 0.9] 
+# frac_list = [0.4]
 n_real_node = [len(layer_real_node[i]) for i in range(n_layer)]
 n_real_node_obs = [[int(frac*n_real_node[i]) for i in range(n_layer)] for frac in frac_list]     
 
-# metric_list: ['fpr', 'tpr', 'auc', 'prec', 'recall','acc']
-metric_list = ['Recall', 'Precision', 'AUC-PR', 'G-mean', 'MCC', 'Recall', 'Precision',
+metric_list = ['Recall', 'Precision', 'AUC-PR', 'G-mean', 'MCC', 'Recall', 'Precision', 'Accuracy',
                'TN', 'FP', 'FN', 'TP']
 # model_list = ['DegEM'] + ['Jaccard', 'Resource Allocation', 'Adamic Adar', 'Prefer. Attachment',
 #                           'Eskin', 'Random Model', 'Random Walk']#, 'NN']   'CN']
-model_list = ['EM with agg. topol.'] + ['EM without agg. topol.'] + ['Jaccard', 'Adamic Adar', 'Random Model']
+model_list = ['EM with agg. topol.', 'EM without agg. topol.', 'Random model']
 n_metric = len(metric_list)
 n_model = len(model_list)
 n_frac = len(frac_list)
-n_rep = 10
-itermax = 20
+n_rep = 1
+itermax = 2
 # foo
 # cd c:\code\illicit_net_resil\src
 # python multi_net.py
@@ -1402,15 +1168,13 @@ itermax = 20
 
 # parellel processing
 if __name__ == '__main__': 
-
     import matplotlib
     matplotlib.use('Agg')
     t00 = time()
     run_plot()
-    print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) ) 
-    
+    print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) )     
     # precision: tp / (tp + fp)
-    # recall: tp / (tp + fn) = tp / P
+    # recall: tp / (tp + fn) = tp / P  # recall > precision since fn > fp
      
     # for i_fd in range(n_fold):   
     #     for i_frac in range(len(frac_list)):
@@ -1483,9 +1247,7 @@ if __name__ == '__main__':
 #     Plots.plot_roc(frac_list, fpr_list, tpr_list, auc_list)
 #     Plots.plot_other(frac_list, metric_value_by_frac)
 
-# if __name__ == '__main__': 
-#     run_plot()
- 
+
             
 # def main_toy(): 
     
@@ -1572,11 +1334,6 @@ if __name__ == '__main__':
 #     # print('reconst.metric_value', reconst.metric_value)
 #     return reconst.metric_value
 # # self = reconst
-
-# def get_result():
-#     with mp.Pool(mp.cpu_count()-3) as pool:
-#         results = pool.map(single_run, range(len(frac_list)))
-#     return results
 
 # def run_plot():
 #     results = get_result()
