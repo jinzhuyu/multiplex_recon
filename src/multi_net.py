@@ -391,11 +391,6 @@ class Reconstruct:
         self.adj_pred_arr[self.adj_pred_arr<0] = 0 
         self.adj_pred_arr[self.adj_pred_arr>1] = 1
 
-        
-    # def cal_cond_entropy(self):
-    #     joint_post =     # p(Z, X|Theta)
-    #     margin_post =     # p(X|Theta)
-    #     self.cond_entropy = - joint_post * np.log2(joint_post / margin_post)
                  
             # mask_1 = self.agg_adj_3d == 1 & self.adj_pred_arr[self.adj_pred_arr>1] = 1
             
@@ -577,129 +572,6 @@ class Reconstruct:
             mask_select = (link_unobs_mask[0][top_idx], link_unobs_mask[1][top_idx])
             adj_pred_arr[i_lyr][mask_select] = 1
         return adj_pred_arr
-
-    def get_G_layer_sg(self):
-        self.G_layer_sg_list = []
-        self.G_by_layer_sub_sg = []
-        self.node_ids_list_by_layer = []
-        for i_lyr in range(self.n_layer):
-            G_by_layer_nx = nx.from_edgelist(self.layer_link_list[i_lyr])
-            node_ids_list = sorted(list(G_by_layer_nx.nodes))
-            node_features = self.node_attr_df.reindex(node_ids_list)
-            self.node_ids_list_by_layer.append(node_ids_list)
-            self.G_layer_sg_list.append(StellarGraph.from_networkx(G_by_layer_nx, node_features=node_features))
-            
-            G_by_layer_sub_nx = nx.from_edgelist(self.layer_true_link_obs[i_lyr])
-            node_ids_sub = sorted(list(G_by_layer_sub_nx.nodes))
-            node_features_sub = self.node_attr_df.reindex(node_ids_sub)
-            self.G_by_layer_sub_sg.append(StellarGraph.from_networkx(G_by_layer_sub_nx, node_features=node_features_sub))
-    
-    def rw_nn(self, n_walks=8, length=10, batch_size=50, epoch=10, worker=4, layer_size=[12]):
-        ''' use random walks + neural network to get node embedding and then logistic regression to predict links
-        '''
-        # TODO: G_by_layer_nx is one layer. The largest node id is greater than the total number of nodes, i.e., the len of embeddings
-        adj_pred_arr_nn = np.zeros((self.n_layer, self.n_node_total, self.n_node_total))
-        self.get_G_layer_sg()
-        for i_lyr in range(self.n_layer):
-            G_layer_sg = self.G_layer_sg_list[i_lyr]
-            G_by_layer_sub_sg = self.G_by_layer_sub_sg[i_lyr]
-            
-            # train attri2vec
-            nodes = list(G_by_layer_sub_sg.nodes())
-            n_walks = 2 #8
-            length = 5 #10
-            batch_size = 50
-            epochs = 4 #10
-            layer_sizes = [4] #[12]
-            workers = 1
-            
-            unsupervised_samples = UnsupervisedSampler(
-                G_by_layer_sub_sg, nodes=nodes, length=length,number_of_walks=n_walks)   
-            # Define an attri2vec training generator, which generates a batch of (feature of target node,
-                # index of context node, label of node pair) pairs per iteration.
-            generator = Attri2VecLinkGenerator(G_by_layer_sub_sg, batch_size)    
-            attri2vec = Attri2Vec(layer_sizes=layer_sizes, generator=generator,
-                                  bias=False, normalize=None)
-            
-            x_inp, x_out = attri2vec.in_out_tensors()
-            
-            prediction = link_classification(
-                output_dim=1, output_act="sigmoid", edge_embedding_method="ip")(x_out)
-            
-            model = keras.Model(inputs=x_inp, outputs=prediction)
-            model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-2),
-                          loss=keras.losses.binary_crossentropy,
-                          metrics=[keras.metrics.binary_accuracy, keras.metrics.TruePositives(),
-                                   keras.metrics.TrueNegatives(), keras.metrics.FalsePositives(),
-                                   keras.metrics.FalseNegatives()], )
-            
-            history = model.fit(
-                generator.flow(unsupervised_samples), epochs=epochs, verbose=2,
-                use_multiprocessing=False, workers=workers, shuffle=True,)
-              
-            embedding_model = keras.Model(inputs=x_inp[0], outputs= x_out[0])
-            
-            # node_ids_list = node_attr_df.index
-            # node_ids_list =  self.node_ids_list_by_layer[i_lyr]
-            node_gen = Attri2VecNodeGenerator(G_layer_sg, batch_size).flow(self.node_ids_list_by_layer[i_lyr])
-            node_embeddings = embedding_model.predict(node_gen, workers=workers, verbose=1)
-            
-            # print('\n--- Embedding done\n')
-                
-            # print('--- type of node_embeddings: ', type(node_embeddings))
-            # <class 'numpy.ndarray'>
-            
-            # https://stackoverflow.com/questions/32191029/getting-the-indices-of-several-elements-in-a-numpy-array-at-once
-            node_ids_arr = np.array(self.node_ids_list_by_layer[i_lyr])                
-            sorter = np.argsort(node_ids_arr)
-            in_sample_edges =  np.array(self.layer_possib_link_obs[i_lyr])
-            print('\n---in_sample_edges[:, 1]: ', max(in_sample_edges[:, 1]) )  # 2113
-            print('\n---node_ids_arr: ', max(node_ids_arr) )  # 2112
-            out_of_sample_edges = np.array(self.layer_possib_link_unobs[i_lyr])
-            in_sample_edge_start_indices = sorter[np.searchsorted(
-                node_ids_arr,  in_sample_edges[:, 0], sorter=sorter)]
-            in_sample_edge_end_indices = sorter[np.searchsorted(
-                node_ids_arr,  in_sample_edges[:, 1], sorter=sorter)]
-            in_sample_edge_labels = [1 if ele in self.layer_true_link_obs[i_lyr] else 0 \
-                                     for ele in in_sample_edges.tolist()]
-            
-            out_of_sample_edge_start_indices = sorter[np.searchsorted(
-                node_ids_arr,  out_of_sample_edges[:, 0], sorter=sorter)]
-            out_of_sample_edge_end_indices = sorter[np.searchsorted(
-                node_ids_arr,  out_of_sample_edges[:, 1], sorter=sorter)]
-            # out_of_sample_edge_labels = [1 if ele in self.layer_link_list[i_lyr] else 0 \
-            #                              for ele in out_of_sample_edges.tolist()]
-            
-            # Construct the edge features from the learned node representations with l2 normed difference,
-            # where edge features are the element-wise square of the difference between the embeddings of two head nodes. 
-            # Other strategy like element-wise product can also be used to construct edge features.
-            in_sample_edge_feat_from_emb = (
-                node_embeddings[in_sample_edge_start_indices] - node_embeddings[in_sample_edge_end_indices]) ** 2
-            
-            out_of_sample_edge_feat_from_emb = (node_embeddings[out_of_sample_edge_start_indices]
-                - node_embeddings[out_of_sample_edge_end_indices]) ** 2
-            
-            clf_edge_pred_from_emb = LogisticRegression(verbose=0, solver="lbfgs", n_jobs=1,
-                                                        multi_class="ovr", max_iter=50) #max_iter=500)
-            clf_edge_pred_from_emb.fit(in_sample_edge_feat_from_emb, in_sample_edge_labels)
-            edge_pred_from_emb = clf_edge_pred_from_emb.predict_proba(out_of_sample_edge_feat_from_emb)
-            
-            
-            if clf_edge_pred_from_emb.classes_[0] == 1:
-                positive_class_index = 0
-            else:
-                positive_class_index = 1
-             
-            out_of_sample_labels_pred = edge_pred_from_emb[:, positive_class_index]
-            # roc_auc_val = roc_auc_score(out_of_sample_edge_labels, )
-            # print('\n--- roc_auc: ', roc_auc_val, '\n')
-            print('\n------ layer: ', i_lyr)
-            print('\n------ len out_of_sample_labels_pred: ', len(out_of_sample_labels_pred))
-            print('------ # of 1 in predicts: ', np.count_nonzero(out_of_sample_labels_pred==1))
-            print('------ out_of_sample_labels_pred: ', out_of_sample_labels_pred)
-            adj_pred_arr_nn[i_lyr][(out_of_sample_edges[:, 0], out_of_sample_edges[:, 1])] = out_of_sample_labels_pred
-            
-            return adj_pred_arr_nn
            
     def run_all_models(self):
         
@@ -746,6 +618,11 @@ class Reconstruct:
         self.adj_true_unobs = np.concatenate(adj_true_unobs_list)
         
         print('\n------ total true links left by self.adj_true_unobs==1: ', (np.array(self.adj_true_unobs)==1).sum(),'\n')
+
+    def cal_cond_entropy(self):
+        joint_post =     # p(Z, X|Theta)
+        margin_post =     # p(X|Theta)
+        self.cond_entropy = - joint_post * np.log2(joint_post / margin_post)
             
     def get_metric_value_sub(self, adj_pred_arr):
         ''' performance evaluation using multiple metrics for imbalanced data, e.g., geometric mean, MCC
