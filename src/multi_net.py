@@ -393,46 +393,6 @@ class Reconstruct:
 
                  
             # mask_1 = self.agg_adj_3d == 1 & self.adj_pred_arr[self.adj_pred_arr>1] = 1
-            
-    # def cal_link_prob_MAA(self):
-    #     # get average degree in each layer: <k>_alpha
-    #         # self.degree_mean_arr  = 2*n_link / self.n_node_total
-    #     # get degree of each node  in each layer: k_w^alpha
-        
-    #     # get number of unobserved links in each layer
-        
-    #     self.adj_pred_arr
-    #     for i_lyr in range(self.n_layer):
-    #         link_unobs = self.layer_possib_link_unobs[i_lyr]
-    #         for w in nx.common_neighbors(G, u, v):
-    #             MAA = sum(1/np.sqrt( np.log(G_lyr[i_lyr0].degree(w))*np.log(G_lyr[i_lyr1].degree(w))) )
-    # def get_JC_mask_list(self):  
-    #     '''JC score for all unobserved links
-    #     '''
-    #     self.JC_mask_list = []
-    #     for i_lyr in range(self.n_layer):
-    #         jc_score = list(nx.jaccard_coefficient(self.net_layer_list[i_lyr], list(net_layer_list[i_lyr].edges)))
-    #         jc_score_sort = sorted(jc_score, key = lambda x: x[2], reverse=True)
-    #         link_select = np.array([ (ele[0], ele[1]) for ele in jc_score_sort[:self.n_possib_link_unobs[i_lyr]] ])
-    #         mask = (link_select[0], link_select[1])
-    #         self.JC_mask_list.append(mask)
-    
-        
-    #     # not in 0 and 1
-    # def get_jc_score(self, G, u, v):
-    #     '''
-    #     ref.: https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.link_prediction.jaccard_coefficient.html
-    #     '''
-    #     union_size = len(set(G[u]) | set(G[v]))
-    #     if union_size == 0:
-    #         return 0
-    #     else:
-    #         return len(list(nx.common_neighbors(G, u, v))) / union_size  
-         
-    # def cal_link_prob_jc(self):
-    #     ''' adamic_adar_index, preferential_attachment, common_neighbor_centrality
-    #         ref.: https://networkx.org/documentation/stable/reference/algorithms/link_prediction.html
-    #     '''
     
     def predict_adj_EM(self, is_agg_topol_known=False, is_update_agg_topol=True):
         '''predict the adj mat of each layer using EM algorithm 
@@ -479,12 +439,12 @@ class Reconstruct:
             #         print('\nNOT converged at the last iteration. MAE: {}\n'.\
             #               format(np.sum(mae_link_prob)))            
             
-            # self.deg_seq_last_arr = self.deg_seq_arr
+            self.deg_seq_last_arr = self.deg_seq_arr
             self.adj_pred_arr_last = self.adj_pred_arr
             # self.adj_pred_arr_round = np.round(self.adj_pred_arr, 0)
             # self.deg_seq_last_arr_round = np.round(self.deg_seq_last_arr)   
         # self.adjust_link_prob()
-        return self.adj_pred_arr_last
+        return self.adj_pred_arr_last, self.sgl_link_prob_3d
     
     def get_link_unobs_mask(self):
         self.link_unobs_mask = []
@@ -578,7 +538,7 @@ class Reconstruct:
         # print('\n--- Estimation based on similarity done\n')
         # adj_pred_arr_simil = self.pred_adj_simil()
         print('\n--- EM without updating aggregate adj at every iteration')
-        adj_pred_arr_EM_wo_agg_adj = self.predict_adj_EM(
+        adj_pred_arr_EM_wo_agg_adj, sgl_link_prob_3d_wo_agg_adj = self.predict_adj_EM(
             is_agg_topol_known=False, is_update_agg_topol=False)
         mae_list_no_agg_adj = self.mae_link_prob
         # for i_lyr in range(self.n_layer):
@@ -587,7 +547,7 @@ class Reconstruct:
 
         # adj_pred_arr_EM_add = self.update_EM_add()
         print('\n--- EM with updated aggregate adj at every iteration')
-        adj_pred_arr_EM_wt_agg_adj = self.predict_adj_EM(
+        adj_pred_arr_EM_wt_agg_adj, sgl_link_prob_3d_wt_agg_adj = self.predict_adj_EM(
             is_agg_topol_known=False, is_update_agg_topol=True)
         # mae_list_with_agg_adj = self.mae_link_prob
         import matplotlib
@@ -619,8 +579,10 @@ class Reconstruct:
         
         print('\n------ total true links left by self.adj_true_unobs==1: ', (np.array(self.adj_true_unobs)==1).sum(),'\n')
 
-    def cal_cond_entropy(self):
-        joint_post =     # p(Z, X|Theta)
+    def cal_cond_entropy(self, Z, P):
+        # Z = adj_pred_arr_EM_wt_agg_adj
+        # P = sgl_link_prob_3d_wt_agg_adj
+        joint_post =     # p(Z, X|Theta) = prod over i <j * prod over layer np.multiply(P^Z, (1-P)^(1-Z))
         margin_post =     # p(X|Theta)
         self.cond_entropy = - joint_post * np.log2(joint_post / margin_post)
             
