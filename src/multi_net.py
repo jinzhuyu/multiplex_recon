@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-os.chdir('c:/code/illicit_net_resil/src')
+# os.chdir('c:/code/illicit_net_resil/src')
 
 import numpy as np
 import pandas as pd
@@ -13,7 +13,7 @@ import networkx as nx
 import multiprocessing as mp 
 # from functools import reduce
 from itertools import permutations, product
-from math import comb
+# from math import comb
 from copy import deepcopy
 # from pickle import load
 # from prg import prg
@@ -36,7 +36,7 @@ from imblearn.metrics import geometric_mean_score
 # conda install -c conda-forge cvxpy
 # pip install matrix-completion
 
-from my_utils import plotfuncs, npprint 
+from my_utils import plotfuncs, npprint, copy_upper_to_lower
 
 # from stellargraph import StellarGraph
 # from stellargraph.data import UnsupervisedSampler
@@ -268,7 +268,7 @@ class Reconstruct:
             #                     (ele[0] in layer_node_unobs or ele[1] in layer_node_unobs)]
             self.layer_possib_link_unobs.append(np.array(link_unobs_1 + link_unobs_2))  
         self.n_possib_link_unobs = np.array([len(sub) for sub in self.layer_possib_link_unobs])
-        print('------ n_possib_link_unobs: ', self.n_possib_link_unobs) #n_possib_link_unobs:  [1148901  438703]
+        # print('------ n_possib_link_unobs: ', self.n_possib_link_unobs) #n_possib_link_unobs:  [1148901  438703]
     
            
     def get_num_link_by_layer(self):    
@@ -533,6 +533,7 @@ class Reconstruct:
             mask_select = (link_unobs_mask[0][top_idx], link_unobs_mask[1][top_idx])
             adj_pred_arr[i_lyr][mask_select] = 1
         return adj_pred_arr
+
            
     def run_all_models(self):
         
@@ -565,6 +566,7 @@ class Reconstruct:
 
         self.adj_pred_arr_list = [adj_pred_arr_EM_wt_agg_adj] + [adj_pred_arr_EM_wo_agg_adj] + [adj_pred_arr_rm]
         self.sgl_link_prob_list = [sgl_link_prob_3d_wo_agg_adj] + [sgl_link_prob_3d_wo_agg_adj] + [None]             
+
                 
     def get_adj_true_unobs(self):
         adj_true_unobs_list = [[] for _ in range(self.n_layer)]
@@ -576,6 +578,7 @@ class Reconstruct:
         self.adj_true_unobs = np.concatenate(adj_true_unobs_list)
         
         # print('\n------ total true links left by self.adj_true_unobs==1: ', (np.array(self.adj_true_unobs)==1).sum(),'\n')
+
 
     def cal_cond_entropy(self, Z, P=None):
         ''' calculate conditional entropy: H(Z|X, Theta)
@@ -608,7 +611,7 @@ class Reconstruct:
             for i_lyr in range(self.n_layer):
                 mask = self.obs_link_mask_list[i_lyr]
                 if mask:  # not empty
-                    layer_X_obs = self.adj_true_arr[i_lyr][mask]
+                    layer_X_obs = Z[i_lyr][mask] #self.adj_true_arr[i_lyr][mask]
                     layer_P_obs = P[i_lyr][mask]
                     layer_prod_sum_log = np.sum(
                         np.log2(np.multiply(layer_P_obs**layer_X_obs, (1-layer_P_obs)**(1-layer_X_obs))))
@@ -616,10 +619,12 @@ class Reconstruct:
             margin_post_log2 = np.sum(layer_prod_sum_log_list)
             # print('------ margin_post_log2: ', margin_post_log2)
             if -joint_post_log2 + margin_post_log2 <= 0:
-                print('------ -joint_post_log2 + margin_post_log2: ', -joint_post_log2 + margin_post_log2)
+                print('------ -joint_post_log2: ', -joint_post_log2)
+                print('------ margin_post_log2: ', margin_post_log2)
             # if margin_post != 0:    
             cond_entropy_log2 = joint_post_log2 + np.log2(-joint_post_log2 + margin_post_log2)
-            return cond_entropy_log2
+            IG_ratio = joint_post_log2 / margin_post_log2
+            return cond_entropy_log2, IG_ratio
             # print('------ cond_entropy_log2: ', cond_entropy_log2)
             # else:
             #     raise(ValueError('marginal post is zero'))
@@ -634,9 +639,37 @@ class Reconstruct:
             #                                 len(link_unobs_mask[0]))
             # joint_post_log2 = np.sum(joint_post_log2_list)
             # print('------ joint_post_log2: ', joint_post_log2) 
-            return 999
+            return 999, 999
+
         
+    def get_topo_charac(self, adj_pred_arr):
+        # get complete estimated adj mat
+            # copy upper triangle to lower triangle
+        adj_pred_arr_sym_list = [copy_upper_to_lower(X) for X in adj_pred_arr]
+       
+        # average degree
+        ave_deg_list = [np.mean(np.sum(X, axis=0)) for X in adj_pred_arr_sym_list]
+        #ave_deg_list = [x/max(ave_deg_list) for x in ave_deg_list]
+       
+        # link density
+        total_possib_link = self.n_node_total * (self.n_node_total - 1) / 2
+        link_density_list = [np.count_nonzero(X==1)/total_possib_link for X in adj_pred_arr_sym_list]
+        
+        print('--- link_density: ', link_density_list)
+        
+        # edge overlap compared to the layer with most links
+        idx_temp = link_density_list.index(max(link_density_list))
+        adj_temp = adj_pred_arr_sym_list[idx_temp]
+        # n_link_temp = np.count_nonzero(adj_temp==1)
+
+
+        edge_overlap_ratio_list = [np.count_nonzero(X == adj_temp)/total_possib_link for X in adj_pred_arr_sym_list]
+
             
+
+        return ave_deg_list, link_density_list, edge_overlap_ratio_list
+
+
     def get_metric_value_sub(self, adj_pred_arr, sgl_link_prob):
         ''' performance evaluation using multiple metrics for imbalanced data, e.g., geometric mean, MCC
         '''
@@ -666,10 +699,14 @@ class Reconstruct:
         # print('\n------ auc_pr, gmean, mcc, recall_val, precision_val: ', auc_pr, gmean, mcc, recall_val, precision_val)
         
         # conditional entropy log2
-        cond_entropy_log2 = self.cal_cond_entropy(np.round(adj_pred_arr), sgl_link_prob)
+        cond_entropy_log2, IG_ratio = self.cal_cond_entropy(np.round(adj_pred_arr), sgl_link_prob)
+
+        # topological characteristics
+        ave_deg_list, link_density_list, edge_overlap_ratio_list = self.get_topo_charac(adj_pred_arr)
         
         return [recall, precision, auc_pr, gmean, mcc, recall_val, precision_val, accuracy_val,
-                tn, fp, fn, tp, cond_entropy_log2]
+                tn, fp, fn, tp, cond_entropy_log2, IG_ratio, ave_deg_list, link_density_list, edge_overlap_ratio_list]
+
     
     def get_metric_value(self):
         self.get_adj_true_unobs()
@@ -731,7 +768,7 @@ class Plots:
         plt.ylabel("Mean MAE")
         plt.legend(loc='best')
         plt.savefig('../output/{}_link_prob_mae_{}layers_{}nodes.pdf'.format(net_name, n_layer, n_node_total))
-        plt.show()  
+        plt.show() 
 
     def get_mean_prc(x_mean, x_list, y_list):
         '''get the mean of precision (y) values at mean of recall (x)
@@ -774,21 +811,22 @@ class Plots:
         plt.savefig('../output/{}_{}layers_{}nodes_{}.pdf'.format(net_name, n_layer, n_node_total, metric))
         plt.show() 
         
-
     def plot_each_metric(frac_list, metric_mean_by_frac, n_layer, n_node_total, metric_list, model_list):        
-        first_metric_to_plot = 2
-        # last_metric_to_plot = 7
-        for i_mtc in range(first_metric_to_plot, len(metric_list)):
-            # print('\n------ metric_mean_by_model_frac[i_mtc]', np.array(metric_mean_by_model_frac[i_mtc-2]))
-            print('\n')
-            # if i_mtc <= last_metric_to_plot:
-            Plots.plot_each_metric_sub(frac_list, metric_mean_by_frac[i_mtc],
-                                       metric_list[i_mtc], model_list,
-                                       n_layer, n_node_total) 
-            # if metric_list[i_mtc] in ['MCC', 'Recall', 'Precision']:
-            print('------ {}: {}'.format(metric_list[i_mtc], metric_mean_by_frac[i_mtc]))
-            
-            print('\n')
+        metric_to_plot = ['Recall_range', 'Precision_range', 'AUC-PR', 'G-mean',
+                          'MCC', 'Recall', 'Precision', 'Accuracy',
+                          'TN', 'FP', 'FN', 'TP', 'Log_H', 'IG_ratio']
+        for i_mtc, mtc in enumerate(metric_list):
+            if mtc in metric_to_plot:
+                # print('\n------ metric_mean_by_model_frac[i_mtc]', np.array(metric_mean_by_model_frac[i_mtc-2]))
+                print('\n')
+                # if i_mtc <= last_metric_to_plot:
+                Plots.plot_each_metric_sub(frac_list, metric_mean_by_frac[i_mtc],
+                                           metric_list[i_mtc], model_list,
+                                           n_layer, n_node_total) 
+                # if metric_list[i_mtc] in ['MCC', 'Recall', 'Precision']:
+                print('------ {}: {}'.format(metric_list[i_mtc], metric_mean_by_frac[i_mtc]))
+                
+                print('\n')
         
     def plot_prc(frac_list, metric_mean_by_frac, n_layer, n_node_total, model_list):
         ''' precision-recall curve for each fraction of observed nodes
@@ -823,13 +861,13 @@ class Plots:
                 net_name, frac_list[i_frac],n_layer, n_node_total))
             plt.show()
 
+
     def plot_other(frac_list, metric_mean_by_frac, n_layer, n_node_total):
         # metric_value_by_frac = metric_mean_by_frac[2:]
         first_score_metric = 2
         metric_mean_by_frac_select = metric_mean_by_frac[first_score_metric:]
-        metric_select = ['Recall', 'Precision',
-                         'AUC-PR', 'G-mean', 'MCC',
-                         'Recall', 'Precision', 'Accuracy']
+        metric_select = ['Recall_range', 'Precision_range',
+                         'AUC-PR', 'G-mean', 'MCC', 'Recall', 'Precision', 'Accuracy']
         metric_select= metric_select[first_score_metric:]
         plotfuncs.format_fig(1.1)
         plt.figure(figsize=(5, 4), dpi=400)
@@ -837,7 +875,6 @@ class Plots:
             plt.plot(frac_list, metric_mean_by_frac_select[i], color=Plots.colors[i],
                      marker=Plots.markers[i], alpha=.85, ms=Plots.med_size,
                      lw=Plots.lw, linestyle = '--', label=metric_select[i])
-                
         # plt.xlim(right=1.03)
         # plt.ylim([0, 1.03])
         plt.xlim([min(frac_list)-0.03, 1.03])
@@ -848,6 +885,7 @@ class Plots:
         # plt.xticks([0.2*i for i in range(5+1)])
         plt.savefig('../output/{}_imbl_metrics_{}layers_{}nodes.pdf'.format(net_name, n_layer, n_node_total))
         plt.show()                  
+
     
 def load_data(path):
     link_df = pd.read_csv(path)
@@ -858,6 +896,7 @@ def load_data(path):
         layer_link_list.append(link_temp)    
     return layer_link_list
 
+
 def get_layer_node_list(layer_link_list, n_layer, n_node_total):
     node_set_agg = set(np.concatenate(layer_link_list).ravel())
     layer_node = [set(np.concatenate(layer_link_list[i])) for i in range(n_layer)]
@@ -867,7 +906,7 @@ def get_layer_node_list(layer_link_list, n_layer, n_node_total):
     layer_virt_node = [list(node_set_agg.difference(ele)) for ele in layer_node]
     return layer_real_node, layer_virt_node
 
-def cal_edge_overlap_rate
+# def cal_edge_overlap_rate
 
 @numba.njit
 def get_permuts_half_numba(vec: np.ndarray):
@@ -950,15 +989,51 @@ def paral_run():
 
 # results[i_frac][i_rep][i_mdl][i_mtc]
 
-def run_plot():
-    results = paral_run()
-    # print('---n_frac', len(results))
-    # print('---n_rep', len(results[0]))
-    # print('---n_model', len(results[0][0]))
-    # print('---n_metric', len(results[0][0][0]))
+def save_output(net_name, n_node_total, n_layer, frac_list, metric_mean_by_frac):
+    '''save log2H at each observatation rate to a pandas pf
+    '''
+    log2H_loc = metric_list.index('Log_H')
+    IG_ratio_loc = metric_list.index('IG_ratio')
+    accuracy_metric_list = ['AUC-PR', 'G-mean', 'MCC']
+    topo_charc_list = ['ave_deg', 'link_density', 'edge_overlap_ratio']
+    # accuracy_loc = metric_list.index('Accuracy')
+    # mcc_loc = metric_list.index('MCC')
+    # auc_loc = metric_list.index('AUC_PR')
+    
+    EM_with_agg_adj_loc = 0
+    log2H = metric_mean_by_frac[log2H_loc][EM_with_agg_adj_loc][:]
+    IG_ratio = metric_mean_by_frac[IG_ratio_loc][EM_with_agg_adj_loc][:]
+    # accuracy = metric_mean_by_frac[accuracy_loc][EM_with_agg_adj_loc][:]
+    
+    output_df = pd.DataFrame(columns=['net_name', 'n_node_total', 'n_layer',
+                                      'obs_frac', 'log2H'] \
+                                      + accuracy_metric_list + topo_charc_list)
+    output_df['obs_frac'] = frac_list
+    output_df['log2H'] = log2H 
+    output_df['IG_ratio'] = IG_ratio
+    
+    for metric in accuracy_metric_list + topo_charc_list:
+        output_df[metric] = metric_mean_by_frac[metric_list.index(metric)][EM_with_agg_adj_loc][:]
+    output_df['net_name'] = net_name
+    output_df['n_node_total'] = n_node_total
+    output_df['n_layer'] = n_layer    
+    
+    path = '../output/log2H_by_obs_frac.csv'    
+    file_exists = os.path.exists(path) 
+    if file_exists:
+        output_df.to_csv(path, mode='a', header=False, index=False)        
+    else:                
+        output_df.to_csv(path, header=True, index=False)      
+
+
+def run_plot(frac_list, metric_mean_by_frac, n_layer, n_node_total, metric_list, model_list):
+    #Plots
+    Plots.plot_each_metric(frac_list, metric_mean_by_frac, n_layer, n_node_total, metric_list, model_list)
+    Plots.plot_prc(frac_list, metric_mean_by_frac, n_layer, n_node_total, model_list)
+
+
+def get_metric_mean(results):
     metric_value_by_frac = [ [ [[] for _ in frac_list] for _ in model_list] for _ in metric_list]
-    # for ele in metric_list:
-    #     exec('{}_list = [[] for item in range(len(frac_list))]'.format(ele))
     for i_mtc in range(n_metric):
         for i_frac in range(n_frac):
             for i_rep in range(n_rep):
@@ -966,16 +1041,15 @@ def run_plot():
                     metric_value_by_frac[i_mtc][i_mdl][i_frac].append(results[i_frac][i_rep][i_mdl][i_mtc])
                     # if i_mtc >=2 and i_rep==1:
                     #     print('---', i_mtc, i_mdl, i_frac, metric_value_by_frac[i_mtc][i_mdl][i_frac])
-
     # calculate the mean
     metric_mean_by_frac = [ [[ [] for _ in frac_list] for _ in model_list] for _ in metric_list]   
     recall_mean = np.linspace(0, 1, 40)
-    for i_mtc in range(n_metric): # enumerate(metric_list):
+    for i_mtc, mtc in enumerate(metric_list): # enumerate(metric_list):
         for i_mdl in range(n_model):
-            if i_mtc == 0:
+            if mtc == 'Recall_range':
                 for i_frac in range(n_frac):
                     metric_mean_by_frac[i_mtc][i_mdl][i_frac] = recall_mean
-            elif i_mtc == 1:
+            elif mtc == 'Precision_range':
                 for i_frac in range(n_frac):
                     recall_list = metric_value_by_frac[i_mtc-1][i_mdl][i_frac]
                     prec_list = metric_value_by_frac[i_mtc][i_mdl][i_frac]
@@ -984,17 +1058,35 @@ def run_plot():
                     prec_mean = Plots.get_mean_prc(recall_mean, recall_list, prec_list)
                     # print('\n--- prec_mean', prec_mean)
                     metric_mean_by_frac[i_mtc][i_mdl][i_frac] = prec_mean
-            else:                
+            elif mtc in ['AUC-PR', 'G-mean', 'MCC', 'Recall', 'Precision', 'Accuracy',
+               'TN', 'FP', 'FN', 'TP', 'Log_H', 'IG_ratio']: 
+                print(mtc)
                 for i_frac in range(n_frac):
-                    # print(metric_value_by_frac[i_mtc][i_frac])
+                    # print(np.array(metric_value_by_frac[i_mtc][i_mdl][i_frac]))
                     metric_mean_by_frac[i_mtc][i_mdl][i_frac] = np.nanmean(
                         np.array(metric_value_by_frac[i_mtc][i_mdl][i_frac]))
                     # print('---',i_mtc, i_mdl, i_frac, metric_mean_by_frac[i_mtc][i_mdl][i_frac])
+            else: # mtc in ['ave_deg', 'link_density', 'edge_overlap_ratio']: 
+                print(mtc)
+                print(metric_value_by_frac[i_mtc][i_mdl][i_frac])
+                for i_frac in range(n_frac):  
+                    metric_mean_by_frac[i_mtc][i_mdl][i_frac] = np.mean(
+                        np.array(metric_value_by_frac[i_mtc][i_mdl][i_frac]), axis=0)
+    return metric_mean_by_frac      
+
+
+def run_main():
+    #results = paral_run()
+    # for ele in metric_list:
+    #     exec('{}_list = [[] for item in range(len(frac_list))]'.format(ele))
+    # get mean
+    metric_mean_by_frac = get_metric_mean(paral_run())
     # metric_value_by_frac = [auc_list, prec_list, recall_list, acc_list]
     # print('\nmetric_value_by_frac: ', metric_value_by_frac)
     #Plots
-    Plots.plot_each_metric(frac_list, metric_mean_by_frac, n_layer, n_node_total, metric_list, model_list)
-    Plots.plot_prc(frac_list, metric_mean_by_frac, n_layer, n_node_total, model_list)
+    run_plot(frac_list, metric_mean_by_frac, n_layer, n_node_total, metric_list, model_list)
+    # save log2H
+    save_output(net_name, n_node_total, n_layer, frac_list, metric_mean_by_frac)
 
 # import data
 # net_name = 'toy'
@@ -1005,8 +1097,8 @@ def run_plot():
 
 net_name = 'drug'
 # n_node_total, n_layer = 2114, 2
-n_node_total, n_layer = 2196, 4
-# n_node_total, n_layer = 2139, 3
+# n_node_total, n_layer = 2196, 4
+n_node_total, n_layer = 2139, 3
 # load each layer (a nx class object)
 # with open('../data/drug_net_layer_list.pkl', 'rb') as f:
 #     net_layer_list = load(f)
@@ -1033,28 +1125,15 @@ layer_link_list = load_data('../data/{}.csv'.format(file_name))
 
 
 
-
-
-
-
-
-
-
-
-overlap_edge =list(set(layer_link_list[0]).intersection(*layer_link_list))
-
-
-
-
-
-
-
-
+# find overlap edges
+layer_link_tuple = [tuple(item) for sublist in layer_link_list for item in sublist]
+from collections import Counter
+overlap_link = [ele for ele, cnt in Counter(layer_link_tuple).items() if cnt >= n_layer]
 
 
 if net_name == 'drug':
     node_attr_df = pd.read_csv('../data/drug_net_attr_{}layers_{}nodes.csv'. \
-                                  format(n_layer, n_node_total))
+                               format(n_layer, n_node_total))
     node_attr_df = node_attr_df[['Node_ID', 'Gender', 'Drug_Activity', 'Recode_Level', 'Drug_Type',
                                  'Group_Membership_Type', 'Group_Membership_Code']]    
     node_attr_dict = node_attr_df.set_index('Node_ID').to_dict('index')
@@ -1063,17 +1142,18 @@ else:
     node_attr_df, node_attr_dict = None, None
 layer_real_node, layer_virt_node = get_layer_node_list(layer_link_list, n_layer, n_node_total)
 
+
 # layer_list_name = '{}_net_layer_list_{}layers_{}nodes'.format(net_name, n_layer, n_node_total)
 
 # frac_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9] 
-frac_list = [0.1, 0.4, 0.7, 0.9] 
+frac_list = [0.1, 0.2, 0.3, 0.5, 0.7, 0.9, 0.95] 
 # frac_list = [0.4, 0.9] 
 # frac_list = [0.4, 0.7, 0.9]
 n_real_node = [len(layer_real_node[i]) for i in range(n_layer)]
 n_real_node_obs = [[int(frac*n_real_node[i]) for i in range(n_layer)] for frac in frac_list]     
 
-metric_list = ['Recall', 'Precision', 'AUC-PR', 'G-mean', 'MCC', 'Recall', 'Precision', 'Accuracy',
-               'TN', 'FP', 'FN', 'TP', 'Log_H']
+metric_list = ['Recall_range', 'Precision_range', 'AUC-PR', 'G-mean', 'MCC', 'Recall', 'Precision', 'Accuracy',
+               'TN', 'FP', 'FN', 'TP', 'Log_H', 'IG_ratio', 'ave_deg', 'link_density', 'edge_overlap_ratio']
 # model_list = ['DegEM'] + ['Jaccard', 'Resource Allocation', 'Adamic Adar', 'Prefer. Attachment',
 #                           'Eskin', 'Random Model', 'Random Walk']#, 'NN']   'CN']
 model_list = ['EM with agg. topol.', 'EM without agg. topol.', 'Random model']
@@ -1081,19 +1161,19 @@ n_metric = len(metric_list)
 n_model = len(model_list)
 n_frac = len(frac_list)
 n_rep = 5
-itermax = 3
+itermax = 5
 # foo
 # cd c:\code\illicit_net_resil\src
 # python multi_net.py
 
 
-# # parellel processing
-# if __name__ == '__main__': 
-#     import matplotlib
-#     matplotlib.use('Agg')
-#     t00 = time()
-#     run_plot()
-#     print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) )     
+# parellel processing
+if __name__ == '__main__': 
+    import matplotlib
+    matplotlib.use('Agg')
+    t00 = time()
+    run_main()
+    print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) )     
     # precision: tp / (tp + fp)
     # recall: tp / (tp + fn) = tp / P  # recall > precision since fn > fp
      
