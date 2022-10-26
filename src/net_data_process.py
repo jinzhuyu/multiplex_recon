@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Formate the Sicilian Mafia network data
+1. Extract network statistics of each layer of each multiplex networks
+2. Extract link list for each layer of each multiplex netwwork from raw data
 """
 import numpy as np
 import pandas as pd
@@ -22,9 +23,7 @@ class Net():
             csv file containing start and end node ids of each link in the selected layers.
             the network is undirected, so the start node id < end node id for easier later use
             node ids are continuous from 0 to the total number of nodes.
-        
-        '''    
-        # super().__init__(**kwargs) # inherite parent class's method        
+        '''          
         vars = locals()
         self.__dict__.update(vars)
         del self.__dict__["self"] 
@@ -35,7 +34,6 @@ class Net():
   
         if self.is_get_net_charac:
             self.gen_net()
-            self.get_layer()
             self.get_net_charac()
         
         if self.is_save_data:
@@ -60,36 +58,40 @@ class Net():
         # find missing node ids
         node_id = pd.concat([link_df_temp['From'], link_df_temp['To']], ignore_index=True).unique().tolist()
         node_id_missed = [i for i in range(max(node_id)) if i not in node_id]
-        print('\n--- Skipped node id in the raw data: ', node_id_missed)
-        # correct id error in df
-        link_df_temp_new = link_df_temp
-        for col in ['From', 'To']:
-            node_ls_temp = link_df_temp[col].tolist()
-            counter = 0
-            for this_id in node_id_missed:                          
-                this_id -= counter
-                node_ls_temp = [ele - 1 if ele >= this_id else ele for ele in node_ls_temp]                
-                counter += 1
-            link_df_temp_new[col] = pd.Series(node_ls_temp, index=link_df_temp_new.index)
-        node_id_new = pd.concat([link_df_temp_new['From'], link_df_temp_new['To']],
-                                ignore_index=True).unique().tolist()          
-        self.node_id = node_id_new
-        self.node_id_missed = node_id_missed
-        self.n_node = len(node_id_new)
-        self.link_df_new = link_df_temp_new
-               
+        if len(node_id_missed)>=1:
+            print('\n--- Skipped node id in the raw data: ', node_id_missed)
+            # correct id error in df
+            link_df_temp_new = link_df_temp
+            for col in ['From', 'To']:
+                node_ls_temp = link_df_temp[col].tolist()
+                counter = 0
+                for this_id in node_id_missed:                          
+                    this_id -= counter
+                    node_ls_temp = [ele - 1 if ele >= this_id else ele for ele in node_ls_temp]                
+                    counter += 1
+                link_df_temp_new[col] = pd.Series(node_ls_temp, index=link_df_temp_new.index)
+            node_id_new = pd.concat([link_df_temp_new['From'], link_df_temp_new['To']],
+                                    ignore_index=True).unique().tolist()          
+            self.node_id = node_id_new
+            self.n_node_total = len(node_id_new)
+            self.link_df_new = link_df_temp_new
+        else:
+            self.node_id = node_id
+            self.n_node_total = len(node_id)
+            self.link_df_new = link_df_temp           
+        self.node_id_missed = node_id_missed               
         # put_small_id_to_start. links are undirected.
         small_ids = self.link_df_new[['From', 'To']].min(axis=1) 
         large_ids = self.link_df_new[['From', 'To']].max(axis=1) 
         self.link_df_new['From'] = small_ids
-        self.link_df_new['To'] = large_ids    
+        self.link_df_new['To'] = large_ids
     
         #remove duplicates
         self.link_df_new = self.link_df_new.drop_duplicates()
         
     def save_df(self):
         self.link_df_new.to_csv('../data/{}_net_{}layers_{}nodes.csv'. \
-                            format(self.net_name, self.n_layer, self.n_node), index=False)                 
+                            format(self.net_name, self.n_layer, self.n_node_total), index=False)                 
             
     def gen_net(self):        
         self.G_agg = nx.MultiGraph()
@@ -113,14 +115,14 @@ class Net():
         
         if n_link > 0:
             density = nx.density(G)
-            degree_mean = 2*n_node / float(n_link)
+            degree_mean = 2* float(n_link) / n_node
             cc_size = [len(c) for c in sorted(nx.connected_components(G), key=len, reverse=True)]
             cc_mean = np.mean(cc_size)
             
             n_digit = 2
             print('--------- No. of nodes: ', n_node)
             print('--------- No. of links: ', n_link)
-            print('--------- Density/1000: ', round(density*1000, n_digit))
+            print('--------- Density * 1000: ', round(density*1000, n_digit))
             print('--------- Average degree: ', round(degree_mean, n_digit))
             print('--------- Average size of connected component: ', round(cc_mean, n_digit))
             print('--------- Size of the greatest connected component: ', round(max(cc_size), n_digit))
@@ -133,6 +135,7 @@ class Net():
         self.get_net_charac_sub(self.G_agg)
         
         print('\n--- Each layer')
+        self.get_layer()
         for i in range(self.n_layer):
             print('\n------ {} layer'.format(self.layer_name_ls[i]))
             self.get_net_charac_sub(self.G_layer_ls[i])
@@ -166,14 +169,14 @@ class Net():
     #     if self.is_save_fig:
     #         # plt.savefig('../output/each_layer_net.pdf', dpi=800)
     #         plt.savefig('../output/{}_net_{}layers_{}nodes_each_layer.pdf'. \
-    #                     format(self.net_name, self.n_layer, self.n_node), dpi=600)
+    #                     format(self.net_name, self.n_layer, self.n_node_total), dpi=600)
     #     plt.show()
         
     #     plt.figure(figsize=(6,4), dpi=300)
     #     nx.draw(self.G, node_size=2)
     #     if self.is_save_fig:
     #         plt.savefig('../output/{}_net_{}layers_{}nodes_all_layer.pdf'. \
-    #                     format(self.net_name, self.n_layer, self.n_node), dpi=600)
+    #                     format(self.net_name, self.n_layer, self.n_node_total), dpi=600)
     #     plt.show()
 
 
@@ -203,7 +206,6 @@ class AusBomb(Net):
 
         if self.is_get_net_charac:
             self.gen_net()
-            self.get_layer()
             self.get_net_charac()
         
         if self.is_save_data:
@@ -213,8 +215,12 @@ class AusBomb(Net):
             self.gen_net()  
     
     def load_data(self):
+        from glob import glob
         # csv_ls = glob(self.path+'*1*.csv') + glob(self.path+'*2*.csv')
-        csv_ls = glob(self.path+'*1*.csv')
+        if '1' in self.net_name:
+            csv_ls = glob(self.path+'*1*.csv')
+        if '2' in self.net_name:
+            csv_ls = glob(self.path+'*2*.csv')
         self.df_list = [pd.read_csv(file) for file in csv_ls]        
         self.layer_name_ls = ['Acquaintances', 'Friends/Family/Coworker', 'Close Friends/Family/Coworker']
         self.n_layer = len(self.layer_name_ls)
@@ -248,18 +254,106 @@ class AusBomb(Net):
         
 def main_embassy_bomb():
     path = '../data/Australian_Embassy_bombing/'
-    net_name = 'embassybomb'
+    net_name_ls = ['embassybomb1', 'embassybomb2']
     is_get_net_charac = True
-    embassy_bomb = AusBomb(path=path, net_name=net_name, is_save_data=True,
-                       is_get_net_charac=is_get_net_charac)
-    embassy_bomb.main()
+    for net_name in net_name_ls:
+        embassy_bomb = AusBomb(path=path, net_name=net_name, is_save_data=True,
+                           is_get_net_charac=is_get_net_charac)
+        embassy_bomb.main()
 # # self = embassy_bomb
 # if __name__ == '__main__':
-#     from glob import glob
 #     main_embassy_bomb()
 
+
+
+# Caenorhabditis elegans connectome, where the multiplex consists of layers corresponding
+# to different synaptic junctions
+class Elegan(Net):
+    def __init__(self, layer_name_ls = ['Electric', 'Chemical', 'Polyadic'], **kwargs):
+        '''     
+        Parameters
+            path: path to the links of networks.
+            layer_selected_ls: list of layers to select
+
+        Returns
+            a csv file containing start and end node ids of each link in the selected layers.
+            node ids are continuous and start from 0 
+        '''    
+        super().__init__(**kwargs) # inherite parent class's method        
+        vars = locals()
+        self.__dict__.update(vars)
+        del self.__dict__["self"]     
+
+    def main(self):        
+        self.load_data()
+        
+        self.extract_link()
+        
+        self.correct_node_id()
+
+        if self.is_get_net_charac:
+            self.gen_net()
+            self.get_net_charac()
+        
+        if self.is_save_data:
+            self.save_df() 
+        
+        if self.is_plot:
+            self.gen_net()  
+    
+    def load_data(self):
+        from glob import glob
+        csv_ls = glob(self.path+'*.csv')
+        self.df_list = [pd.read_csv(file, header=None) for file in csv_ls]        
+        self.n_layer = len(self.layer_name_ls)
+        
+    def extract_link_sub(self, relation_df, layer_id):
+        '''relation_df: 279 x 279 adj mat (imported as a pandas df)
+        '''
+        # node_id = relation_df['Unnamed: 0'].tolist()
+        # relation_df = relation_df.drop(columns=['Unnamed: 0'])
+        relation_mat = relation_df.to_numpy()        
+        tri_low_idx = np.tril_indices(relation_mat.shape[0], k=1)
+        relation_mat[tri_low_idx] = 0
+        link_idx = np.where(relation_mat == 1)
+        n_link = link_idx[0].shape[0]
+        if n_link > 0:
+            for j in range(len(link_idx[0])):
+                self.link_list.append((link_idx[0][j], link_idx[1][j], self.layer_name_ls[layer_id]))
+        
+    def extract_link(self):
+        self.link_list = []
+        for i, df in enumerate(self.df_list[:self.n_layer]):
+            self.extract_link_sub(relation_df=df, layer_id=i)
+        self.link_df_orig = pd.DataFrame(self.link_list, columns=['From', 'To', 'Relation']) 
+        
+        
+def main_elegan():
+    path = '../data/C_Elegans/'
+    net_name = 'elegan'
+    is_get_net_charac = True
+    elegan = Elegan(path=path, net_name=net_name, layer_name_ls = ['Chemical', 'Polyadic'],
+                    is_save_data=True,
+                    is_get_net_charac=is_get_net_charac)
+    elegan.main()
+# # self = elegan
+# if __name__ == '__main__':
+#     main_elegan()
+
+def main_london_transport():
+    path = '../data/London_transport/'
+    net_name = 'london_transport'
+    is_get_net_charac = True
+    london_transport = Elegan(path=path, net_name=net_name,
+                    layer_name_ls = ['Underground', 'Overground', 'Lightrail' ],
+                    is_save_data=True, is_get_net_charac=is_get_net_charac)
+    london_transport.main()
+
+if __name__ == '__main__':
+    main_london_transport()
+
 # noordin top terrorist networks
-class NoordinTop(Net):
+class Noordin(Net):
     def __init__(self, **kwargs):
         '''     
         Parameters
@@ -285,19 +379,20 @@ class NoordinTop(Net):
         layer_name = list(set([re.sub('[0-9]', '', ele) for ele in col_selected])) 
         
     def extract_link(self):
-        df_temp = self.link_df_orig[col_selected]
+        df_temp = self.link_df_orig[col_selected].drop(columns=['NAME'])
         
 
     
-def main_terror():
+def main_noordin():
     import re
-    path = '../data/noordin_top_terrorist/noordin_terrorist_raw.csv'
-    net_name = 'terror'
+    path = '../data/noordin_terrorist/noordin_terrorist_raw.csv'
+    net_name = 'noordin'
     is_get_net_charac = True
-    noordintop = NoordinTop(path=path, net_name=net_name, is_save_data=True,
-                           is_get_net_charac=is_get_net_charac)
-    noordintop.main()
+    noordin = Noordin(path=path, net_name=net_name, is_save_data=True,
+                      is_get_net_charac=is_get_net_charac)
+    noordin.main()
 
+# self = noordin
 
 # drug trafficking network
 class DrugNet(Net):    
@@ -327,7 +422,6 @@ class DrugNet(Net):
         
         if self.is_get_net_charac:
             self.gen_net()
-            self.get_layer()
             self.get_net_charac()
         
         if self.is_save_data:
@@ -451,10 +545,13 @@ def main_mafia():
     net_name = 'mafia'
     mafia = Net(path=path, net_name=net_name, is_save_data=True, is_get_net_charac=True)
     mafia.main()
-
-if __name__ == '__main__':
     
-    # main_drug()
-    # main_mafia()
-    from glob import glob
-    main_embassy_bomb()
+# import os
+# os.chdir('c:/code/illicit_net_resil/src')
+
+# if __name__ == '__main__':
+    
+#     # main_drug()
+#     # main_mafia()
+#     from glob import glob
+#     main_embassy_bomb()
