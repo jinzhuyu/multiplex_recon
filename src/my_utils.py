@@ -3,6 +3,8 @@ import numpy as np
 from itertools import permutations
 import networkx as nx
 
+# __all__ = []
+
 class plotfuncs:
     def format_fig(size_scale=1):
     
@@ -82,7 +84,10 @@ class plotfuncs:
         # markers =['o', 'v', 's', '*', 'D', 'x', 'v', 'o', 'x', 'D', '*', 's'] 
         return markers
 
-
+def copy_upper_to_lower(X):
+    X = np.triu(X)
+    X = X + X.T - np.diag(np.diag(X))
+    return X
 
 def npprint(A, n_space=2):
      assert isinstance(A, np.ndarray), "input of npprint must be ndarray"

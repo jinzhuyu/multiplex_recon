@@ -115,26 +115,30 @@ prod_ratio_frac = list(product(list(range(len(allocate_ratio))),
 
 def plot_acc(frac_mean, allocate_ratio, acc_mean_by_ratio, n_layer, n_node):
     # linestyles = plotfuncs.linestyles()
-    plotfuncs.format_fig(1.1)
+    plotfuncs.format_fig(1.05)
     lw = .9
     med_size = 7
-    colors = ['tab:{}'.format(x) for x in ['red', 'blue', 'green', 'orange']]
-    markers = ['o', 'v', 's', 'd']
+    colors = ['tab:{}'.format(x) for x in ['red', 'blue', 'green', 'orange', 'purple']]
+    markers = ['o', 'v', 's', 'd', '*']
     plt.figure(figsize=(5, 4), dpi=400)
     # print('---acc_mean_by_ratio', acc_mean_by_ratio)
     for i in range(len(frac_mean)):
-        plt.plot(allocate_ratio, np.array(acc_mean_by_ratio)[:,i], color=colors[i], marker=markers[i], alpha=.85,
+        plt.plot(allocate_ratio, np.array(acc_mean_by_ratio)[:,i],
+                 color=colors[i], marker=markers[i], alpha=.85,
                  ms=med_size, lw=lw,linestyle = '--', label= frac_mean[i])        
     # plt.xlim(right=1.03)
     plt.ylim([0, 1.03])
     # plt.xlim([-0.03, 1.03])
     # plt.ylim([0.0, 1.03])
+    plt.xlim([0.1/1.1, 10*1.1])
+    plt.xscale('log', base=10)
     plt.xlabel("Allocation ratio")
     plt.ylabel("Accuracy")
-    plt.legend(loc="lower right", fontsize=13.5, title='Observed fraction')
+    plt.legend(loc="lower right", fontsize=14, title='Observed fraction')
     # plt.xticks([0.2*i for i in range(5+1)])
     plt.savefig('../output/acc_vs_ratio_{}layers_{}nodes.pdf'.format(n_layer, n_node))
     plt.show() 
+
       
     
 def sample_node_obs(layer_link_list, real_node_list, virt_node_list, i_frac, i_ratio): 

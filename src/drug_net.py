@@ -6,24 +6,29 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mtransforms
-# from matplotlib import cm
 import networkx as nx
 from copy import deepcopy
 
 from sklearn.tree import DecisionTreeRegressor
-     
+
+
+# TODO: try fit_transform
+# from sklearn.preprocessing import Imputer
+# imp = Imputer(strategy="mean")
+# mat_no_NA = imp.fit_transform(mat_with_NA)
 
 class DrugNet():
     
     def __init__(self, path, layer_selected_list, is_save_data=False, 
-                 is_get_net_charac=False, is_plot=False, is_save_fig=False, **kwargs):
+                 is_get_net_charac=False, is_plot=False, is_save_fig=False, 
+                 **kwargs):
         '''     
         Parameters
             Path: path to the links of networks.
             layer_selected_list: list of layers to select
 
         Returns
-            excel file containing start and end node ids of each link in the selected layers.
+            csv file containing start and end node ids of each link in the selected layers.
             node ids are continuous and start from 0
         
         '''    
@@ -78,6 +83,11 @@ class DrugNet():
                 layer_selected_list = ['Co-Offenders', 'Formal Criminal Organization', 'Legitimate']
         '''
         self.link_df_select = self.link_df.loc[self.link_df['Type_relation'].isin(self.layer_selected_list)]
+
+    def rename_col(self):
+        self.link_df.rename(columns={'Actor_A': 'From', 'Actor_B': 'To', 'Type_relation': 'Relation'} , 
+                            inplace=True)
+        self.attr_df.rename(columns={'Actor_ID': 'Node_ID'}, inplace=True)  
     
     def correct_node_id(self):
         '''correct node id because some ids are skipped 
@@ -123,8 +133,8 @@ class DrugNet():
         
     def select_attr(self):
         self.attr_df = self.attr_df[['Node_ID', 'Gender', 'DOB_Year', 'Age_First_Analysis',
-                                       'Drug_Activity', 'Recode_Level', 'Drug_Type',
-                                       'Group_Membership_Type', 'Group_Membership_Code']]
+                                     'Drug_Activity', 'Recode_Level', 'Drug_Type',
+                                     'Group_Membership_Type', 'Group_Membership_Code']]
         
     def impute_miss_data(self):
         # if an actor is not involved in drug activity
@@ -188,7 +198,7 @@ class DrugNet():
             
     def gen_net(self):        
         G = nx.MultiGraph()
-        self.layer_id_list = self.link_df['Relation'].unique() .tolist()  
+        self.layer_id_list = self.link_df['Relation'].unique().tolist()  
         for _, row in self.link_df.iterrows():
             G.add_edge(row['From'], row['To'], label=row['Relation'])       
         self.G = G
@@ -201,9 +211,10 @@ class DrugNet():
                               if e['label']==self.layer_selected_list[i]]
             G_sub.add_edges_from(selected_edges)
             self.G_layer_list.append(G_sub)
-    
+
     def get_net_charac_sub(self, G):
-        # charac_list = ['density', average']
+        ''' get characteristics of each layer or the aggregate layer of a multilayer network
+        '''
         n_node = G.number_of_nodes()
         n_link = G.number_of_edges()
         
@@ -212,12 +223,14 @@ class DrugNet():
         cc_size = [len(c) for c in sorted(nx.connected_components(G), key=len, reverse=True)]
         cc_mean = np.mean(cc_size)
         
-        n_digit = 4
+        n_digit = 2
         print('--------- No. of nodes: ', n_node)
         print('--------- No. of links: ', n_link)
-        print('--------- Density: ', round(density, n_digit))
+        print('--------- Density/1000: ', round(density*1000, n_digit))
         print('--------- Average degree: ', round(degree_mean, n_digit))
         print('--------- Average size of connected component: ', round(cc_mean, n_digit))
+        print('--------- Size of the greatest connected component: ', round(max(cc_size), n_digit))
+        print('--------- CoV of connected components: ', round(np.std(cc_size)/cc_mean, n_digit))  
     
     def get_net_charac(self):
         print('\n--- Aggregate network')
@@ -270,7 +283,7 @@ class DrugNet():
         
 def main():
     path='../data/drug_net_raw_data.xlsx'
-    is_get_net_charac = False
+    is_get_net_charac = True
     if is_get_net_charac:
         layer_selected_2d_list = [['Co-Offenders', 'Legitimate', 'Formal Criminal Organization', 'Kinship']]    
     else:

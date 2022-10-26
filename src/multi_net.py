@@ -1,5 +1,17 @@
 # -*- coding: utf-8 -*-
 
+'''
+#  link density cam be derived by number of nodes and average degree, so average degreee can be removed from feature list
+# simplify the problem 
+    # two layers or just one layer   
+    # use synthetic random network to control a given feature, such as edge overlap rate
+    # extreme cases
+# same observation rate (e.g., 0.5), get the results
+# augment drug networks data with other combinations of 2 and 3 layers
+
+# relation between cond entropy ratio (rho_CH) and accuracy (MCC): MCC \propto 1 - beta for each network * rho_CH
+'''
+
 import os
 # os.chdir('c:/code/illicit_net_resil/src')
 
@@ -9,7 +21,7 @@ import matplotlib.pyplot as plt
 # from random import sample
 # import matplotlib.transforms as mtransforms
 # from matplotlib import cm
-import networkx as nx
+# import networkx as nx
 import multiprocessing as mp 
 # from functools import reduce
 from itertools import permutations, product
@@ -49,19 +61,12 @@ from my_utils import plotfuncs, npprint, copy_upper_to_lower
 
 
 '''
-# TODO: 
-        prove and show convergence
-        time complexity
-# TODO: what kind of observed part of networks gives the best reconstruction accuracy?
-        theoretical analysis using entropy
-        numerical analysis and empirical formula
-            the impact of link density and other structural features over different synthetic and real networks
-# predictive accuracy measured by higher-order effects / dynamical processes on networks
+# TODO: predictive accuracy measured by higher-order effects / dynamical processes on networks
 
 # import sys
 # sys.path.insert(0, './xxxx')
 # from xxxx import *
-# TODO: move Q[i,j] = A[i,j] for observed links outside for loop
+# TODO: 
     # : when the adj[i,j] is observed, how to save computational cost???
     # : avoid indexing those virtual observed nodes and lnks
     # : the current complexity is N_iter*(N_all^2 + N_obs^2)
@@ -539,9 +544,9 @@ class Reconstruct:
         
         # print('\n--- Estimation based on similarity done\n')
         # adj_pred_arr_simil = self.pred_adj_simil()
-        adj_pred_arr_EM_wo_agg_adj, sgl_link_prob_3d_wo_agg_adj = self.predict_adj_EM(
-            is_agg_topol_known=False, is_update_agg_topol=False)
-        mae_list_no_agg_adj = self.mae_link_prob
+        # adj_pred_arr_EM_wo_agg_adj, sgl_link_prob_3d_wo_agg_adj = self.predict_adj_EM(
+        #     is_agg_topol_known=False, is_update_agg_topol=False)
+        # # mae_list_no_agg_adj = self.mae_link_prob
         # for i_lyr in range(self.n_layer):
         #     print('------ # of predicted links in {} layer: {}'.\
         #           format(i_lyr, (adj_pred_arr_EM[i_lyr]>0.5).sum())) 
@@ -550,9 +555,15 @@ class Reconstruct:
         adj_pred_arr_EM_wt_agg_adj, sgl_link_prob_3d_wt_agg_adj = self.predict_adj_EM(
             is_agg_topol_known=False, is_update_agg_topol=True)
         # mae_list_with_agg_adj = self.mae_link_prob
-        import matplotlib
-        matplotlib.use('Agg')
-        Plots.plot_link_mae(mae_list_no_agg_adj, self.mae_link_prob)
+        # import matplotlib
+        # matplotlib.use('Agg')
+        # Plots.plot_link_mae(mae_list_no_agg_adj, self.mae_link_prob)
+
+        adj_pred_arr_EM_wo_agg_adj, sgl_link_prob_3d_wo_agg_adj = \
+            adj_pred_arr_EM_wt_agg_adj, sgl_link_prob_3d_wt_agg_adj
+            
+        # # mae_list_no_agg_adj = self.mae_link_prob
+        
         # for i_lyr in range(self.n_layer):
         #     print('\n------ # of predicted links in {} layer: {}'.\
         #           format(i_lyr, (adj_pred_arr_EM_no_agg_adj[i_lyr]>0.5).sum()))         
@@ -623,7 +634,7 @@ class Reconstruct:
                 print('------ margin_post_log2: ', margin_post_log2)
             # if margin_post != 0:    
             cond_entropy_log2 = joint_post_log2 + np.log2(-joint_post_log2 + margin_post_log2)
-            IG_ratio = joint_post_log2 / margin_post_log2
+            IG_ratio = margin_post_log2 / joint_post_log2
             return cond_entropy_log2, IG_ratio
             # print('------ cond_entropy_log2: ', cond_entropy_log2)
             # else:
@@ -663,7 +674,7 @@ class Reconstruct:
         # n_link_temp = np.count_nonzero(adj_temp==1)
 
 
-        edge_overlap_ratio_list = [np.count_nonzero(X == adj_temp)/total_possib_link for X in adj_pred_arr_sym_list]
+        edge_overlap_ratio_list = [np.count_nonzero(X == adj_temp)/self.n_node_total**2 for X in adj_pred_arr_sym_list]
 
             
 
@@ -1092,13 +1103,51 @@ def run_main():
 # net_name = 'toy'
 # n_node_total, n_layer = 6, 2
 
-# net_name = 'rand'
-# n_node_total, n_layer = 30, 2
 
-net_name = 'drug'
+# net_name = 'power'
+# n_node_total, n_layer = 500, 2
+# n_node_total, n_layer = 500, 3
+# n_node_total, n_layer = 500, 4
+# n_node_total, n_layer = 500, 5
+# n_node_total, n_layer = 500, 6
+
+
+net_name = 'dup'
+n_node_total = 400
+n_layer = 2
+# n_layer = 3
+# n_layer = 4
+# n_layer = 5
+# n_layer = 6
+
+# dup_frac = 0.0
+# dup_frac = 0.05
+# dup_frac = 0.2
+# dup_frac = 0.4
+# dup_frac = 0.6
+# dup_frac = 0.8
+dup_frac = 0.95
+net_name = net_name+str(dup_frac)
+file_name = '{}_{}layers_{}nodes'.format(net_name, n_layer, n_node_total)
+
+# net_name = 'dup'
+# n_node_total, n_layer = 500, 2
+# n_node_total, n_layer = 500, 3
+# n_node_total, n_layer = 500, 4
+# n_node_total, n_layer = 500, 5
+# n_node_total, n_layer = 500, 6
+
+# net_name = 'rand'
+# n_node_total, n_layer = 500, 2
+# n_node_total, n_layer = 500, 3
+# n_node_total, n_layer = 500, 4
+# n_node_total, n_layer = 500, 5
+# n_node_total, n_layer = 500, 6
+
+# net_name = 'drug'
 # n_node_total, n_layer = 2114, 2
 # n_node_total, n_layer = 2196, 4
-n_node_total, n_layer = 2139, 3
+# n_node_total, n_layer = 2139, 3
 # load each layer (a nx class object)
 # with open('../data/drug_net_layer_list.pkl', 'rb') as f:
 #     net_layer_list = load(f)
@@ -1118,9 +1167,10 @@ n_node_total, n_layer = 2139, 3
 # net_name = 'elegan'
 # n_node_total = 279
 # n_layer = 3
-
+# n_node_total = 273
+# n_layer = 2
   
-file_name = '{}_net_{}layers_{}nodes'.format(net_name, n_layer, n_node_total)
+# file_name = '{}_net_{}layers_{}nodes'.format(net_name, n_layer, n_node_total)
 layer_link_list = load_data('../data/{}.csv'.format(file_name))
 
 
@@ -1160,11 +1210,8 @@ model_list = ['EM with agg. topol.', 'EM without agg. topol.', 'Random model']
 n_metric = len(metric_list)
 n_model = len(model_list)
 n_frac = len(frac_list)
-n_rep = 5
+n_rep = 10
 itermax = 5
-# foo
-# cd c:\code\illicit_net_resil\src
-# python multi_net.py
 
 
 # parellel processing
@@ -1174,6 +1221,12 @@ if __name__ == '__main__':
     t00 = time()
     run_main()
     print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) )     
+    
+    
+# cd c:\code\illicit_net_resil\src
+# python multi_net.py
+    
+    
     # precision: tp / (tp + fp)
     # recall: tp / (tp + fn) = tp / P  # recall > precision since fn > fp
      

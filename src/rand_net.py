@@ -100,8 +100,8 @@ def gen_overlap_net(n_layer, n_node, p_list, f_dup):
     '''    
     if f_dup == 0:  #snp.all(np.array(f_dup) == 0):
         layer_link_list = gen_non_overlap_net(n_layer, n_node, p_list)
-    elif f_dup == 1:  #np.all(np.array(f_dup) == 1):       
-        layer_link_list = gen_dup_net(n_layer, n_node, p_list[0])
+    # elif f_dup == 1:  #np.all(np.array(f_dup) == 1):       
+    #     layer_link_list = gen_dup_net(n_layer, n_node, p_list[0])
     else:
         layer_link_list = []
         for i in range(n_layer):
@@ -110,8 +110,8 @@ def gen_overlap_net(n_layer, n_node, p_list, f_dup):
             if i >= 1:
                 # randomly select a fraction of links in the current layer to be replaced
                     # the new network maynot be totally random now
-                replaced_links = random.sample(links, int(len(links)*f_dup))
-                links = [i for i in links if i not in replaced_links]
+                links_to_replace = random.sample(links, int(len(links)*f_dup))
+                links = [x for x in links if x not in links_to_replace]
                 # add the randomly selected links from the previous layer
                 dup_links = random.sample(layer_link_list[i-1], int(len(links)*f_dup))
                 # change the layer id to current layer
@@ -154,7 +154,7 @@ def main():
     # link_prob = [0.05, 0.03, 0.02, 0.02, 0.02]
     link_prob = [x*0.001 for x in [5, 4, 3.5, 3, 3, 4]]
     # net_type_list = ['non-dup'] #'dup'] #['rand'] #, 'power']
-    f_dup_list = [round(i*0.2, 2) for i in range (0, 6)]  #[i/10 for i in range(11)]
+    f_dup_list = [1]  #[round(i*0.2, 2) for i in range (0, 6)]  #[i/10 for i in range(11)]
     for f_dup in f_dup_list:
         for n_node in n_node_list:
             for n_layer in n_layer_list:
@@ -163,7 +163,7 @@ def main():
                 link_df = pd.DataFrame(layer_link_list, columns=['From', 'To', 'Relation'])
                 # link_df.to_excel("../data/rand_net_{}layers_{}nodes.xlsx".format(n_layer, n_node),
                 #                   index=False) 
-                link_df.to_csv("../data/rand_net_fdup_{}_{}layers_{}nodes.csv".format(f_dup, n_layer, n_node),
+                link_df.to_csv("../data/dup{}_{}layers_{}nodes.csv".format(f_dup, n_layer, n_node),
                                index=False) 
 if __name__ == '__main__':
     main()
