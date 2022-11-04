@@ -1,4 +1,4 @@
-# Multiple Network Reconstruction
+# Multiplex Network Reconstruction
 This is the implementation of numerical experiments in our paper titled *Reconstructing Multiplex Networks with Application to Covert Networks*.
 
 # Requirements
