@@ -3,7 +3,7 @@ This is the implementation of numerical experiments in our paper titled *Reconst
 
 # Requirements
 ### Software
-**Python: 3.8.3** 
+Python: 3.8.3 
 
 ### Packages
-**networkx 2.8.4**
+networkx 2.8.4
