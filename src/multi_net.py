@@ -13,10 +13,10 @@
 '''
 
 import os
-# os.chdir('c:/code/illicit_net_resil/src')
+# os.chdir('c:/code/multiplex_recon/src')
 
-import numpy as np
-import pandas as pd
+import numpy as np  # 1.19.2
+import pandas as pd  # 1.4.4
 import matplotlib.pyplot as plt
 # from random import sample
 # import matplotlib.transforms as mtransforms
@@ -30,23 +30,19 @@ from copy import deepcopy
 # from pickle import load
 # from prg import prg
 from time import time
-import numba
+import numba  # 0.55.1
+# print(numba.__version__)
 # conda install -c numba numba
 
 # metrics
-from sklearn.metrics import auc, confusion_matrix
+from sklearn.metrics import auc, confusion_matrix  # sklearn 1.1.1
 from sklearn.metrics import precision_score, recall_score, precision_recall_curve 
 from sklearn.metrics import matthews_corrcoef, accuracy_score
 # from sklearn.metrics import f1_score #balanced_accuracy_score 
 # from sklearn.metrics.cluster import fowlkes_mallows_score # geometric mean (G-mean)
-from imblearn.metrics import geometric_mean_score
+from imblearn.metrics import geometric_mean_score  # imlearn 0.7.0
 # conda install -c conda-forge imbalanced-learn
 
-
-# other methods
-# from matrix_completion import svt_solve
-# conda install -c conda-forge cvxpy
-# pip install matrix-completion
 
 from my_utils import plotfuncs, npprint, copy_upper_to_lower
 
@@ -328,14 +324,12 @@ class Reconstruct:
         self.agg_adj = self.agg_deg_seq[:, None]*self.agg_deg_seq[:].T / (sum(self.agg_deg_seq) - 1)          
         
         # rectify agg adj entries where associated links are observed in any layer       
-        # this seems to be the major reason behind performance improvement
         for i_lyr in range(self.n_layer):
             mask = self.obs_link_mask_list[i_lyr]
             self.agg_adj[mask] = 1 - np.prod(1 - self.adj_true_arr, axis=0)[mask]     
         self.agg_adj[self.agg_adj<0] = 0 
         self.agg_adj[self.agg_adj>1] = 1
-        
-        # print('\n------ self.agg_adj: ', self.agg_adj)
+
     
     def cal_link_prob_deg(self):
         ''' calculate link probability between two nodes using their degrees (configuration model)
@@ -1148,16 +1142,16 @@ def run_main():
 # n_node_total, n_layer = 500, 5
 # n_node_total, n_layer = 500, 6
 
-net_name = 'drug'
+# net_name = 'drug'
 # n_node_total, n_layer = 2114, 2
-n_node_total, n_layer = 2196, 4
+# n_node_total, n_layer = 2196, 4
 # n_node_total, n_layer = 2139, 3
 # load each layer (a nx class object)
 # with open('../data/drug_net_layer_list.pkl', 'rb') as f:
 #     net_layer_list = load(f)
 
-# net_name = 'mafia'
-# n_node_total, n_layer = 143, 2
+net_name = 'mafia'
+n_node_total, n_layer = 143, 2
 
 # net_name = 'london_transport'
 # n_node_total = 356
@@ -1201,7 +1195,7 @@ layer_real_node, layer_virt_node = get_layer_node_list(layer_link_list, n_layer,
 
 frac_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9] 
 # frac_list = [0.1, 0.2, 0.3, 0.5, 0.7, 0.9, 0.95] 
-# frac_list = [0.7] 
+# frac_list = [0.4, 0.7] 
 # frac_list = [0.1, 0.2, 0.4, 0.6, 0.8, 0.9]
 n_real_node = [len(layer_real_node[i]) for i in range(n_layer)]
 n_real_node_obs = [[int(frac*n_real_node[i]) for i in range(n_layer)] for frac in frac_list]     
@@ -1210,13 +1204,12 @@ metric_list = ['Recall_range', 'Precision_range', 'AUC-PR', 'G-mean', 'MCC', 'Re
                'TN', 'FP', 'FN', 'TP', 'Log_H', 'IG_ratio', 'ave_deg', 'link_density', 'edge_overlap_ratio']
 # model_list = ['DegEM'] + ['Jaccard', 'Resource Allocation', 'Adamic Adar', 'Prefer. Attachment',
 #                           'Eskin', 'Random Model', 'Random Walk']#, 'NN']   'CN']
-model_list = ['EM with agg. topol.', 'EM without agg. topol.', 'Random model']
+model_list = ['EMA', 'EM', 'RM']
 n_metric = len(metric_list)
 n_model = len(model_list)
 n_frac = len(frac_list)
-n_rep = 10
-itermax = 5
-
+n_rep = 50
+itermax = 8
 
 
 # parellel processing
@@ -1225,10 +1218,12 @@ if __name__ == '__main__':
     matplotlib.use('Agg')
     t00 = time()
     run_main()
+    print('Net: ', net_name)
+    print('n layers: ', n_layer)
     print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) )     
     
     
-# cd c:\code\illicit_net_resil\src
+# cd c:\code\multiplex_recon\src
 # python multi_net.py
     
     

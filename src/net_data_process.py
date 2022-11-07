@@ -332,9 +332,9 @@ def main_elegan():
     path = '../data/C_Elegans/'
     net_name = 'elegan'
     is_get_net_charac = True
-    elegan = Elegan(path=path, net_name=net_name, layer_name_ls = ['Chemical', 'Polyadic'],
-                    is_save_data=True,
-                    is_get_net_charac=is_get_net_charac)
+    elegan = Elegan(path=path, net_name=net_name,
+                    layer_name_ls = ['Electric','Chemical', 'Polyadic'],
+                    is_save_data=False, is_get_net_charac=is_get_net_charac)
     elegan.main()
 # # self = elegan
 # if __name__ == '__main__':
@@ -345,8 +345,8 @@ def main_london_transport():
     net_name = 'london_transport'
     is_get_net_charac = True
     london_transport = Elegan(path=path, net_name=net_name,
-                    layer_name_ls = ['Underground', 'Overground', 'Lightrail' ],
-                    is_save_data=True, is_get_net_charac=is_get_net_charac)
+                              layer_name_ls = ['Underground', 'Overground', 'Lightrail' ],
+                              is_save_data=False, is_get_net_charac=is_get_net_charac)
     london_transport.main()
 
 if __name__ == '__main__':
@@ -388,7 +388,7 @@ def main_noordin():
     path = '../data/noordin_terrorist/noordin_terrorist_raw.csv'
     net_name = 'noordin'
     is_get_net_charac = True
-    noordin = Noordin(path=path, net_name=net_name, is_save_data=True,
+    noordin = Noordin(path=path, net_name=net_name, is_save_data=False,
                       is_get_net_charac=is_get_net_charac)
     noordin.main()
 
@@ -543,11 +543,11 @@ def main_drug():
 def main_mafia():
     path='../data/sicilian_mafia/edge_list_raw.csv'
     net_name = 'mafia'
-    mafia = Net(path=path, net_name=net_name, is_save_data=True, is_get_net_charac=True)
+    mafia = Net(path=path, net_name=net_name, is_save_data=False, is_get_net_charac=True)
     mafia.main()
     
 # import os
-# os.chdir('c:/code/illicit_net_resil/src')
+# os.chdir('c:/code/multiplex_recon/src')
 
 # if __name__ == '__main__':
     
