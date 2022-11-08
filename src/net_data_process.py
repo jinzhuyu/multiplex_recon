@@ -10,6 +10,10 @@ import matplotlib.transforms as mtransforms
 import networkx as nx
 from copy import deepcopy
 
+# use for running code within IDE
+# import os
+# os.chdir('c:/code/multiplex_recon/src')
+
 class Net():    
     def __init__(self, path, net_name, 
                  is_save_data=False, is_get_net_charac=False, 
@@ -260,10 +264,6 @@ def main_embassy_bomb():
         embassy_bomb = AusBomb(path=path, net_name=net_name, is_save_data=True,
                            is_get_net_charac=is_get_net_charac)
         embassy_bomb.main()
-# # self = embassy_bomb
-# if __name__ == '__main__':
-#     main_embassy_bomb()
-
 
 
 # Caenorhabditis elegans connectome, where the multiplex consists of layers corresponding
@@ -336,9 +336,6 @@ def main_elegan():
                     layer_name_ls = ['Electric','Chemical', 'Polyadic'],
                     is_save_data=False, is_get_net_charac=is_get_net_charac)
     elegan.main()
-# # self = elegan
-# if __name__ == '__main__':
-#     main_elegan()
 
 def main_london_transport():
     path = '../data/London_transport/'
@@ -349,8 +346,6 @@ def main_london_transport():
                               is_save_data=False, is_get_net_charac=is_get_net_charac)
     london_transport.main()
 
-if __name__ == '__main__':
-    main_london_transport()
 
 # noordin top terrorist networks
 class Noordin(Net):
@@ -392,7 +387,6 @@ def main_noordin():
                       is_get_net_charac=is_get_net_charac)
     noordin.main()
 
-# self = noordin
 
 # drug trafficking network
 class DrugNet(Net):    
@@ -546,12 +540,10 @@ def main_mafia():
     mafia = Net(path=path, net_name=net_name, is_save_data=False, is_get_net_charac=True)
     mafia.main()
     
-# import os
-# os.chdir('c:/code/multiplex_recon/src')
 
-# if __name__ == '__main__':
-    
-#     # main_drug()
-#     # main_mafia()
-#     from glob import glob
-#     main_embassy_bomb()
+# the other multiplex networks are not used in the manuscript
+if __name__ == '__main__':
+    main_elegan()
+    main_london_transport()    
+    main_drug()
+    main_mafia()
