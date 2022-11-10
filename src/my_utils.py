@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from itertools import permutations
 import networkx as nx
 import pickle
@@ -113,6 +114,15 @@ def get_largest_idx(array, n):
     indices = np.argpartition(flat, -n)[-n:]
     indices = indices[np.argsort(-flat[indices])]
     return np.unravel_index(indices, array.shape)
+
+def load_data(path):
+    link_df = pd.read_csv(path)
+    relation_list = link_df['Relation'].unique().tolist()
+    layer_link_list = []
+    for idx, ele in enumerate(relation_list):
+        link_temp = link_df.loc[link_df['Relation']== ele, ['From', 'To']].values.tolist()
+        layer_link_list.append(link_temp)    
+    return layer_link_list, relation_list
 
 def save_pickle(obj, path):
        try:
