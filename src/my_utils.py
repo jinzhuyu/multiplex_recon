@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from itertools import permutations
 import networkx as nx
-
+import pickle
 # __all__ = []
 
 class plotfuncs:
@@ -114,6 +114,19 @@ def get_largest_idx(array, n):
     indices = indices[np.argsort(-flat[indices])]
     return np.unravel_index(indices, array.shape)
 
+def save_pickle(obj, path):
+       try:
+           with open(path, 'wb') as f:
+               pickle.dump(results, f, protocol=pickle.HIGHEST_PROTOCOL)
+       except Exception as ex:
+           print("Error during pickling object (Possibly unsupported):", ex)
+
+def load_object(path):
+    try:
+        with open(path, "rb") as f:
+            return pickle.load(f)
+    except Exception as ex:
+        print("Error during unpickling object (Possibly unsupported):", ex)
 # @numba.njit
 # def get_permuts_half_numba(vec: np.ndarray):
 #     k, size = 0, vec.size
@@ -126,20 +139,6 @@ def get_largest_idx(array, n):
 # if mat has more than 5000 elements use pairwise_multiply_iterative_slicing
 # https://stackoverflow.com/questions/62012339/efficiently-computing-all-pairwise-products-of-a-given-vectors-elements-in-nump/62012545#62012545
 
-# t0 = time()
-# aa0 = get_permuts_half(list(range(2000)))
-# print(time()-t0)
-
-# t0 = time()
-# aa1 = get_permuts_half_nb(list(range(2000)))
-# print(time()-t0)
-
-# t0 = time()
-# a_list = list(range(2000))
-# a_arr = np.array(a_list)
-# aa = get_permuts_half_numba(a_arr)
-# aa2 = aa.tolist()
-# print(time()-t0)
 
 
 def sample_deg_corr(G, f=0.1, edges=None, probs=None):

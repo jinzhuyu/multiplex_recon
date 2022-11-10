@@ -17,6 +17,7 @@ import os
 
 import numpy as np  # 1.19.2
 import pandas as pd  # 1.4.4
+import matplotlib
 import matplotlib.pyplot as plt
 # from random import sample
 # import matplotlib.transforms as mtransforms
@@ -44,7 +45,7 @@ from imblearn.metrics import geometric_mean_score  # imlearn 0.7.0
 # conda install -c conda-forge imbalanced-learn
 
 
-from my_utils import plotfuncs, npprint, copy_upper_to_lower
+from my_utils import plotfuncs, npprint, copy_upper_to_lower, save_pickle
 
 # from stellargraph import StellarGraph
 # from stellargraph.data import UnsupervisedSampler
@@ -297,9 +298,7 @@ class Reconstruct:
         #     n_link_obs_temp = (self.adj_true_arr[i_lyr][(real_virt_link_obs[0], real_virt_link_obs[1])] == 1).sum()
         #     self.n_link_obs.append(n_link_obs_temp)
         #     self.n_link_left.append(self.n_link_total_by_layer[i_lyr] - n_link_obs_temp)
-                    
-        # smaller than actual n_link_obs
-        # print('------ n_link_obs:', self.n_link_obs)       
+     
         self.n_link_left = []
         adj_true_unobs_list = [[] for _ in range(self.n_layer)]
         for i_lyr in range(self.n_layer):
@@ -495,43 +494,6 @@ class Reconstruct:
             self.adj_pred_arr_add[i_lyr][mask] /= adj_max_temp[mask]
         return self.adj_pred_arr_add()
     
-    # def prefer_attach(self):
-    #     '''generate links between a new node and existing nodes probabilistically using preferential attachment 
-    #        link probability is proportional to the degree of existing nodes.
-             # cannot guarantee that the total number of links is equal to the number of links to predict
-    #     '''
-    #     # randomly generate a link
-    #     # degree of nodes in current networks
-    #     deg_list = []
-    #     PA_score = 
-    #     link_prob_norm = PA_score / sum(PA_score)
-
-
-
-# n = 6
-# bb = np.random.normal(0,1,(n,n))
-# aa = np.random.normal(0,1,(2, n,n))
-# mask = (bb >0.5) & (np.sum(aa < 0.5, axis=0) == 2)
-
-# np.max(aa, axis=0)[mask]
-    # using matrix factorization
-    # def MF_nonbin(self):
-    #     adj_pred_nm_nb = []
-    #     for i_lyr in range(2):
-    #         print('\n------ layer: ', i_lyr)
-    #         is_obs_arr = np.zeros((self.n_node_total, self.n_node_total))
-    #         # for this method, the lower triangle is considered as well
-    #         link_obs_temp = np.array(self.layer_possib_link_obs[i_lyr])
-    #         obs_idx_start = link_obs_temp.flatten('F')
-    #         link_obs_temp[:, [0,1]] = link_obs_temp[:, [1,0]]
-    #         obs_idx_end = link_obs_temp.flatten('F')
-    #         # the mask indicating node obs is (is_obs_start, is_obs_end)
-    #         is_obs_arr[(obs_idx_start, obs_idx_end)] = 1
-    #         adj_pred_temp = svt_solve(self.adj_true_arr[i_lyr].astype(float),
-    #                                   is_obs_arr, max_iterations=200)
-    #         adj_pred_nm_nb.append(adj_pred_temp)
-    #         print('------ count of 1 in the predicted mat: ', np.count_nonzero(adj_pred_temp == 1))
-    #     return adj_pred_nm_nb
 
     def random_model(self):
         '''randomly select no of links left among the unobserved links
@@ -549,32 +511,14 @@ class Reconstruct:
            
     def run_all_models(self):
         
-        # print('\n--- Estimation based on similarity done\n')
-        # adj_pred_arr_simil = self.pred_adj_simil()
         adj_pred_arr_EM_wo_agg_adj, sgl_link_prob_3d_wo_agg_adj = self.predict_adj_EM(
             is_agg_topol_known=False, is_update_agg_topol=False)
-        # # mae_list_no_agg_adj = self.mae_link_prob
-        # for i_lyr in range(self.n_layer):
-        #     print('------ # of predicted links in {} layer: {}'.\
-        #           format(i_lyr, (adj_pred_arr_EM[i_lyr]>0.5).sum())) 
-
-        # adj_pred_arr_EM_add = self.update_EM_add()
+        mae_list_no_agg_adj = self.mae_link_prob
+ 
         adj_pred_arr_EM_wt_agg_adj, sgl_link_prob_3d_wt_agg_adj = self.predict_adj_EM(
             is_agg_topol_known=False, is_update_agg_topol=True)
-        # mae_list_with_agg_adj = self.mae_link_prob
-        # import matplotlib
-        # matplotlib.use('Agg')
-        # Plots.plot_link_mae(mae_list_no_agg_adj, self.mae_link_prob)
-            
-        # # mae_list_no_agg_adj = self.mae_link_prob
-        
-        # for i_lyr in range(self.n_layer):
-        #     print('\n------ # of predicted links in {} layer: {}'.\
-        #           format(i_lyr, (adj_pred_arr_EM_no_agg_adj[i_lyr]>0.5).sum()))         
-                
-        # adj_pred_arr_simil = self.pred_adj_simil()
-        # print('\n--- Estimation based on neural networks\n')
-        # adj_pred_arr_nn = self.rw_nn()
+        mae_list_with_agg_adj = self.mae_link_prob
+
         adj_pred_arr_rm =  self.random_model()
         
         print('--- Done running all models\n')
@@ -668,9 +612,8 @@ class Reconstruct:
        
         # link density
         total_possib_link = self.n_node_total * (self.n_node_total - 1) / 2
-        link_density_list = [np.count_nonzero(X==1)/total_possib_link for X in adj_pred_arr_sym_list]
-        
-        print('--- link_density: ', link_density_list)
+        link_density_list = [np.count_nonzero(X==1)/total_possib_link for X in adj_pred_arr_sym_list]       
+        # print('--- link_density: ', link_density_list)
         
         # edge overlap compared to the layer with most links
         idx_temp = link_density_list.index(max(link_density_list))
@@ -707,9 +650,7 @@ class Reconstruct:
         # b_acc = balanced_accuracy_score(self.adj_true_unobs, adj_pred_unobs)  #balanced_accuracy_score
         # metric_value = [recall, precision, auc_pr, gmean, mcc] #, f1] 
         tn, fp, fn, tp = confusion_matrix(self.adj_true_unobs, adj_pred_unobs, labels=[0, 1]).ravel()
-        
-        # print('\n------ auc_pr, gmean, mcc, recall_val, precision_val: ', auc_pr, gmean, mcc, recall_val, precision_val)
-        
+              
         # conditional entropy log2
         cond_entropy_log2, IG_ratio = self.cal_cond_entropy(np.round(adj_pred_arr), sgl_link_prob)
 
@@ -773,6 +714,7 @@ class Plots:
     linestyles = plotfuncs.get_linestyles()          
     
     def plot_link_mae(mae_list_no_agg_adj, mae_list_with_agg_adj):
+        matplotlib.use('Agg')
         plt.figure(figsize=(5, 4), dpi=400)
         plt.plot(range(len(mae_list_no_agg_adj)), mae_list_no_agg_adj, label='Without agg. adj')
         plt.plot(range(len(mae_list_with_agg_adj)), mae_list_with_agg_adj, label='With agg. adj')
@@ -868,7 +810,7 @@ class Plots:
             # handles, labels = ax.get_legend_handles_labels()
             # ax.legend(reversed(handles), reversed(labels), title=r'$c$', loc='lower left', fontsize=14.5,)        
             plt.savefig('../output/{}_prc_frac{}_{}layers_{}nodes.pdf'.format(
-                net_name, frac_list[i_frac],n_layer, n_node_total))
+                net_name, frac_list[i_frac], n_layer, n_node_total))
             plt.show()
 
     # def plot_other(frac_list, metric_mean_by_frac, n_layer, n_node_total):
@@ -903,7 +845,7 @@ def load_data(path):
     for idx, ele in enumerate(relation_list):
         link_temp = link_df.loc[link_df['Relation']== ele, ['From', 'To']].values.tolist()
         layer_link_list.append(link_temp)    
-    return layer_link_list
+    return layer_link_list, relation_list
 
 
 def get_layer_node_list(layer_link_list, n_layer, n_node_total):
@@ -951,13 +893,9 @@ def get_permuts_half_numba(vec: np.ndarray):
 
 # i_frac = 0
 # for 2 layer 6 node toy net, real_virt_node_obs = [[0,1,2], [0,4,5]] leads to zero error
-def single_run(i_frac):  #, layer_link_list, n_node_total):
+def single_run(i_frac):
     metric_value_rep_list = []
     for i_rep in range(n_rep):
-        # real_virt_node_obs, layer_link_unobs_list = sample_node_obs(layer_link_list, layer_real_node,
-        #                                                       layer_virt_node, i_frac)
-        # t000 = time()
-        # foo
         real_node_obs = [np.random.choice(layer_real_node[i_lyr], n_real_node_obs[i_frac][i_lyr],
                          replace=False).tolist() for i_lyr in range(n_layer)]
         [ele.sort() for ele in real_node_obs]            
@@ -981,16 +919,18 @@ def single_run(i_frac):  #, layer_link_list, n_node_total):
 # self = reconst
 # reconst.print_result()
 
-def paral_run():
+def paral_run(is_save=True):
     n_cpu = mp.cpu_count()
     if n_cpu <= 8:
         n_cpu = int(n_cpu*0.4)
     else:
         n_cpu = int(n_cpu*0.6)
-    
-    # print('=== # of CPUs used: ', n_cpu)
+
     with mp.Pool(n_cpu) as pool:
         results = pool.map(single_run, range(n_frac))
+    if is_save:
+       path = '../output/{}_{}layers_{}nodes_result.pickle'.format(net_name, n_layer, n_node_total)
+       save_pickle(resutls, path)
     return results
 
 # results include metric_value_rep_list for each frac. 
@@ -1049,7 +989,7 @@ def get_metric_mean(results):
                     metric_value_by_frac[i_mtc][i_mdl][i_frac].append(results[i_frac][i_rep][i_mdl][i_mtc])     
     # calculate the mean
     metric_mean_by_frac = [ [[ [] for _ in frac_list] for _ in model_list] for _ in metric_list]   
-    recall_mean = np.linspace(0, 1, 80)
+    recall_mean = np.linspace(0, 1, 50)
     for i_mtc, mtc in enumerate(metric_list):
         for i_mdl in range(n_model):
             if mtc == 'Recall_range':
@@ -1080,6 +1020,9 @@ def get_metric_mean(results):
                 for i_frac in range(n_frac):  
                     metric_mean_by_frac[i_mtc][i_mdl][i_frac] = np.mean(
                         np.array(metric_value_by_frac[i_mtc][i_mdl][i_frac]), axis=0)
+    if is_save:
+       path = '../output/{}_{}layers_{}nodes_result_mean.pickle'.format(net_name, n_layer, n_node_total)
+       save_pickle(metric_mean_by_frac, path)
     return metric_mean_by_frac      
 
 
@@ -1142,16 +1085,16 @@ def run_main():
 # n_node_total, n_layer = 500, 5
 # n_node_total, n_layer = 500, 6
 
-# net_name = 'drug'
+net_name = 'drug'
 # n_node_total, n_layer = 2114, 2
-# n_node_total, n_layer = 2196, 4
+n_node_total, n_layer = 2196, 4
 # n_node_total, n_layer = 2139, 3
 # load each layer (a nx class object)
 # with open('../data/drug_net_layer_list.pkl', 'rb') as f:
 #     net_layer_list = load(f)
 
-net_name = 'mafia'
-n_node_total, n_layer = 143, 2
+# net_name = 'mafia'
+# n_node_total, n_layer = 143, 2
 
 # net_name = 'london_transport'
 # n_node_total = 356
@@ -1169,14 +1112,7 @@ n_node_total, n_layer = 143, 2
 # n_layer = 2
   
 file_name = '{}_net_{}layers_{}nodes'.format(net_name, n_layer, n_node_total)
-layer_link_list = load_data('../data/{}.csv'.format(file_name))
-
-
-
-# find overlap edges
-layer_link_tuple = [tuple(item) for sublist in layer_link_list for item in sublist]
-from collections import Counter
-overlap_link = [ele for ele, cnt in Counter(layer_link_tuple).items() if cnt >= n_layer]
+layer_link_list, relation_list = load_data('../data/{}.csv'.format(file_name))
 
 
 if net_name == 'drug':
@@ -1212,15 +1148,15 @@ n_rep = 50
 itermax = 8
 
 
-# parellel processing
-if __name__ == '__main__': 
-    import matplotlib
-    matplotlib.use('Agg')
-    t00 = time()
-    run_main()
-    print('Net: ', net_name)
-    print('n layers: ', n_layer)
-    print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) )     
+# # parellel processing
+# if __name__ == '__main__': 
+#     import matplotlib
+#     matplotlib.use('Agg')
+#     t00 = time()
+#     run_main()
+#     print('Net: ', net_name)
+#     print('n layers: ', n_layer)
+#     print('Total elapsed time: {} mins'.format( round( (time()-t00)/60, 4) ) )     
     
     
 # cd c:\code\multiplex_recon\src
