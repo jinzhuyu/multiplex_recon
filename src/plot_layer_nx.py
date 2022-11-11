@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import matplotlib.pyplot as plt
+from matplotlib import cm
 import numpy as np
 import networkx as nx
 # import matplotlib.transforms as mtransforms
@@ -18,14 +19,20 @@ def draw_net_comp(G, n_row, n_col):
     '''
     # node size by degre
     deg = np.array(list(dict(G.degree).values()))
-    size_min = 40/n_row/n_col
-    size_max = size_min * 8
+    if n_col == 3 and n_row == 1:
+        size_min = 30
+    if n_col == 2 and n_row == 1:
+        size_min = 35
+    if n_col == 2 and n_row == 2:
+        size_min = 10
+    size_max = size_min * 9
     node_size = rescale(deg, min(deg), max(deg), size_min, size_max)
     # node color by component size
     Gcc = sorted(nx.connected_components(G), key=len, reverse=True)
+    cmap = cm.get_cmap('viridis_r')
     if len(Gcc) == 1: # all nodes are connected
         print('--- All nodes are connected')
-        node_color = 'yellow'
+        node_color = cmap.colors[-1]
     else:
         node_comp_size = [(n, len(c)) for i,c in enumerate(Gcc, 1) for n in c]
         # change to the sequence of node ids of G
@@ -36,7 +43,8 @@ def draw_net_comp(G, n_row, n_col):
     nx.draw(G, pos=nx.nx_agraph.graphviz_layout(G, prog="neato"), 
             node_color=node_color,
             node_size=node_size,
-            edge_color='grey')
+            edge_color='grey',
+            cmap = cmap)
 
 def draw_layers(layer_link_list, relation_list, net_name, n_layer, n_node_total, is_save_fig=False):
    
@@ -77,13 +85,13 @@ def draw_layers(layer_link_list, relation_list, net_name, n_layer, n_node_total,
                  orientation='horizontal',
                  shrink=cbar_shrink, aspect=90, pad=-0.02,
                  ticks=[0, 1])
-    cbar.ax.set_xticklabels(['Small', 'Large'])
+    cbar.ax.set_xticklabels(['Large', 'Small'])
     cbar.ax.tick_params(labelsize=font_size-2)
     cbar.ax.get_xaxis().labelpad = 0
     cbar.ax.set_xlabel('Size of connected component', size=font_size-2)
     #save fig
     if is_save_fig:
-        file_name = '../output/{}_net_{}layers_{}nodes'.format(net_name, n_layer, n_node_total)
+        file_name = '../output/layers_plot/{}_net_{}layers_{}nodes'.format(net_name, n_layer, n_node_total)
         # plt.savefig(file_name +'.png', dpi=800)
         plt.savefig(file_name +'.pdf', dpi=500)
     plt.show()
