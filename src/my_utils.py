@@ -13,13 +13,13 @@ class plotfuncs:
         SMALL = 13*size_scale
         MEDIUM = 15*size_scale
         LARGE = 16*size_scale
-        lw_small = 1.1*size_scale
+        LW_SMALL = 1.1*size_scale
         
         # plt.style.use('classic')
         
         plt.rcParams["font.family"] = "Arial"  #Comic Sans MS, Arial, Helvetica Neue
         plt.rcParams['font.weight']= 'normal'
-        plt.rcParams['figure.figsize'] = (6, 6*3/4)
+        # plt.rcParams['figure.figsize'] = (6, 6*3/4)
         plt.rcParams['figure.titlesize'] = LARGE   
         plt.rcParams['figure.facecolor'] = 'white'
         plt.rcParams['figure.dpi'] = 500
@@ -29,16 +29,16 @@ class plotfuncs:
     
         plt.rcParams['axes.titlepad'] = LARGE + 2  # title to figure
         plt.rcParams['axes.labelpad'] = 3.5 # x y labels to figure
-        plt.rc('axes', titlesize=MEDIUM, labelsize=MEDIUM, linewidth=lw_small)    # fontsize of the axes title, the x and y labels
-        plt.rcParams['xtick.major.width'] = lw_small
-        plt.rcParams['ytick.minor.width'] = lw_small       
+        plt.rc('axes', titlesize=MEDIUM, labelsize=MEDIUM, linewidth=LW_SMALL)    # fontsize of the axes title, the x and y labels
+        plt.rcParams['xtick.major.width'] = LW_SMALL
+        plt.rcParams['ytick.minor.width'] = LW_SMALL       
         
         plt.rcParams['ytick.right'] = False
         plt.rcParams['xtick.top'] = False
         # plt.rcParams['xtick.minor.visible'] = True
         # plt.rcParams['ytick.minor.visible'] = True
     
-        plt.rc('lines', linewidth=1.8, markersize=5) #, markeredgecolor='none')
+        plt.rc('lines', linewidth=1.1, markersize=10) #, markeredgecolor='none')
         
         plt.rc('xtick', labelsize=MEDIUM)
         plt.rc('ytick', labelsize=MEDIUM)
@@ -58,7 +58,7 @@ class plotfuncs:
     
         
         plt.rcParams['savefig.bbox'] = 'tight'
-        plt.rcParams['savefig.dpi'] = 800
+        plt.rcParams['savefig.dpi'] = 600
         
         
     def get_linestyles():
@@ -127,7 +127,7 @@ def load_data(path):
 def save_pickle(obj, path):
        try:
            with open(path, 'wb') as f:
-               pickle.dump(results, f, protocol=pickle.HIGHEST_PROTOCOL)
+               pickle.dump(obj, f, protocol=pickle.HIGHEST_PROTOCOL)
        except Exception as ex:
            print("Error during pickling object (Possibly unsupported):", ex)
 
@@ -137,6 +137,8 @@ def load_object(path):
             return pickle.load(f)
     except Exception as ex:
         print("Error during unpickling object (Possibly unsupported):", ex)
+
+
 # @numba.njit
 # def get_permuts_half_numba(vec: np.ndarray):
 #     k, size = 0, vec.size
@@ -149,6 +151,9 @@ def load_object(path):
 # if mat has more than 5000 elements use pairwise_multiply_iterative_slicing
 # https://stackoverflow.com/questions/62012339/efficiently-computing-all-pairwise-products-of-a-given-vectors-elements-in-nump/62012545#62012545
 
+
+def hel_dist(p, q):
+    return np.sqrt(np.sum((np.sqrt(p) - np.sqrt(q)) ** 2)) / np.sqrt(2)
 
 
 def sample_deg_corr(G, f=0.1, edges=None, probs=None):

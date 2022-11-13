@@ -4,15 +4,14 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
 import networkx as nx
-# import matplotlib.transforms as mtransforms
-import string
+from string import ascii_uppercase
 
 from my_utils import load_data
 
 def rescale(x,a,b,c,d):
     return c + (x-a)/(b-a)*(d-c)
 
-def draw_net_comp(G, n_row, n_col):
+def plot_net_comp(G, n_row, n_col):
     ''' plot network. Node size proportional to degree and node color by component membership
     # get connected component ids
     # https://stackoverflow.com/questions/68235334/how-to-generate-the-component-id-in-the-networkx-graph/68235670#68235670
@@ -46,8 +45,8 @@ def draw_net_comp(G, n_row, n_col):
             edge_color='grey',
             cmap = cmap)
 
-def draw_layers(layer_link_list, relation_list, net_name, n_layer, n_node_total, is_save_fig=False):
-   
+
+def plot_layers(layer_link_list, relation_list, net_name, n_layer, n_node_total, is_save_fig=False):   
     # subplots with labels
     if n_layer == 2 or n_layer == 4:
         n_col = 2
@@ -76,15 +75,13 @@ def draw_layers(layer_link_list, relation_list, net_name, n_layer, n_node_total,
     for n, ax in enumerate(axes_flat):
         G = nx.from_edgelist(layer_link_list[n])
         plt.sca(ax)
-        im = draw_net_comp(G, n_row, n_col) 
-        # ax.set_title(string.ascii_uppercase[n] + '. {}'.format(relation_list[n]), 
-        #              size=font_size, pad=-0.03)
-        ax.text(0.083, 0.96, string.ascii_uppercase[n] + '. {}'.format(relation_list[n]),
+        im = plot_net_comp(G, n_row, n_col) 
+        ax.text(0.083, 0.96, ascii_uppercase[n] + '. {}'.format(relation_list[n]),
                 transform=ax.transAxes, size=font_size) 
     cbar = fig.colorbar(im, ax=axes.ravel().tolist(),
-                 orientation='horizontal',
-                 shrink=cbar_shrink, aspect=90, pad=-0.02,
-                 ticks=[0, 1])
+                        orientation='horizontal',
+                        shrink=cbar_shrink, aspect=90, pad=-0.02,
+                        ticks=[0, 1])
     cbar.ax.set_xticklabels(['Large', 'Small'])
     cbar.ax.tick_params(labelsize=font_size-2)
     cbar.ax.get_xaxis().labelpad = 0
@@ -96,32 +93,32 @@ def draw_layers(layer_link_list, relation_list, net_name, n_layer, n_node_total,
         plt.savefig(file_name +'.pdf', dpi=500)
     plt.show()
 
-def draw_layers_ext(net_name, n_layer, n_node_total):
+def plot_layers_ext(net_name, n_layer, n_node_total):
     file_name = '{}_net_{}layers_{}nodes'.format(net_name, n_layer, n_node_total)
     layer_link_list, relation_list = load_data('../data/{}.csv'.format(file_name))
-    draw_layers(layer_link_list, relation_list, net_name, n_layer, n_node_total,
+    plot_layers(layer_link_list, relation_list, net_name, n_layer, n_node_total,
                 is_save_fig=True)
 
 def main():
     
     net_name = 'drug'
     n_node_total, n_layer = 2196, 4 
-    draw_layers_ext(net_name, n_layer, n_node_total)
+    plot_layers_ext(net_name, n_layer, n_node_total)
 
 
     net_name = 'mafia'
     n_node_total, n_layer = 143, 2
-    draw_layers_ext(net_name, n_layer, n_node_total)
+    plot_layers_ext(net_name, n_layer, n_node_total)
     
     net_name = 'london_transport'
     n_node_total = 356
     n_layer = 3
-    draw_layers_ext(net_name, n_layer, n_node_total)
+    plot_layers_ext(net_name, n_layer, n_node_total)
 
     net_name = 'elegan'
     n_node_total = 279
     n_layer = 3
-    draw_layers_ext(net_name, n_layer, n_node_total)
+    plot_layers_ext(net_name, n_layer, n_node_total)
 
 # if __name__ == 'main':
 #     main()
