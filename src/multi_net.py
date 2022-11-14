@@ -359,7 +359,18 @@ class Reconstruct:
                                     
         self.adj_pred_arr[self.adj_pred_arr<0] = 0 
         self.adj_pred_arr[self.adj_pred_arr>1] = 1
-                
+
+
+    def cal_mean_MAE(self, adj_pred_arr_last):
+        '''mean absolute differences between the predicted adj at two consercutive iters 
+        '''
+        adj_MAE = []
+        for i_lyr in range(self.n_layer):
+            mask = self.link_unobs_mask[i_lyr]
+            MAE = np.sum(np.abs(adj_pred_arr_last[i_lyr][mask] - self.adj_pred_arr[i_lyr][mask]))/len(mask[0])
+            adj_MAE.append(MAE)
+        return np.mean(adj_MAE)                 
+
     
     def predict_adj_EM(self, is_agg_topol_known=False, is_update_agg_topol=True):
         '''predict the adj mat of each layer using EM or EMA
@@ -367,7 +378,6 @@ class Reconstruct:
         EMA: is_update_agg_topol=True. The aggregation step is integrated into EM where
              the aggregate topology is updated at every iteration.
         '''
-        print('\n--- EM without aggregate adj')
         if is_agg_topol_known:
             # use true aggregate adj
             self.get_agg_adj() 
@@ -378,7 +388,8 @@ class Reconstruct:
         #initialize the network model parameters
         self.deg_seq_arr = np.random.uniform(1, self.n_node_total+1, size=(self.n_layer, self.n_node_total))
         adj_pred_arr_last = np.zeros((self.n_layer, self.n_node_total, self.n_node_total))
-        self.adj_MAE = []
+        adj_MAE = []
+        self.adj_rel_MAE = []
         for i_iter in range(self.itermax):
             # get variable required by the EM algorithm                                                
             self.deg_sum_arr = np.sum(self.deg_seq_arr, axis=1)   
@@ -391,24 +402,22 @@ class Reconstruct:
             # update aggregate adj
             if is_update_agg_topol:
                 self.update_agg_adj()
-            # check convergence according to MAE of predicted adj mats
-            adj_MAE = []
-            for i_lyr in range(self.n_layer):
-                mask = self.link_unobs_mask[i_lyr]
-                MAE = np.sum(np.abs(adj_pred_arr_last[i_lyr][mask] - self.adj_pred_arr[i_lyr][mask]))/len(mask[0])
-                adj_MAE.append(MAE)
-            self.adj_MAE.append(np.mean(adj_MAE))
-            
+            # check convergence according to changes in MAE of predicted adj mats
+            adj_MAE.append(self.cal_mean_MAE(adj_pred_arr_last)) 
+            # update the latest adj pred after cal MAE
             adj_pred_arr_last = self.adj_pred_arr 
-            min_iter = 3
-            if np.mean(adj_MAE) < self.err_tol and i_iter > min_iter:
-                print('\nConverges at iter: {}'.format(i_iter))
-                break
+            if i_iter == 0:
+                continue
             else:
-                if i_iter == self.itermax - 1:
-                    print('\nNOT converged at the last iteration')                    
-        self.deg_seq_last_arr = self.deg_seq_arr 
-        return adj_pred_arr_last, self.sgl_link_prob_3d, self.deg_seq_last_arr, self.adj_MAE
+                adj_rel_MAE = (adj_MAE[-1] - adj_MAE[-2]) / adj_MAE[-2]            
+                self.adj_rel_MAE.append(adj_rel_MAE)
+                if adj_rel_MAE < self.err_tol:
+                    print('\nConverges at iter: {}'.format(i_iter))
+                    break
+                else:
+                    if i_iter == self.itermax - 1:
+                        print('\nNOT converged at the last iteration')                    
+        return adj_pred_arr_last, self.sgl_link_prob_3d, self.deg_seq_arr, self.adj_rel_MAE
  
     
     def get_link_unobs_mask(self):
@@ -617,7 +626,7 @@ class Reconstruct:
         for idx in range(self.n_layer):   
             if idx > 0:
                 print(' ' * n_space, '-'*n_dot*2)
-            npprint(round_list(self.deg_seq_last_arr)[idx], n_space)  
+            npprint(round_list(self.deg_seq_arr)[idx], n_space)  
         
         print('\n')
         for idx in range(self.n_layer):   
@@ -869,7 +878,7 @@ def single_run(i_frac):
                               layer_real_node=layer_real_node,
                               # net_layer_list=net_layer_list,
                               # layer_link_unobs_list=layer_link_unobs_list,
-                              n_node_total=n_node_total, itermax=itermax, err_tol=1e-6)    
+                              n_node_total=n_node_total, itermax=itermax, err_tol=1e-3)    
         reconst.main() 
         mtc_val_rep_list.append(reconst.mtc_val_list)
     return mtc_val_rep_list
@@ -878,7 +887,7 @@ def single_run(i_frac):
 def paral_run():
     n_cpu = mp.cpu_count()
     if n_cpu <= 8:
-        n_cpu = int(n_cpu*0.4)
+        n_cpu = int(n_cpu*0.5)
     else:
         n_cpu = int(n_cpu*0.6)
     with mp.Pool(n_cpu) as pool:
@@ -1031,8 +1040,8 @@ def run_main():
 # n_node_total, n_layer = 500, 6
 
 net_name = 'drug'
-# n_node_total, n_layer = 2114, 2
-n_node_total, n_layer = 2196, 4
+n_node_total, n_layer = 2114, 2
+# n_node_total, n_layer = 2196, 4
 # n_node_total, n_layer = 2139, 3
 # load each layer (a nx class object)
 # with open('../data/drug_net_layer_list.pkl', 'rb') as f:
@@ -1094,7 +1103,7 @@ itermax = 15
 # parellel processing
 if __name__ == '__main__':  
     matplotlib.use('Agg')
-    time.sleep(20000)
+    # time.sleep(20000)
     t00 = time.time()
     run_main()
     print('Net: ', net_name)
