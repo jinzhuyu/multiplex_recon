@@ -818,11 +818,11 @@ def run_main():
 # n_node_total, n_layer = 2139, 3
 
 
-# net_name = 'mafia'
-# n_node_total, n_layer = 143, 2
+net_name = 'mafia'
+n_node_total, n_layer = 143, 2
 
-net_name = 'london_transport'
-n_node_total, n_layer = 356, 3
+# net_name = 'london_transport'
+# n_node_total, n_layer = 356, 3
 # n_node_total, n_layer = 318, 2
 
 # net_name = 'embassybomb1'
@@ -866,7 +866,7 @@ n_mtc = len(mtc_list)
 n_model = len(model_list)
 n_frac = len(frac_list)
 n_rep = 50
-itermax = 50
+itermax = 40
 
 
 # parellel processing

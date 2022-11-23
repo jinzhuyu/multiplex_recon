@@ -14,7 +14,6 @@ from sklearn.metrics import auc
 from my_utils import load_object, plotfuncs
 
 
-
 class Plots:
     # class variables
     _colors = ['tab:{}'.format(x) for x in ['red', 'blue', 'green', 'orange', 'purple', 'pink', 'brown','cyan','olive']]
@@ -24,17 +23,19 @@ class Plots:
     linestyles = plotfuncs.get_linestyles()       
     
     def __init__(self, net_name, n_layer, n_node_total,
-                 frac_list, mtc_list, model_list, y_max=None,
+                 frac_list, mtc_list, model_list, is_save_fig=True,
                  **kwargs):
         super().__init__(**kwargs) # inherite parent class's method if necessary       
         vars = locals()
         self.__dict__.update(vars)
         del self.__dict__["self"] 
-        
+    
+    def main(self):
         self.load_data()
+        self.plot_each_mtc()
 
     def load_data(self):       
-        path_mean = '../output/raw_result/{}_{}layers_{}nodes_metric_std_by_mdl_frac.pickle'.format(
+        path_mean = '../output/raw_result/{}_{}layers_{}nodes_metric_mean_by_mdl_frac.pickle'.format(
                     self.net_name, self.n_layer, self.n_node_total)
         self.mtc_mean_by_mdl_frac = load_object(path_mean)
         self.mtc_std_by_mdl_frac = None 
@@ -42,8 +43,9 @@ class Plots:
         # path_std = '../output/raw_result/{}_{}layers_{}nodes_metric_std_by_mdl_frac.pickle'.format(
         #             net_name, n_layer, n_node_total)
         # self.mtc_std_by_mdl_frac = load_object(path_std)       
-  
-    def plot_adj_MAE(self, is_save_fig=True):
+        
+
+    def plot_adj_MAE(self):
         ix_MAE = self.mtc_list.index('MAE')
         frac_select = [0.2, 0.4, 0.6, 0.8]
         ix_frac_select = [self.frac_list.index(x) for x in frac_select]
@@ -110,19 +112,46 @@ class Plots:
         # max_MAE = np.max(np.array(self.mtc_mean_by_mdl_frac[ix_MAE][0:2]))
         plt.setp(axes, ylim=(0, min(5, max_MAE*1.02)))
         #save fig
-        if is_save_fig:
-            file_name = '../output/{}_{}layers_{}nodes_MAE'.format(net_name, n_layer, n_node_total)
+        if self.is_save_fig:
+            file_name = '../output/{}_{}layers_{}nodes_MAE'.format(
+                self.net_name, self.n_layer, self.n_node_total)
             plt.savefig(file_name +'.pdf', dpi=500)
         plt.show()
  
+
+    def set_y_max(self, mtc, y_max=None):
+        '''set the same max of y axis in G-mean and MCC for the same multiplex when the
+           no. of layers are different for easier visual comparison
+        '''
+        if self.net_name == 'london_transport':
+            if mtc == 'G-mean':
+                y_max = 0.3
+            if mtc == 'MCC':
+                y_max = 0.25
+        if self.net_name == 'elegan':
+            if mtc == 'G-mean':
+                y_max = 0.7
+            if mtc == 'MCC':
+                y_max = 0.65
+        if self.net_name == 'drug':
+            if mtc == 'G-mean':
+                y_max = 0.5
+            if mtc == 'MCC':
+                y_max = 0.4
+        if self.net_name == 'mafia':
+            y_max = 0.4
+        return y_max 
     
-    def plot_acc_mtc(self, mtc_mean_by_mdl, mtc, y_max=None):
+    
+    def plot_acc_mtc(self, mtc_mean_by_mdl, mtc, y_max):
         ''' plot each metric for accuracy 
         '''
         plotfuncs.format_fig(1.2)
         plt.figure(figsize=(4.8*0.93, 4*0.93), dpi=400)
         if mtc == 'LogH':
             model_list = self.model_list[:-1]
+        else:
+            model_list = self.model_list
         for i in range(len(model_list)):
             plt.plot(self.frac_list, mtc_mean_by_mdl[i], color=Plots._colors[i],
                      marker=Plots._markers[i], alpha=.85, ms=Plots._MS,
@@ -134,7 +163,12 @@ class Plots:
         plt.xlabel(r'$c$', fontsize=Plots._MS+7)
         plt.ylabel(mtc, fontsize=Plots._MS+7)
         plt.legend(loc="best", fontsize=Plots._MS+3)
-        plt.savefig('../output/{}_{}layers_{}nodes_{}.pdf'.format(net_name, n_layer, n_node_total, mtc))
+        if self.is_save_fig:
+            file_name = '../output/{}_{}layers_{}nodes_{}'.format(
+                self.net_name, self.n_layer, self.n_node_total, mtc)
+            plt.savefig(file_name +'.pdf', dpi=500)
+            if mtc in ['G-mean', 'MCC']:
+                plt.savefig(file_name +'.png', dpi=500)
         plt.show() 
 
         
@@ -146,9 +180,10 @@ class Plots:
             if mtc in mtc_to_plot:
                 print('\n')
                 print('------ {}: {}'.format(self.mtc_list[i_mtc], self.mtc_mean_by_mdl_frac[i_mtc]))
-                Plots.plot_acc_mtc(self.mtc_mean_by_mdl_frac[i_mtc], self.mtc_list[i_mtc], y_max) 
+                y_max = self.set_y_max(mtc)
+                self.plot_acc_mtc(self.mtc_mean_by_mdl_frac[i_mtc], self.mtc_list[i_mtc], y_max) 
             if mtc == 'MAE':
-                Plots.plot_adj_MAE(self.mtc_mean_by_mdl_frac, self.mtc_std_by_mdl_frac, is_save_fig=True)
+                self.plot_adj_MAE()
                 
                 
     def plot_prc(self):
@@ -180,16 +215,45 @@ class Plots:
             # handles, labels = ax.get_legend_handles_labels()
             # ax.legend(reversed(handles), reversed(labels), title=r'$c$', loc='lower left', fontsize=14.5,)        
             plt.savefig('../output/{}_prc_frac{}_{}layers_{}nodes.pdf'.format(
-                        net_name, self.frac_list[i_frac], n_layer, n_node_total))
+                        self.net_name, self.frac_list[i_frac], self.n_layer, self.n_node_total))
+            plt.savefig('../output/{}_prc_frac{}_{}layers_{}nodes.png'.format(
+                        self.net_name, self.frac_list[i_frac], self.n_layer, self.n_node_total))
             plt.show() 
 
 
-net_name = 'london_transport'
-# n_node_total, n_layer = 356, 3
-n_node_total, n_layer = 318, 2 
+def main():
+    from multi_net import frac_list, mtc_list, model_list
 
-path = '../output/raw_result/{}_{}layers_{}nodes_metric_mean_by_mdl_frac.pickle'.format(
-       net_name, n_layer, n_node_total)
-mtc_mean_by_mdl_frac = load_object(path)
-#Plots
-Plots.plot_each_mtc()
+    # # london transport
+    # net_name = 'london_transport'
+    # n_node_total_list = [356, 318]
+    # n_layer_list = [3, 2]
+    # for i, _ in enumerate(n_node_total_list):
+    #     plots = Plots(net_name, n_layer_list[i], n_node_total_list[i], frac_list, mtc_list, model_list)
+    #     plots.main()
+
+    # # elegans
+    # net_name = 'elegan'
+    # n_node_total_list = [279, 273]
+    # n_layer_list = [3, 2]
+    # for i, _ in enumerate(n_node_total_list):
+    #     plots = Plots(net_name, n_layer_list[i], n_node_total_list[i], frac_list, mtc_list, model_list)
+    #     plots.main()
+
+    # drug trafficking
+    net_name = 'drug'
+    n_node_total_list = [2196, 2139, 2114]
+    n_layer_list = [4, 3, 2]
+    for i, _ in enumerate(n_node_total_list):
+        plots = Plots(net_name, n_layer_list[i], n_node_total_list[i], frac_list, mtc_list, model_list)
+        plots.main()
+
+    # # mafia
+    # net_name = 'mafia'
+    # n_node_total_list = [143]
+    # n_layer_list = [2]
+    # for i, _ in enumerate(n_node_total_list):
+    #     plots = Plots(net_name, n_layer_list[i], n_node_total_list[i], frac_list, mtc_list, model_list)
+    #     plots.main()
+if __name__ == "__main__":
+    main()
