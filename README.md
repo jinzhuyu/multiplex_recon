@@ -8,7 +8,6 @@ This is the implementation of numerical experiments in our paper titled *Reconst
   journal={arXiv preprint arXiv:2208.01739},
   year={2022}
 }
-
 ````
 # Requirements
 ### Software
@@ -21,3 +20,6 @@ numba 0.55.1
 sklearn 1.1.1
 imblearn 0.7.0
 networkx 2.8.4
+
+### Run
+To get the results for each multiplex network, run ```multi_net.py``` with the respective net_name, n_layer, and n_node_total.
