@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-# os.chdir('C:/Users/Jinzh/OneDrive/code/multiplex_recon/src')
+os.chdir('C:/Users/Jinzh/OneDrive/code/multiplex_recon/src')
 
 import numpy as np  # 1.19.2
 import pandas as pd  # 1.4.4
@@ -794,10 +794,8 @@ class Plots:
             auc_list = []
             for i_mdl in range(len(model_list)):
                 plt.plot(recall_list[i_mdl][i_frac], precision_list[i_mdl][i_frac],
-                         color=Plots._colors[i_mdl], #marker='', #markers[i_idx], 
-                         # ms=med_size, 
-                         lw=Plots.lw, linestyle = Plots.linestyles[i_mdl][1],
-                         alpha=.85,
+                         color=Plots._colors[i_mdl], lw=Plots.lw, 
+                         linestyle = Plots.linestyles[i_mdl][1], alpha=.85,
                          # label="{:.2f} ({:0.2f})".format(frac_list[idx], auc_list[idx]))
                          label=model_list[i_mdl]) 
                 auc_list.append(auc(recall_list[i_mdl][i_frac], precision_list[i_mdl][i_frac]))
@@ -838,7 +836,7 @@ def get_permuts_half_numba(vec: np.ndarray):
             k += 1
     return output
              
-# there are always unobserved links when the network is large enough    
+# not run: there are unobserved links when the network is large enough    
 # def sample_node_obs(layer_link_list, layer_real_node, layer_virt_node, i_frac):    
 #     real_node_obs = [np.random.choice(layer_real_node[i_lyr], n_real_node_obs[i_frac][i_lyr],
 #                          replace=False).tolist() for i_lyr in range(n_layer)]                
