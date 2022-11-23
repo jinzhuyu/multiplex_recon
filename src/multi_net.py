@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
-# TODO: 
-    # avoid indexing those virtual observed nodes and lnks
-    # the current complexity is N_iter*(N_all^2 + N_obs^2)
-    # includethe list of observed links as an input    
-    # use numpy array instead of nested list in cal_link_prob deg and PON_list 
-    # use synthetic random network to control a given feature, such as edge overlap rate
-
 import os
 # os.chdir('C:/Users/Jinzh/OneDrive/code/multiplex_recon/src')
 
