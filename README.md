@@ -24,4 +24,4 @@ networkx 2.8.4
 ### Run
 To get the results for reconstructuring each multiplex network, run ```multi_net.py``` with the respective net_name, n_layer, and n_node_total.
 
-Parellel processing is used to reduce the run time. If necessary, Cython can be used to future decrease the run time.
+Parellel processing is used to reduce the run time. If necessary, Cython can be used to decrease the run time a bit more.
