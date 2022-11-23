@@ -32,8 +32,8 @@ from imblearn.metrics import geometric_mean_score  # imlearn 0.7.0
 from scipy import stats
 from sklearn.neighbors import KernelDensity
 
-from my_utils import plotfuncs, npprint, copy_upper_to_lower, load_data, save_pickle, hel_dist
-      
+from my_utils import plotfuncs, npprint, copy_upper_to_lower, hel_dist
+from my_utils import load_data, save_object, load_object   
 
 class Reconstruct:
     def __init__(self, layer_link_list, node_attr_df=None, real_virt_node_obs=None, #net_layer_list=None, #layer_link_unobs_list=None,
@@ -198,14 +198,12 @@ class Reconstruct:
                 [ele[0], ele[1]] if (ele[0] < ele[1]) else [ele[1], ele[0]] \
                 for ele in layer_possib_links_obs]
             self.layer_possib_link_obs.append(layer_possib_links_obs)
-            # len(layer_possib_links_obs)
             
         #     layer_possib_link_unobs = [ele for ele in layer_possib_links\
         #                                if ele not in layer_possib_links_obs]
-        #     self.layer_possib_link_unobs.append(layer_possib_link_unobs)
-            
+        #     self.layer_possib_link_unobs.append(layer_possib_link_unobs)            
         # self.n_possib_link_unobs = np.array([len(sub) for sub in self.layer_possib_link_unobs]) 
-        # print('--- n_possib_link_unobs: ', self.n_possib_link_unobs)
+
 
     def get_layer_link_unobs(self):
         ''' Due to symmetry, only unobserved links in the upper half are selected 
@@ -233,12 +231,8 @@ class Reconstruct:
         # n_node_true_by_layer = np.array([len(x) for x in self.layer_real_node])
         # n_node_obs_by_layer = np.array([len(x) for x in self.real_node_obs])
         # # n_link_obs_by_layer = self.n_link_obs
-        # print('\n------ n_node_true_by_layer, n_node_obs_by_layer, n_link_obs_by_layer')
-        # print('----------', n_node_true_by_layer, n_node_obs_by_layer, self.n_link_obs)
         # n_link_estimate_by_layer = (self.n_link_obs*n_node_true_by_layer/ n_node_obs_by_layer).astype(int)
-        # print('---------- estimated n_link_by_layer', n_link_estimate_by_layer)
         self.n_link_total_by_layer = np.array([len(x) for x in self.layer_link_list])
-        # print('------ true n_link_by_layer', self.n_link_total_by_layer)
 
     
     def get_n_link_obs(self):
@@ -306,8 +300,6 @@ class Reconstruct:
         self.adj_pred_arr = self.agg_adj_3d * self.sgl_link_prob_3d / agg_link_prob_3d
         # self.adj_pred_arr = self.sgl_link_prob_3d
         self.adj_pred_arr = np.nan_to_num(self.adj_pred_arr) 
-        
-        # ratio = np.nan_to_num(self.agg_adj_3d * self.sgl_link_prob_3d / agg_link_prob_3d)
         
         self.adj_pred_arr[self.adj_pred_arr<0] = 0 
         self.adj_pred_arr[self.adj_pred_arr>1] = 1
@@ -392,11 +384,6 @@ class Reconstruct:
             if i_iter == 0:
                 continue
             else:
-                # print('\n adj_MAE[-1], adj_MAE[-2]: ', adj_MAE[-1], adj_MAE[-2])
-                # print('\n adj_MAE_diff: ', adj_MAE_diff)
-                # adj_MAE_diff = np.abs(adj_MAE[-1] - adj_MAE[-2]) / adj_MAE[-2]
-                # print('\n adj_MAE_diff: ', adj_MAE_diff)
-                # self.adj_MAE_diff.append(adj_MAE_diff)
                 if self.adj_MAE_diff[-1] <= self.err_tol:
                     print('\nConverges at iter: {}'.format(i_iter))
                     break
@@ -638,26 +625,7 @@ class Plots:
     _LW = 1.8
     _MS = 11
     linestyles = plotfuncs.get_linestyles()          
-
-    # # lgd = fig.legend(im, ax=axes.ravel().tolist(),
-    # #                     orientation='horizontal',
-    # #                     shrink=cbar_shrink, aspect=90, pad=-0.02,
-    # #                     ticks=[0, 1])
-
-    # # lgd.ax.get_xaxis().labelpad = 0
-    # # lgd.ax.set_xlabel('Iteration', size=Plots._MS+6)
-    # #save fig
-    # if is_save_fig:
-    #     file_name = '../output/MAE_plot/{}_net_{}layers_{}nodes'.format(net_name, n_layer, n_node_total)
-    #     plt.savefig(file_name +'.pdf', dpi=500)
-    # plt.show()
-   
-
-    #         for i_frac in range(n_frac):  
-    #             metric_mean_by_mdl_frac[i_mtc][i_mdl][i_frac] = np.mean(
-    #                 np.array(mtc_val_by_mdl_frac[i_mtc][i_mdl][i_frac]), axis=0)  
-
-    
+  
     def plot_adj_MAE(mtc_mean_by_mdl_frac, mtc_std_by_mdl_frac, is_save_fig=True):
         ix_MAE = mtc_list.index('MAE')
         frac_select = [0.2, 0.4, 0.6, 0.8]
@@ -675,12 +643,8 @@ class Plots:
         for n, ax in enumerate(axes_flat):
             mean_temp = mtc_mean_by_mdl_frac[ix_MAE][0][ix_frac_select[n]]
             # std_temp = mtc_std_by_mdl_frac[ix_MAE][0][ix_frac_select[n]]
-            print('--- n: ', n)
-            print('--- mean_temp: ', mean_temp)
-            # print('--- std_temp: ', std_temp)
             x_temp = range(1, len(mean_temp) + 1)
             y_mean_temp = [i*y_scale for i in mean_temp]
-            # print('\nMAE of EMA: ', y_mean_temp)
             # y_UB_temp = [i*y_scale for i in mean_temp + std_temp]
             # y_LB_temp = [i*y_scale for i in mean_temp - std_temp]
             # ax.fill_between(x_temp, y_UB_temp, y_LB_temp,
@@ -694,7 +658,6 @@ class Plots:
             # std_temp = mtc_std_by_mdl_frac[ix_MAE][1][ix_frac_select[n]]
             x_temp = range(1, len(mean_temp) + 1)
             y_mean_temp = [i*y_scale for i in mean_temp]
-            # print('\nMAE of EM: ', y_mean_temp)
             # y_UB_temp = [i*y_scale for i in mean_temp + std_temp]
             # y_LB_temp = [i*y_scale for i in mean_temp - std_temp]
             # ax.fill_between(x_temp, y_UB_temp, y_LB_temp,
@@ -935,7 +898,7 @@ def extract_mtc_val(results, is_save=True):
     if is_save:
        path = '../output/raw_result/{}_{}layers_{}nodes_mtc_val_by_mdl_frac.pickle'.format(
               net_name, n_layer, n_node_total)
-       save_pickle(mtc_val_by_mdl_frac, path)
+       save_object(mtc_val_by_mdl_frac, path)
     # calculate the mean
     mtc_mean_by_mdl_frac = [ [[ [] for _ in frac_list] for _ in model_list] for _ in mtc_list]
     mtc_std_by_mdl_frac = [ [[ [] for _ in frac_list] for _ in model_list] for _ in mtc_list]
@@ -987,7 +950,7 @@ def extract_mtc_val(results, is_save=True):
     if is_save:
        path = '../output/raw_result/{}_{}layers_{}nodes_metric_mean_by_mdl_frac.pickle'.format(
                   net_name, n_layer, n_node_total)
-       save_pickle(mtc_mean_by_mdl_frac, path)
+       save_object(mtc_mean_by_mdl_frac, path)
     return mtc_mean_by_mdl_frac, mtc_std_by_mdl_frac     
 
 
@@ -995,8 +958,6 @@ def extract_mtc_val(results, is_save=True):
 def run_main():
     # get mean
     mtc_mean_by_mdl_frac, mtc_std_by_mdl_frac = extract_mtc_val(paral_run())
-    # mtc_val_by_mdl_frac = [auc_list, prec_list, recall_list, acc_list]
-    # print('\nmtc_val_by_mdl_frac: ', mtc_val_by_mdl_frac)
     #Plots
     Plots.plot_each_mtc(frac_list, mtc_mean_by_mdl_frac, mtc_std_by_mdl_frac, 
                         n_layer, n_node_total, mtc_list, model_list)
@@ -1004,45 +965,11 @@ def run_main():
     save_output(net_name, n_node_total, n_layer, frac_list, mtc_mean_by_mdl_frac)
 
 
-# net_name = 'dup'
-# n_node_total = 400
-# n_layer = 2
-# n_layer = 3
-# n_layer = 4
-# n_layer = 5
-# n_layer = 6
-
-# dup_frac = 0.0
-# dup_frac = 0.05
-# dup_frac = 0.2
-# dup_frac = 0.4
-# dup_frac = 0.6
-# dup_frac = 0.8
-# dup_frac = 0.95
-# net_name = net_name+str(dup_frac)
-# file_name = '{}_{}layers_{}nodes'.format(net_name, n_layer, n_node_total)
-
-# net_name = 'dup'
-# n_node_total, n_layer = 500, 2
-# n_node_total, n_layer = 500, 3
-# n_node_total, n_layer = 500, 4
-# n_node_total, n_layer = 500, 5
-# n_node_total, n_layer = 500, 6
-
-# net_name = 'rand'
-# n_node_total, n_layer = 500, 2
-# n_node_total, n_layer = 500, 3
-# n_node_total, n_layer = 500, 4
-# n_node_total, n_layer = 500, 5
-# n_node_total, n_layer = 500, 6
-
-net_name = 'drug'
-n_node_total, n_layer = 2114, 2
+# net_name = 'drug'
+# n_node_total, n_layer = 2114, 2
 # n_node_total, n_layer = 2196, 4
 # n_node_total, n_layer = 2139, 3
-# load each layer (a nx class object)
-# with open('../data/drug_net_layer_list.pkl', 'rb') as f:
-#     net_layer_list = load(f)
+
 
 # net_name = 'mafia'
 # n_node_total, n_layer = 143, 2
@@ -1058,8 +985,8 @@ n_node_total, n_layer = 356, 3
 # n_node_total, n_layer = 279, 3
 # n_node_total, n_layer = 273, 2
 
-## toy / demo network
-## for this toy network, real_virt_node_obs = [[0,1,2], [0,4,5]] leads to zero error
+## toy / demo network is used to test the EM part of EMA
+## for this toy network, real_virt_node_obs = [[0,1,2], [0,4,5]] leads to zero error when EM converges
 # net_name = 'toy'
 # n_node_total, n_layer = 6, 2
 
@@ -1079,15 +1006,13 @@ else:
     node_attr_df, node_attr_dict = None, None
 layer_real_node, layer_virt_node = get_layer_node_list(layer_link_list, n_layer, n_node_total)
 
-# layer_list_name = '{}_net_layer_list_{}layers_{}nodes'.format(net_name, n_layer, n_node_total)
 
 frac_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9] 
-# frac_list = [ 0.3, 0.6] # [0.1, 0.3, 0.5, 0.7, 0.9] 
 n_real_node = [len(layer_real_node[i]) for i in range(n_layer)]
 n_real_node_obs = [[int(frac*n_real_node[i]) for i in range(n_layer)] for frac in frac_list]     
-
-mtc_list = ['Recall_range', 'Precision_range', 'AUC-PR', 'G-mean', 'MCC', 'Recall', 'Precision', 'Accuracy',
-            'TN', 'FP', 'FN', 'TP', 'Log_H', 'IG_ratio', 'link_density', 'edge_overlap_ratio',
+mtc_list = ['Recall_range', 'Precision_range', 'AUC-PR', 'G-mean', 'MCC', 
+            'Recall', 'Precision', 'Accuracy', 'TN', 'FP', 'FN', 'TP', 
+            'Log_H', 'IG_ratio', 'link_density', 'edge_overlap_ratio',
             'KS distance', 'Hellinger distance', 'Run time (s)', 'MAE']
 model_list = ['EMA', 'EM', 'RM']
 n_mtc = len(mtc_list)
@@ -1100,7 +1025,6 @@ itermax = 50
 # # parellel processing
 # if __name__ == '__main__':  
 #     matplotlib.use('Agg')
-#     # time.sleep(7200)
 #     t00 = time.time()
 #     run_main()
 #     print('Net: ', net_name)

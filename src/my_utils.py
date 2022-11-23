@@ -82,7 +82,6 @@ class plotfuncs:
     
     def get_markers():
         markers =['o', 'v', 's', 'D', '*', 'x', 'o', 'v', 's', 'D', '*', 'x'] 
-        # markers =['o', 'v', 's', '*', 'D', 'x', 'v', 'o', 'x', 'D', '*', 's'] 
         return markers
 
 def copy_upper_to_lower(X):
@@ -124,7 +123,7 @@ def load_data(path):
         layer_link_list.append(link_temp)    
     return layer_link_list, relation_list
 
-def save_pickle(obj, path):
+def save_object(obj, path):
        try:
            with open(path, 'wb') as f:
                pickle.dump(obj, f, protocol=pickle.HIGHEST_PROTOCOL)
