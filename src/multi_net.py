@@ -2,26 +2,20 @@
 
 
 # TODO: 
-    # : avoid indexing those virtual observed nodes and lnks
-    # : the current complexity is N_iter*(N_all^2 + N_obs^2)
-    # : includethe list of observed links as an input    
-    #: use numpy array instead of nested list in cal_link_prob deg and PON_list 
-    #  link density cam be derived by number of nodes and average degree, so average degreee can be removed from feature list
-    # simplify the problem  
-        # use synthetic random network to control a given feature, such as edge overlap rate
-        # extreme cases
-        # augment drug networks data with other combinations of 2 and 3 layers
-    # relation between cond entropy ratio (rho_CH) and accuracy (MCC): MCC \propto 1 - beta for each network * rho_CH
+    # avoid indexing those virtual observed nodes and lnks
+    # the current complexity is N_iter*(N_all^2 + N_obs^2)
+    # includethe list of observed links as an input    
+    # use numpy array instead of nested list in cal_link_prob deg and PON_list 
+    # use synthetic random network to control a given feature, such as edge overlap rate
 
-
-# import os
-# os.chdir('c:/code/multiplex_recon/src')
+import os
 # os.chdir('C:/Users/Jinzh/OneDrive/code/multiplex_recon/src')
 
 import numpy as np  # 1.19.2
 import pandas as pd  # 1.4.4
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 import multiprocessing as mp
 import os 
 # from functools import reduce
@@ -51,7 +45,7 @@ from my_utils import plotfuncs, npprint, copy_upper_to_lower, load_data, save_pi
 
 class Reconstruct:
     def __init__(self, layer_link_list, node_attr_df=None, real_virt_node_obs=None, #net_layer_list=None, #layer_link_unobs_list=None,
-                 real_node_obs=None, layer_real_node=None, n_node_total=None, itermax=80, err_tol=1e-3, 
+                 real_node_obs=None, layer_real_node=None, n_node_total=None, itermax=20, err_tol=1e-5, 
                  simil_index_list=['jaccard_coefficient', 'preferential_attachment',
                                    'common_neighbor_centrality', 'adamic_adar_index'],
                  **kwargs):
@@ -326,8 +320,7 @@ class Reconstruct:
         self.adj_pred_arr[self.adj_pred_arr<0] = 0 
         self.adj_pred_arr[self.adj_pred_arr>1] = 1
     
-    def cal_link_prob_PON(self):
-        
+    def cal_link_prob_PON(self):       
         '''update link probability using the set of observed nodes in each layer
         '''
         self.adj_pred_arr = self.get_adj_obs(self.adj_pred_arr)        
@@ -352,10 +345,7 @@ class Reconstruct:
                      np.logical_not(np.isin(self.adj_pred_arr[i_othr, :, :], [0, 1])) 
             self.adj_pred_arr[i_othr, mask_0] = self.agg_adj[mask_0] * self.sgl_link_prob_3d[i_othr, mask_0]/ \
                                                 agg_link_prob[mask_0]
-            # self.adj_pred_arr[i_othr, mask_0] = self.sgl_link_prob_3d[i_othr, mask_0]
             self.adj_pred_arr[i_othr, mask_0] = np.nan_to_num(self.adj_pred_arr[i_othr, mask_0])
-            
-            # ratio = np.nan_to_num(self.agg_adj[mask_0] / agg_link_prob[mask_0])
                                     
         self.adj_pred_arr[self.adj_pred_arr<0] = 0 
         self.adj_pred_arr[self.adj_pred_arr>1] = 1
@@ -387,9 +377,10 @@ class Reconstruct:
             self.get_agg_adj_obs()
         #initialize the network model parameters
         self.deg_seq_arr = np.random.uniform(1, self.n_node_total+1, size=(self.n_layer, self.n_node_total))
-        adj_pred_arr_last = np.zeros((self.n_layer, self.n_node_total, self.n_node_total))
-        adj_MAE = []
-        self.adj_rel_MAE = []
+        adj_pred_arr_last = np.random.uniform(0, 1, (self.n_layer, self.n_node_total, self.n_node_total))
+        # adj_MAE = []
+        self.adj_MAE_diff = []
+        t_start = time.time()
         for i_iter in range(self.itermax):
             # get variable required by the EM algorithm                                                
             self.deg_sum_arr = np.sum(self.deg_seq_arr, axis=1)   
@@ -403,21 +394,25 @@ class Reconstruct:
             if is_update_agg_topol:
                 self.update_agg_adj()
             # check convergence according to changes in MAE of predicted adj mats
-            adj_MAE.append(self.cal_mean_MAE(adj_pred_arr_last)) 
+            self.adj_MAE_diff.append(self.cal_mean_MAE(adj_pred_arr_last)) 
             # update the latest adj pred after cal MAE
             adj_pred_arr_last = self.adj_pred_arr 
             if i_iter == 0:
                 continue
             else:
-                adj_rel_MAE = (adj_MAE[-1] - adj_MAE[-2]) / adj_MAE[-2]            
-                self.adj_rel_MAE.append(adj_rel_MAE)
-                if adj_rel_MAE < self.err_tol:
+                # print('\n adj_MAE[-1], adj_MAE[-2]: ', adj_MAE[-1], adj_MAE[-2])
+                # print('\n adj_MAE_diff: ', adj_MAE_diff)
+                # adj_MAE_diff = np.abs(adj_MAE[-1] - adj_MAE[-2]) / adj_MAE[-2]
+                # print('\n adj_MAE_diff: ', adj_MAE_diff)
+                # self.adj_MAE_diff.append(adj_MAE_diff)
+                if self.adj_MAE_diff[-1] <= self.err_tol:
                     print('\nConverges at iter: {}'.format(i_iter))
                     break
                 else:
                     if i_iter == self.itermax - 1:
                         print('\nNOT converged at the last iteration')                    
-        return adj_pred_arr_last, self.sgl_link_prob_3d, self.deg_seq_arr, self.adj_rel_MAE
+        run_time = time.time() - t_start
+        return adj_pred_arr_last, self.sgl_link_prob_3d, self.deg_seq_arr, self.adj_MAE_diff, run_time
  
     
     def get_link_unobs_mask(self):
@@ -430,7 +425,6 @@ class Reconstruct:
     def random_model(self):
         '''randomly select no of links left among the unobserved links
         '''
-        print('\n--- Random model')
         adj_pred_arr = np.zeros((self.n_layer, self.n_node_total, self.n_node_total))
         adj_pred_arr = self.get_adj_obs(adj_pred_arr)
         for i_lyr in range(self.n_layer):
@@ -441,19 +435,21 @@ class Reconstruct:
         return adj_pred_arr, np.sum(adj_pred_arr, axis=1)
 
            
-    def run_all_models(self):        
-        adj_pred_arr_EM, sgl_link_prob_3d_EM, deg_seq_EM, MAE_list_EM = self.predict_adj_EM(
-            is_agg_topol_known=False, is_update_agg_topol=False)
- 
-        adj_pred_arr_EMA, sgl_link_prob_3d_EMA, deg_seq_EMA, MAE_list_EMA = self.predict_adj_EM(
-            is_agg_topol_known=False, is_update_agg_topol=True)
-
+    def run_all_models(self):  
+        print('\n--- EMA')
+        adj_pred_arr_EMA, sgl_link_prob_3d_EMA, deg_seq_EMA, MAE_list_EMA, run_time_EMA = \
+            self.predict_adj_EM(is_agg_topol_known=False, is_update_agg_topol=True)
+        print('\n--- EM')
+        adj_pred_arr_EM, sgl_link_prob_3d_EM, deg_seq_EM, MAE_list_EM, run_time_EM = \
+            self.predict_adj_EM(is_agg_topol_known=False, is_update_agg_topol=False)
+        print('\n--- RA')
         adj_pred_arr_RM, deg_seq_RM =  self.random_model()
 
         self.adj_pred_arr_by_mdl = [adj_pred_arr_EMA] + [adj_pred_arr_EM] + [adj_pred_arr_RM]
         self.sgl_link_prob_by_mdl = [sgl_link_prob_3d_EMA] + [sgl_link_prob_3d_EM] + [None]             
         self.deg_seq_by_mdl = [deg_seq_EMA.tolist()] + [deg_seq_EM.tolist()] + [deg_seq_RM.tolist()]
         self.MAE_by_mdl = [MAE_list_EMA] + [MAE_list_EM] + [[np.nan for i in range(len(MAE_list_EM))]] 
+        self.run_time_by_mdl = [run_time_EMA] + [run_time_EM] + [0]
 
         print('--- Done running all models\n')
 
@@ -566,7 +562,7 @@ class Reconstruct:
         return np.mean(deg_distri_KS), np.mean(deg_distri_HL)
 
 
-    def get_mtc_val_sub(self, adj_pred_arr, sgl_link_prob, deg_seq_arr_pred, MAE):
+    def get_mtc_val_sub(self, adj_pred_arr, sgl_link_prob, deg_seq_arr_pred, run_time, MAE):
         ''' performance evaluation using multiple metrics for imbalanced data, e.g., geometric mean and MCC
         '''
         adj_pred_unobs_list = [[] for _ in range(self.n_layer)]
@@ -601,7 +597,7 @@ class Reconstruct:
                 
         return [recall, precision, auc_pr, gmean, mcc, recall_val, precision_val, accuracy_val,
                 tn, fp, fn, tp, cond_entropy_log2, IG_ratio, link_density_list,
-                edge_overlap_ratio_list, deg_distri_KS, deg_distri_HL, MAE]
+                edge_overlap_ratio_list, deg_distri_KS, deg_distri_HL, run_time, MAE]
 
     
     def get_mtc_val(self):
@@ -611,6 +607,7 @@ class Reconstruct:
             mtc_val_temp = self.get_mtc_val_sub(adj_pred, 
                                                 self.sgl_link_prob_by_mdl[i_mdl],
                                                 self.deg_seq_by_mdl[i_mdl],
+                                                self.run_time_by_mdl[i_mdl],
                                                 self.MAE_by_mdl[i_mdl]) 
             self.mtc_val_list.append(mtc_val_temp)
 
@@ -675,43 +672,52 @@ class Plots:
         ix_frac_select = [frac_list.index(x) for x in frac_select]
         
         n_col, n_row = 2, 2
-        fig, axes = plt.subplots(n_row, n_col, figsize=(4.4*n_col, 4.2*n_row))  
+        fig, axes = plt.subplots(n_row, n_col, figsize=(4.3*n_col, 4.1*n_row))  
         axes_flat = axes.flat      
-        plt.subplots_adjust(wspace=0.07, hspace=0.40)
+        plt.subplots_adjust(wspace=0.1, hspace=0.43)
         plt.subplots_adjust(left=0, right=0.995, top=0.995, bottom=0)
         # plot curves
-        font_size = Plots._MS+10
+        font_size = Plots._MS+11
         max_MAE = 0
-        y_scale = 1000
+        y_scale = 1e4
         for n, ax in enumerate(axes_flat):
             mean_temp = mtc_mean_by_mdl_frac[ix_MAE][0][ix_frac_select[n]]
-            std_temp = mtc_std_by_mdl_frac[ix_MAE][0][ix_frac_select[n]]
+            # std_temp = mtc_std_by_mdl_frac[ix_MAE][0][ix_frac_select[n]]
+            print('--- n: ', n)
+            print('--- mean_temp: ', mean_temp)
+            # print('--- std_temp: ', std_temp)
             x_temp = range(1, len(mean_temp) + 1)
             y_mean_temp = [i*y_scale for i in mean_temp]
-            y_UB_temp = [i*y_scale for i in mean_temp + std_temp]
-            y_LB_temp = [i*y_scale for i in mean_temp - std_temp]
-            ax.fill_between(x_temp, y_UB_temp, y_LB_temp,
-                            alpha=0.5, color=Plots._colors[0])
-            p1 = ax.plot(x_temp, y_mean_temp, color=Plots._colors[0], linewidth=2)
-            p2 = ax.fill(np.NaN, np.NaN, color=Plots._colors[0], alpha=0.5)
-            max_MAE = max(max_MAE, max(y_UB_temp))
+            # print('\nMAE of EMA: ', y_mean_temp)
+            # y_UB_temp = [i*y_scale for i in mean_temp + std_temp]
+            # y_LB_temp = [i*y_scale for i in mean_temp - std_temp]
+            # ax.fill_between(x_temp, y_UB_temp, y_LB_temp,
+            #                 alpha=0.5, color=Plots._colors[0])
+            p1 = ax.plot(x_temp, y_mean_temp, color=Plots._colors[0], linewidth=2.5)#,
+                         #linestyle=Plots.linestyles[1])
+            # p2 = ax.fill(np.NaN, np.NaN, color=Plots._colors[0], alpha=0.5)
+            max_MAE = max(max_MAE, max(y_mean_temp))
             
             mean_temp = mtc_mean_by_mdl_frac[ix_MAE][1][ix_frac_select[n]]
-            std_temp = mtc_std_by_mdl_frac[ix_MAE][1][ix_frac_select[n]]
+            # std_temp = mtc_std_by_mdl_frac[ix_MAE][1][ix_frac_select[n]]
             x_temp = range(1, len(mean_temp) + 1)
             y_mean_temp = [i*y_scale for i in mean_temp]
-            y_UB_temp = [i*y_scale for i in mean_temp + std_temp]
-            y_LB_temp = [i*y_scale for i in mean_temp - std_temp]
-            ax.fill_between(x_temp, y_UB_temp, y_LB_temp,
-                            alpha=0.5, color=Plots._colors[1])
-            p3 = ax.plot(x_temp, y_mean_temp, color=Plots._colors[1], linewidth=2)
-            p4 = ax.fill(np.NaN, np.NaN, color=Plots._colors[1], alpha=0.5)
-            max_MAE = max(max_MAE, max(y_UB_temp))
+            # print('\nMAE of EM: ', y_mean_temp)
+            # y_UB_temp = [i*y_scale for i in mean_temp + std_temp]
+            # y_LB_temp = [i*y_scale for i in mean_temp - std_temp]
+            # ax.fill_between(x_temp, y_UB_temp, y_LB_temp,
+            #                 alpha=0.5, color=Plots._colors[1])
+            p3 = ax.plot(x_temp, y_mean_temp, color=Plots._colors[1], linewidth=2.5,
+                         linestyle='dashed')
+            # p4 = ax.fill(np.NaN, np.NaN, color=Plots._colors[1], alpha=0.5)
+            max_MAE = max(max_MAE, max(y_mean_temp))
                        
-            ax.legend([(p2[0], p1[0]), (p4[0], p3[0]), ],
-                      ['EMA (mean$\pm$std)', 'EM (mean$\pm$std)'], 
-                      loc='upper right', fontsize=font_size-2)
-            ax.tick_params(axis='both', labelsize=font_size-2)
+            # ax.legend([(p2[0], p1[0]), (p4[0], p3[0]), ],
+            #           ['EMA (mean$\pm$std)', 'EM  (mean$\pm$std)'], 
+            #           loc='upper right', fontsize=font_size-2)
+            ax.legend(['EMA', 'EM'], loc='upper right', fontsize=font_size)
+            ax.tick_params(axis='both', labelsize=font_size)
+            ax.xaxis.set_major_locator(MaxNLocator(integer=True))
             # if n in [0, 1]:
             #     ax.set_xlabel([], color='w')
             #     ax.set_xticklabels([], color='w')
@@ -721,16 +727,16 @@ class Plots:
                 ax.set_ylabel([], color='w')
                 ax.set_yticklabels([], color='w')
             else:
-                ax.set_ylabel(r'MAE ($\times 10^{-3})$', size=font_size)
+                ax.set_ylabel(r'$\epsilon$ $(\times 10^{-4})$', size=font_size)
             if n in [0, 2]:
-                txt_pos_x = -0.15
+                txt_pos_x = -0.004
             else:
-                txt_pos_x = -0.003
-            txt_pos_y = 1.06
+                txt_pos_x = -0.004
+            txt_pos_y = 1.08
             ax.text(txt_pos_x, txt_pos_y, ascii_uppercase[n] + r'. $c$ = {}'.format(frac_select[n]),
                     transform=ax.transAxes, size=font_size+2)            
         # max_MAE = np.max(np.array(mtc_mean_by_mdl_frac[ix_MAE][0:2]))
-        plt.setp(axes, ylim=(0, max_MAE*1.02))
+        plt.setp(axes, ylim=(0, min(5, max_MAE*1.02)))
         #save fig
         if is_save_fig:
             file_name = '../output/{}_{}layers_{}nodes_MAE'.format(net_name, n_layer, n_node_total)
@@ -773,7 +779,7 @@ class Plots:
                       n_layer, n_node_total, mtc_list, model_list):        
         mtc_to_plot = ['G-mean', 'MCC', 'Recall', 'Precision', 'Accuracy',
                        'TN', 'FP', 'FN', 'TP', 'Log_H', 'IG_ratio', 
-                       'KS distance', 'Hellinger distance']
+                       'KS distance', 'Hellinger distance','Run time (s)']
         for i_mtc, mtc in enumerate(mtc_list):
             if mtc in mtc_to_plot:
                 print('\n')
@@ -878,7 +884,7 @@ def single_run(i_frac):
                               layer_real_node=layer_real_node,
                               # net_layer_list=net_layer_list,
                               # layer_link_unobs_list=layer_link_unobs_list,
-                              n_node_total=n_node_total, itermax=itermax, err_tol=1e-3)    
+                              n_node_total=n_node_total, itermax=itermax, err_tol=1e-5)    
         reconst.main() 
         mtc_val_rep_list.append(reconst.mtc_val_list)
     return mtc_val_rep_list
@@ -887,7 +893,7 @@ def single_run(i_frac):
 def paral_run():
     n_cpu = mp.cpu_count()
     if n_cpu <= 8:
-        n_cpu = int(n_cpu*0.5)
+        n_cpu = 4
     else:
         n_cpu = int(n_cpu*0.6)
     with mp.Pool(n_cpu) as pool:
@@ -962,7 +968,8 @@ def extract_mtc_val(results, is_save=True):
                 pass
             elif mtc in ['G-mean', 'MCC', 'Recall', 'Precision', 'Accuracy',
                          'TN', 'FP', 'FN', 'TP', 'Log_H', 'IG_ratio',
-                         'KS distance', 'Hellinger distance']: 
+                         'KS distance', 'Hellinger distance',
+                         'Run time (s)']: 
                 for i_frac in range(n_frac):
                     mtc_mean_by_mdl_frac[i_mtc][i_mdl][i_frac] = np.nanmean(
                         np.array(mtc_val_by_mdl_frac[i_mtc][i_mdl][i_frac]))
@@ -1003,7 +1010,7 @@ def run_main():
     #Plots
     Plots.plot_each_mtc(frac_list, mtc_mean_by_mdl_frac, mtc_std_by_mdl_frac, 
                         n_layer, n_node_total, mtc_list, model_list)
-    # save log2H
+    #save log2H
     save_output(net_name, n_node_total, n_layer, frac_list, mtc_mean_by_mdl_frac)
 
 
@@ -1050,8 +1057,8 @@ n_node_total, n_layer = 2114, 2
 # net_name = 'mafia'
 # n_node_total, n_layer = 143, 2
 
-# net_name = 'london_transport'
-# n_node_total, n_layer = 356, 3
+net_name = 'london_transport'
+n_node_total, n_layer = 356, 3
 # n_node_total, n_layer = 318, 2
 
 # net_name = 'embassybomb1'
@@ -1091,22 +1098,22 @@ n_real_node_obs = [[int(frac*n_real_node[i]) for i in range(n_layer)] for frac i
 
 mtc_list = ['Recall_range', 'Precision_range', 'AUC-PR', 'G-mean', 'MCC', 'Recall', 'Precision', 'Accuracy',
             'TN', 'FP', 'FN', 'TP', 'Log_H', 'IG_ratio', 'link_density', 'edge_overlap_ratio',
-            'KS distance', 'Hellinger distance', 'MAE']
+            'KS distance', 'Hellinger distance', 'Run time (s)', 'MAE']
 model_list = ['EMA', 'EM', 'RM']
 n_mtc = len(mtc_list)
 n_model = len(model_list)
 n_frac = len(frac_list)
 n_rep = 50
-itermax = 15
+itermax = 50
 
 
-# parellel processing
-if __name__ == '__main__':  
-    matplotlib.use('Agg')
-    # time.sleep(20000)
-    t00 = time.time()
-    run_main()
-    print('Net: ', net_name)
-    print('n layers: ', n_layer)
-    print('Total elapsed time: {} mins'.format( round( (time.time()-t00)/60, 4) ) )     
+# # parellel processing
+# if __name__ == '__main__':  
+#     matplotlib.use('Agg')
+#     # time.sleep(7200)
+#     t00 = time.time()
+#     run_main()
+#     print('Net: ', net_name)
+#     print('n layers: ', n_layer)
+#     print('Total elapsed time: {} mins'.format( round( (time.time()-t00)/60, 4) ) )     
     
