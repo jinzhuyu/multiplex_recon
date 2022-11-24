@@ -28,6 +28,6 @@ imblearn 0.7.0
 networkx 2.8.4
 
 ### Run
-To get the results for reconstructuring each multiplex network, run ```multi_net.py``` with the respective ```net_name```, ```n_layer```, and ```n_node_total```.
+To get the results for reconstructuring each multiplex network, run ```multi_net.py``` and then ```plot_metrics.py``` with the respective ```net_name```, ```n_layer```, and ```n_node_total```.
 
 Parellel processing is used to reduce the runtime. If necessary, Cython can be used to decrease the runtime a bit more.

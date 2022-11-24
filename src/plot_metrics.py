@@ -255,5 +255,6 @@ def main():
     # for i, _ in enumerate(n_node_total_list):
     #     plots = Plots(net_name, n_layer_list[i], n_node_total_list[i], frac_list, mtc_list, model_list)
     #     plots.main()
+
 if __name__ == "__main__":
     main()

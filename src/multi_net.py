@@ -812,14 +812,14 @@ def run_main():
     save_output(net_name, n_node_total, n_layer, frac_list, mtc_mean_by_mdl_frac)
 
 
-# net_name = 'drug'
-# n_node_total, n_layer = 2114, 2
+net_name = 'drug'
+n_node_total, n_layer = 2114, 2
 # n_node_total, n_layer = 2196, 4
 # n_node_total, n_layer = 2139, 3
 
 
-net_name = 'mafia'
-n_node_total, n_layer = 143, 2
+# net_name = 'mafia'
+# n_node_total, n_layer = 143, 2
 
 # net_name = 'london_transport'
 # n_node_total, n_layer = 356, 3
