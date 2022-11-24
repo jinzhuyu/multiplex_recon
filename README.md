@@ -1,5 +1,5 @@
 # Multiplex Network Reconstruction
-This is the implementation of numerical experiments in our paper titled *Reconstructing Multiplex Networks with Application to Covert Networks*. If you find our paper or code useful, we kindly ask you to cite our work
+This is the implementation of numerical experiments in our paper titled *Reconstructing Sparse Multiplex Networks with Application to Covert Networks*. If you find our paper or code useful, we kindly ask you to cite our work
 
 ```
 @article{yu2022reconstructing,
