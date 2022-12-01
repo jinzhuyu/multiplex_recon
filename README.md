@@ -27,7 +27,7 @@ imblearn 0.7.0
 
 networkx 2.8.4
 
-[//]: # ### Overview
+<! -- ### Overview
 
 ### Usage
 To reproduce the plots for reconstructuring each multiplex network, run ```multi_net.py``` and then ```plot_metrics.py``` with the respective ```net_name```, ```n_layer```, and ```n_node_total```.
