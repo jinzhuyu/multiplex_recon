@@ -10,10 +10,6 @@ import matplotlib.transforms as mtransforms
 import networkx as nx
 from copy import deepcopy
 
-# use for running code within IDE
-# import os
-# os.chdir('c:/code/multiplex_recon/src')
-
 class Net():    
     def __init__(self, path, net_name, 
                  is_save_data=False, is_get_net_charac=False, 
