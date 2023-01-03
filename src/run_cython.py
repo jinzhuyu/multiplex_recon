@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
 
-"""
 if __name__ == '__main__':
     # python setup.py build_ext --inplace
     # without build setup
