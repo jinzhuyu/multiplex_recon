@@ -14,9 +14,6 @@
 # accuracy is likely determined by the relation between observed and unobserved parts and the inter-layer relations
 '''
 
-import os
-# os.chdir('c:/code/illicit_net_resil/src')
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
