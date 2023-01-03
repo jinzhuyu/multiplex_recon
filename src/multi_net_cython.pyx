@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# import os
-# os.chdir('c:/code/illicit_net_resil/src')
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
