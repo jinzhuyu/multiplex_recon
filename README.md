@@ -3,7 +3,7 @@ This is the implementation of numerical experiments in our paper titled *Reconst
 
 ```
 @article{yu2023reconstructing,
-  title={Reconstructing Sparse Multiplex Networks with Application to Covert Networks},
+  title={Reconstructing sparse multiplex networks with application to covert networks},
   author={Yu, Jin-Zhu and Wu, Mincheng and Bichler, Gisela and Aros-Vera, Felipe and Gao, Jianxi},
   journal={Entropy},
   volume={25},
