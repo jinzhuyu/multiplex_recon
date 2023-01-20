@@ -8,9 +8,6 @@ import pandas as pd
 # import pickle
 from networkx.generators.random_graphs import erdos_renyi_graph
 
-import os
-os.chdir('c:/code/illicit_net_resil/src')
-
 # configuration_model(deg_sequence[, ...])
 
 # Returns a random graph with the given degree sequence.

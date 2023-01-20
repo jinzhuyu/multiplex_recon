@@ -9,8 +9,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from my_utils import plotfuncs
-import os
-os.chdir('c:/code/illicit_net_resil/src')
 
 def plot_gmean_obs(df, net_name):
     df[df['net_name']==net_name].groupby('n_layer')['G-mean'].plot(legend=True, figsize=(4.4, 3.3))

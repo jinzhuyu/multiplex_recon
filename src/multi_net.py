@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# import os
-# os.chdir('C:/Users/Jinzh/OneDrive/code/multiplex_recon/src')
-
 import numpy as np  # 1.19.2
 import pandas as pd  # 1.4.4
 import matplotlib
